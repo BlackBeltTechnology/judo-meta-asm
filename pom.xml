@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
     
     <groupId>hu.blackbelt.judo.meta</groupId>
-	<artifactId>judo-meta-runtime</artifactId>
+	<artifactId>judo-meta-asm</artifactId>
 	<packaging>pom</packaging>
     <version>1.0.0-SNAPHSOT</version>
 
