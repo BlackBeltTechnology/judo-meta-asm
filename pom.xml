@@ -5,10 +5,46 @@
     
     <groupId>hu.blackbelt.judo.meta</groupId>
 	<artifactId>judo-meta-asm</artifactId>
-	<packaging>pom</packaging>
-    <version>1.0.0-SNAPHSOT</version>
+	<packaging>bundle</packaging>
+    <version>1.0.0-SNAPSHOT</version>
 
-	<build>
+    <name>JUDO ASM metamodel</name>
+    <description>Judo Architecture Specific Metamodel</description>
+
+    <url>http://github.com/BlackBeltTechnology/judo-meta-asm</url>
+
+    <issueManagement>
+        <url>https://github.com/BlackBeltTechnology/judo-meta-asm/issues</url>
+        <system>GitHub Issues</system>
+    </issueManagement>
+
+    <scm>
+        <connection>scm:git:git://github.com/BlackBeltTechnology/judo-meta-asm.git</connection>
+        <developerConnection>scm:git:ssh://${git.username}@github.com:BlackBeltTechnology/judo-meta-asm.git
+        </developerConnection>
+        <url>http://github.com/BlackBeltTechnology/judo-meta-asm</url>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>borcsokj</id>
+            <name>Börcsök József</name>
+            <email>jozsef.borcsok@blackbelt.hu</email>
+            <url>https://github.com/borcsokj</url>
+            <organization>BlackBelt Technology</organization>
+            <organizationUrl>http://www.blackbelt.hu</organizationUrl>
+        </developer>
+        <developer>
+            <id>robson</id>
+            <name>Róbert Csákány</name>
+            <email>robert.csakany@blackbelt.hu</email>
+            <url>https://github.com/robertcsakany</url>
+            <organization>BlackBelt Technology</organization>
+            <organizationUrl>http://www.blackbelt.hu</organizationUrl>
+        </developer>
+    </developers>
+
+    <build>
 		<plugins>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
@@ -33,6 +69,155 @@
 					</execution>
 				</executions>
 			</plugin>
+
+			<plugin>
+				<groupId>org.apache.felix</groupId>
+				<artifactId>maven-bundle-plugin</artifactId>
+				<version>3.3.0</version>
+				<extensions>true</extensions>
+				<configuration>
+					<obrRepository>NONE</obrRepository>
+					<instructions>
+						<Export-Package>meta/asm;version=${project.version}</Export-Package>
+						<Judo-Tatami-Meta-Model-Paths>meta/asm/types.ecore</Judo-Tatami-Meta-Model-Paths>
+                        <Include-Resource>{maven-resources},meta/asm=model</Include-Resource>
+					</instructions>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
+
+<profiles>
+    <profile>
+        <id>release-github</id>
+        <build>
+            <plugins>
+                <plugin>
+                    <groupId>de.jutzig</groupId>
+                    <artifactId>github-release-plugin</artifactId>
+                    <version>1.2.0</version>
+                    <configuration>
+                        <repositoryId>https://github.com/BlackBeltTechnology/judo-meta-asm.git</repositoryId>
+                        <description>Branch: ${env.WERCKER_GIT_BRANCH} Wercker: ${env.WERCKER_RUN_URL}</description>
+                        <releaseName>${project.version}</releaseName>
+                        <prerelease>true</prerelease>
+                        <tag>${project.version}</tag>
+                        <fileSets>
+                            <fileSet>
+                                <directory>target</directory>
+                                <includes>
+                                    <include>*.jar</include>
+                                </includes>
+                            </fileSet>
+                        </fileSets>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>release-to-github</id>
+                            <phase>install</phase>
+                            <goals>
+                                <goal>release</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </build>
+    </profile>
+    
+    <profile>
+        <id>release-blackbelt</id>
+        <distributionManagement>
+            <snapshotRepository>
+                <id>blackbelt-nexus-distribution</id>
+                <url>https://nexus.blackbelt.cloud/repository/maven-judo-release/</url>
+            </snapshotRepository>
+            <repository>
+                <id>blackbelt-nexus-distribution</id>
+                <url>https://nexus.blackbelt.cloud/repository/maven-judo-release/</url>
+            </repository>
+        </distributionManagement>
+    </profile>
+    
+    <profile>
+        <id>release-central</id>
+        <build>
+            <plugins>
+                <plugin>
+                    <groupId>org.sonatype.plugins</groupId>
+                    <artifactId>nexus-staging-maven-plugin</artifactId>
+                    <version>1.6.8</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <serverId>ossrh</serverId>
+                        <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                        <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                    </configuration>
+                </plugin>
+                
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>2.2.1</version>
+                    <executions>
+                        <execution>
+                            <id>attach-sources</id>
+                            <goals>
+                                <goal>jar-no-fork</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <!--
+                 <pluginß
+                 <groupId>org.apache.maven.plugins</groupId>
+                 <artifactId>maven-javadoc-plugin</artifactId>
+                 <version>2.9.1</version>
+                 <executions>
+                 <execution>
+                 <id>attach-javadocs</id>
+                 <goals>
+                 <goal>jar</goal>
+                 </goals>
+                 </execution>
+                 </executions>
+                 </plugin>
+                 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>1.6</version>
+                    <executions>
+                        <execution>
+                            <id>sign-artifacts</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>sign</goal>
+                            </goals>
+                            <configuration>
+                                <keyname>${gpg.keyname}</keyname>
+                                <passphraseServerId>${gpg.keyname}</passphraseServerId>
+                                <!-- This is necessary for gpg to not try to use the pinentry programs -->
+                                <gpgArguments>
+                                    <arg>--pinentry-mode</arg>
+                                    <arg>loopback</arg>
+                                </gpgArguments>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </build>
+        <distributionManagement>
+            <snapshotRepository>
+                <id>ossrh</id>
+                <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            </snapshotRepository>
+            <repository>
+                <id>ossrh</id>
+                <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            </repository>
+        </distributionManagement>
+    </profile>
+</profiles>
 </project>
