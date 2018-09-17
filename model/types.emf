@@ -1,4 +1,4 @@
-@namespace(uri="http://blackbelt.hu/judo/runtime/types", prefix="types")
+@namespace(uri="http://blackbelt.hu/judo/asm/types", prefix="types")
 package types;
 
 datatype JDate : java.time.LocalDate;
