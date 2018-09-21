@@ -61,6 +61,11 @@
                         <configuration>
                             <artifacts>
                                 <artifact>
+                                    <file>model/base.ecore</file>
+                                    <type>ecore</type>
+                                    <classifier>base</classifier>
+                                </artifact>
+                                <artifact>
                                     <file>model/types.ecore</file>
                                     <type>ecore</type>
                                     <classifier>types</classifier>
@@ -80,7 +85,10 @@
                     <obrRepository>NONE</obrRepository>
                     <instructions>
                         <Export-Package>meta/asm;version=${project.version}</Export-Package>
-                        <Judo-Tatami-Meta-Model-Paths>meta/asm/types.ecore</Judo-Tatami-Meta-Model-Paths>
+                        <Judo-Tatami-Meta-Model-Paths>
+	                        meta/asm/base.ecore,
+	                        meta/asm/types.ecore
+                        </Judo-Tatami-Meta-Model-Paths>
                         <Include-Resource>{maven-resources},meta/asm=model</Include-Resource>
                     </instructions>
                 </configuration>

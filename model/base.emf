@@ -1,0 +1,11 @@
+@namespace(uri="http://blackbelt.hu/judo/asm/base", prefix="base")
+package base;
+
+import "http://blackbelt.hu/judo/asm/types";
+
+abstract class Identifiable {
+
+  @"http://blackbelt.hu/judo/meta/ExtendedMetadata"("id"="true")
+  id attr types.JUUID ~id;
+}
+
