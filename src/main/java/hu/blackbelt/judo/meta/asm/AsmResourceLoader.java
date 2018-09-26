@@ -1,7 +1,6 @@
 package hu.blackbelt.judo.meta.asm;
 
-
-import com.google.common.io.Files;
+import hu.blackbelt.osgi.utils.osgi.api.BundleUtil;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EcorePackage;
@@ -16,7 +15,6 @@ import org.osgi.service.component.annotations.Deactivate;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,16 +24,6 @@ public class AsmResourceLoader {
     Bundle bundle;
     File asmBase;
     File asmTypes;
-
-    private File writeAsBundleFile(Bundle bundle, String targetName, String fileInBundle) throws IOException {
-        File outFile = bundle.getDataFile(targetName);
-
-        InputStream initialStream = bundle.getEntry(fileInBundle).openStream();
-        byte[] buffer = new byte[initialStream.available()];
-        initialStream.read(buffer);
-        Files.write(buffer, outFile);
-        return outFile;
-    }
 
     @Activate
     public void activate(BundleContext bundleContext) throws IOException {
@@ -49,8 +37,8 @@ public class AsmResourceLoader {
         Map<String, Object> m = reg.getExtensionToFactoryMap();
         m.put("asm", new XMIResourceFactoryImpl());
 
-        asmBase = writeAsBundleFile(bundle, "asm_base.model", "meta/asm/base.ecore");
-        asmTypes = writeAsBundleFile(bundle, "asm_types.model", "meta/asm/types.ecore");
+        asmBase = BundleUtil.copyBundleFileToPersistentStorage(bundle, "asm_base.model", "meta/asm/base.ecore");
+        asmTypes = BundleUtil.copyBundleFileToPersistentStorage(bundle, "asm_types.model", "meta/asm/types.ecore");
     }
 
     @Deactivate
