@@ -96,10 +96,6 @@
                             javax.annotation;version="[1.0,2)",
                             *
                         </Import-Package>
-                        <Judo-Tatami-Meta-Model-Paths>
-	                        meta/asm/base.ecore,
-	                        meta/asm/types.ecore
-                        </Judo-Tatami-Meta-Model-Paths>
                         <Include-Resource>{maven-resources},meta/asm=model</Include-Resource>
                     </instructions>
                 </configuration>
