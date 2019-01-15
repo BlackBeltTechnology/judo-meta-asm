@@ -3,6 +3,7 @@ package hu.blackbelt.judo.meta.asm;
 import hu.blackbelt.judo.meta.asm.AsmResourceLoader;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.util.TreeIterator;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
@@ -52,7 +53,7 @@ public class AsmResourceLoaderTest {
     public void testLoadToReourceSet() throws Exception {
         ResourceSet resourceSet = new ResourceSetImpl();
         resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap()
-                .put(resourceSet.getResourceFactoryRegistry().DEFAULT_EXTENSION, new XMIResourceFactoryImpl());
+                .put(Resource.Factory.Registry.DEFAULT_EXTENSION, new XMIResourceFactoryImpl());
 
         asmResourceLoader.loadToReourceSet(resourceSet);
 
