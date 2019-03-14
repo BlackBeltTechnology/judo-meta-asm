@@ -14,6 +14,10 @@
 
     <url>http://github.com/BlackBeltTechnology/judo-meta-asm</url>
 
+    <properties>
+        <emfbuildergenerator-version>0.0.1.develop_55</emfbuildergenerator-version>
+    </properties>
+
     <issueManagement>
         <url>https://github.com/BlackBeltTechnology/judo-meta-asm/issues</url>
         <system>GitHub Issues</system>
@@ -103,6 +107,7 @@
                     <instructions>
                         <Export-Package>
                             meta/asm;version=${project.version},
+                            org.eclipse.emf.ecore.util.builder;version=0.0.1,
                             hu.blackbelt.judo.meta.asm;version=${project.version}
                         </Export-Package>
                         <Import-Package>
@@ -125,6 +130,12 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>hu.blackbelt.eclipse</groupId>
+            <artifactId>emfbuildergenerator-ecore</artifactId>
+            <version>${emfbuildergenerator-version}</version>
+        </dependency>
+
         <dependency>
             <groupId>hu.blackbelt.osgi.utils</groupId>
             <artifactId>osgi-api</artifactId>
