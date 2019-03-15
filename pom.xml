@@ -16,6 +16,7 @@
 
     <properties>
         <emfbuildergenerator-version>0.0.1.develop_55</emfbuildergenerator-version>
+        <epsilon-runtime-version>1.2.0_feature_TRASNFER-79</epsilon-runtime-version>
     </properties>
 
     <issueManagement>
@@ -68,6 +69,28 @@
                     <forkCount>0</forkCount>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-models</id>
+                        <!-- here the phase you need -->
+                        <phase>process-test-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${basedir}/target/test-classes</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>model</directory>
+                                    <filtering>false</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -134,6 +157,16 @@
             <groupId>hu.blackbelt.eclipse</groupId>
             <artifactId>emfbuildergenerator-ecore</artifactId>
             <version>${emfbuildergenerator-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>hu.blackbelt.epsilon</groupId>
+            <artifactId>epsilon-runtime-execution</artifactId>
+            <version>${epsilon-runtime-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>hu.blackbelt.epsilon</groupId>
+            <artifactId>epsilon-runtime-osgi</artifactId>
+            <version>${epsilon-runtime-version}</version>
         </dependency>
 
         <dependency>
