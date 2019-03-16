@@ -1,4 +1,4 @@
-package hu.blackbelt.judo.meta.asm;
+package hu.blackbelt.judo.meta.asm.runtime;
 
 import hu.blackbelt.epsilon.runtime.execution.EmfUtils;
 import org.eclipse.emf.common.util.URI;

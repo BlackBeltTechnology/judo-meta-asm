@@ -1,7 +1,6 @@
-package hu.blackbelt.judo.meta.asm;
+package hu.blackbelt.judo.meta.asm.runtime;
 
 import hu.blackbelt.epsilon.runtime.execution.EmfUtils;
-import hu.blackbelt.epsilon.runtime.osgi.BundleURIHandler;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -28,8 +27,8 @@ public class AsmOsgiPackageRegistration implements AsmPackageRegistration {
     }
 
     public void loadAsmBaseAndTypes(ResourceSet resourceSet) throws Exception {
-        BundleURIHandler uriHandler = new BundleURIHandler("urn", "/", bundle);
-        resourceSet.getURIConverter().getURIHandlers().add(0, uriHandler);
+        // BundleURIHandler uriHandler = new BundleURIHandler("urn", "/", bundle);
+        // resourceSet.getURIConverter().getURIHandlers().add(0, uriHandler);
 
         List<EPackage> basePackages = EmfUtils.register(resourceSet, URI
                 .createURI("urn:meta/asm/base.ecore"), true);

@@ -16,7 +16,7 @@ import org.junit.Test;
 import java.io.File;
 import java.nio.file.FileSystems;
 
-import static hu.blackbelt.judo.meta.asm.AsmModelLoader.*;
+import static hu.blackbelt.judo.meta.asm.runtime.AsmModelLoader.*;
 
 @Slf4j
 public class AsmOsgiPackageRegistrationTest {
