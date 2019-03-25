@@ -40,7 +40,7 @@ public class AsmOsgiPackageRegistrationTest {
 
     @Test
     public void testLoadToReourceSet() throws Exception {
-        ResourceSet resourceSet = createAsmResourceSet(uriHandler);
+        ResourceSet resourceSet = createAsmResourceSet(uriHandler, new LocalAsmPackageRegistration());
         loadAsmModel(resourceSet, URI.createURI("urn:asm.model"), "northwind", "1.0.0");
 
         TreeIterator<Notifier> iter = resourceSet.getAllContents();

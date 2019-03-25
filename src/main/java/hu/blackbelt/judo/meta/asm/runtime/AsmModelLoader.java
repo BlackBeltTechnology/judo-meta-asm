@@ -32,18 +32,25 @@ public class AsmModelLoader {
     }
 
     public static ResourceSet createAsmResourceSet() throws Exception {
-        return createAsmResourceSet(null);
+        return createAsmResourceSet(null, null);
     }
 
-    public static ResourceSet createAsmResourceSet(URIHandler uriHandler) throws Exception {
+    public static ResourceSet createAsmResourceSet(URIHandler uriHandler, AsmPackageRegistration asmPackageRegistration) throws Exception {
         ResourceSet resourceSet = new ResourceSetImpl();
         if (uriHandler != null) {
             resourceSet.getURIConverter().getURIHandlers().add(0, uriHandler);
         }
         resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(ResourceFactoryRegistryImpl.DEFAULT_EXTENSION, getFactory());
         registerAsmMetamodel(resourceSet);
-        registerAsmPackages(resourceSet, null);
+        if (asmPackageRegistration != null) {
+            registerAsmPackages(resourceSet, asmPackageRegistration);
+        }
         return resourceSet;
+    }
+
+
+    public static ResourceSet createAsmResourceSet(URIHandler uriHandler) throws Exception {
+        return createAsmResourceSet(uriHandler, null);
     }
 
     public static void registerAsmPackages(ResourceSet resourceSet, AsmPackageRegistration asmPackageRegistration) throws Exception {
