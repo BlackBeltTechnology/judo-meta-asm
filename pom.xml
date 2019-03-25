@@ -16,7 +16,8 @@
 
     <properties>
         <emfbuildergenerator-version>0.0.1.develop_55</emfbuildergenerator-version>
-        <epsilon-runtime-version>1.2.0_feature_TRASNFER-79</epsilon-runtime-version>
+        <epsilon-runtime-version>1.2.0_develop-83</epsilon-runtime-version>
+        <epsilon-maven-plugin-version>1.2.0_develop-62</epsilon-maven-plugin-version>
     </properties>
 
     <issueManagement>
