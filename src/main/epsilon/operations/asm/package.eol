@@ -1,0 +1,11 @@
+@cached
+operation ASM!EPackage getFullName() : String {
+	var package = self.eSuperPackage;
+	var name = "";
+	while (package.isDefined()) {
+		name = package.name + "." + name;
+		package = package.eSuperPackage;
+	}
+
+	return name + self.name;
+}

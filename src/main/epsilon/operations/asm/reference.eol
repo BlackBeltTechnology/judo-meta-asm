@@ -1,0 +1,16 @@
+import "modelElement.eol";
+
+@cached
+operation ASM!EReference isEmbedded() : Boolean {
+	return self.annotatedAsTrue("embedded");
+}
+
+@cached
+operation ASM!EReference getFQName() : String {
+	return self.eContainingClass.getFQName() + "#" + self.name;
+}
+
+@cached
+operation ASM!EReference getReferenceFQName() : String {
+	return self.eReferenceType.getFQName() + "#" + self.name;
+}

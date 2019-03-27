@@ -146,7 +146,11 @@
                             javax.annotation;version="[1.0,2)",
                             *
                         </Import-Package>
-                        <Include-Resource>{maven-resources},meta/asm=model</Include-Resource>
+                        <Include-Resource>
+                            {maven-resources},
+                            meta/asm=model,
+                            judo/asm/operations=src/main/epsilon/operations/asm
+                        </Include-Resource>
                     </instructions>
                 </configuration>
             </plugin>

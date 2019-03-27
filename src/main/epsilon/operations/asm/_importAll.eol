@@ -1,0 +1,9 @@
+import "accessPoint.eol";
+import "attribute.eol";
+import "annotation.eol";
+import "class.eol";
+import "modelElement.eol";
+import "package.eol";
+import "service.eol";
+import "reference.eol";
+import "type.eol";

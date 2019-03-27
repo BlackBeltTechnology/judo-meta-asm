@@ -1,0 +1,27 @@
+import "annotation.eol";
+import "modelElement.eol";
+
+@cached
+operation getAllStatelessOperations() : Collection {
+    return ASM!EOperation.all.select(o | o.isStateless());
+}
+
+@cached
+operation getAllMappedTransferObjectTypes() : Collection {
+    return ASM!EClass.all.select(c | c.isMappedTransferObjectType());
+}
+
+@cached
+operation ASM!EOperation isStateless() : Boolean {
+    var exposedBy = self.getAnnotationValue("exposedBy", false);
+    if (exposedBy.isDefined()) {
+        return exposedBy.resolve().isAccessPoint() and self.annotatedAsFalse("stateful");
+    } else {
+        return false;
+    }
+}
+
+@cached
+operation ASM!EClass isMappedTransferObjectType() : Boolean {
+    return self.hasAnnotation("mappedEntityType");    
+}

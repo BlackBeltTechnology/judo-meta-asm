@@ -1,0 +1,4 @@
+@cached
+operation ASM!EStringToStringMapEntry getAnnotation() : ASM!EAnnotation {
+    return ASM!EAnnotation.all.selectOne(a | a.details.contains(self));
+}

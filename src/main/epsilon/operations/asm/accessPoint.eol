@@ -1,0 +1,85 @@
+import "service.eol";
+
+@cached
+operation getAllAccessPoints() : Collection {
+    return ASM!EClass.all.select(c | c.isAccessPoint());
+}
+
+@cached
+operation getAllExposedGraphs() : Collection {
+    return ASM!EClass.all.select(c | c.isExposedGraph());
+}
+
+@cached
+operation ASM!EClass isAccessPoint() : Boolean {
+    return self.interface and self.annotatedAsTrue("accessPoint");
+}
+
+@cached
+operation ASM!EClass getResolvedExposedBy() : ASM!EClass {
+    var exposedBy = self.getAnnotationValue("exposedBy", false);
+    if (exposedBy.isDefined()) {
+        return exposedBy.resolve();
+    } else {
+        return null;
+    }
+}
+
+@cached
+operation ASM!EClass getResolvedRoot() : ASM!EClass {
+    var root = self.getAnnotationValue("root", false);
+    if (root.isDefined()) {
+        return root.resolve();
+    } else {
+        return null;
+    } 
+}
+
+@cached
+operation ASM!EClass isExposedGraph() : Boolean {
+    var exposedBy = self.getResolvedExposedBy();
+    var root = self.getResolvedRoot();
+    
+    if (exposedBy.isDefined() and root.isDefined()) {
+        return exposedBy.isAccessPoint() and root.isMappedTransferObjectType() and self.interface;
+    } else {
+        return false;
+    }
+}
+
+@cached
+operation ASM!EClass getExposedGraphName() : String {
+    if (self.isExposedGraph()) {
+        return self.name.substring(self.getContainerClass().name.length + 1);
+    } else {
+        return null;
+    }
+}
+
+@cached
+operation ASM!EClass getGraphs() : Collection {
+	var annotations = self.eAnnotations.selectOne(a | a.source = extendedMetadataURI);
+	if (annotations.isDefined()) {
+		return annotations.details.select(d | d.key.startsWith("graphs.")).collect(d | d.value.resolve());
+	} else {
+		return new Set;
+	}
+}
+
+@cached
+operation ASM!EClass getExposedMappedTransferObjectTypes() : Collection {
+    if (self.isExposedGraph()) {
+        return getAllMappedTransferObjectTypes().select(t | t.getGraphs().contains(self));
+    } else {
+        return new Sequence;
+    }
+}
+
+@cached
+operation ASM!EClass getExposedOperations() : Collection {
+    if (self.isExposedGraph()) {
+        return self.getExposedMappedTransferObjectTypes().collect(t | t.getNestedClasses()).flatten().select(og | og.interface).collect(og | og.eOperations).flatten();
+    } else {
+        return new Sequence;
+    }
+}
