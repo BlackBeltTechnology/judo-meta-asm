@@ -14,7 +14,6 @@ import org.eclipse.emf.ecore.xmi.XMIResource;
 import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.eclipse.emf.ecore.xmi.impl.URIHandlerImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -80,7 +79,7 @@ public class AsmModelLoader {
                 .version(version)
                 .uri(uri)
                 .checksum(checksum)
-                .resource(resource);
+                .resourceSet(resourceSet);
 
         if (checksum != null) {
             b.checksum(checksum);
@@ -126,6 +125,6 @@ public class AsmModelLoader {
 
 
     public static void saveAsmModel(AsmModel asmModel) throws IOException {
-        asmModel.getResource().save(getDefaultSaveOptions());
+        asmModel.getResourceSet().getResource(asmModel.getUri(), false).save(getDefaultSaveOptions());
     }
 }
