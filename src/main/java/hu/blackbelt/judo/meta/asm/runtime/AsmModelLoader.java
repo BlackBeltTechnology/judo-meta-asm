@@ -101,8 +101,8 @@ public class AsmModelLoader {
         }
     }
 
-    public static Map<Object, Object> getDefaultSaveOptions() {
-        final Map<Object, Object> saveOptions = Maps.newHashMap(); //asmResourceSet.getDefaultSaveOptions();
+    public static Map<Object, Object> getAsmDefaultSaveOptions() {
+        final Map<Object, Object> saveOptions = Maps.newHashMap();
         saveOptions.put(XMIResource.OPTION_DECLARE_XML,Boolean.TRUE);
         saveOptions.put(XMIResource.OPTION_PROCESS_DANGLING_HREF,XMIResource.OPTION_PROCESS_DANGLING_HREF_DISCARD);
         saveOptions.put(XMIResource.OPTION_URI_HANDLER, new URIHandlerImpl() {
@@ -125,6 +125,6 @@ public class AsmModelLoader {
 
 
     public static void saveAsmModel(AsmModel asmModel) throws IOException {
-        asmModel.getResourceSet().getResource(asmModel.getUri(), false).save(getDefaultSaveOptions());
+        asmModel.getResourceSet().getResource(asmModel.getUri(), false).save(getAsmDefaultSaveOptions());
     }
 }
