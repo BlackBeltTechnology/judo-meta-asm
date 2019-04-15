@@ -1,0 +1,10 @@
+// get annotation details entry for a given exposed graph
+@cached
+operation ASM!EModelElement getGraphAnnotation(graphFQName : String) : ASM!EStringToStringMapEntry {
+    var annotation = self.getExtensionAnnotation(false);
+    if (annotation.isDefined()) {
+        return annotation.details.selectOne(d | d.key.startsWith(".graphs.") and d.value == accessPointFQName);
+    } else {
+        return null;
+    }
+}

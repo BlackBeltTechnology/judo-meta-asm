@@ -1,13 +1,18 @@
 import "service.eol";
 
 @cached
-operation getAllAccessPoints() : Collection {
-    return ASM!EClass.all.select(c | c.isAccessPoint());
+operation getAllAccessPoints() : Set {
+    return ASM!EClass.all.select(c | c.isAccessPoint()).asSet();
 }
 
 @cached
-operation getAllExposedGraphs() : Collection {
-    return ASM!EClass.all.select(c | c.isExposedGraph());
+operation getAllExposedGraphs() : Set {
+    return ASM!EClass.all.select(c | c.isExposedGraph()).asSet();
+}
+
+@cached
+operation getAllExposedServices() : Set {
+    return ASM!EOperation.all.select(c | c.isExposedService()).asSet();
 }
 
 @cached
@@ -32,7 +37,7 @@ operation ASM!EClass getResolvedRoot() : ASM!EClass {
         return root.resolve();
     } else {
         return null;
-    } 
+    }
 }
 
 @cached
@@ -48,6 +53,17 @@ operation ASM!EClass isExposedGraph() : Boolean {
 }
 
 @cached
+operation ASM!EOperation isExposedService() : Boolean {
+    var exposedBy = self.getResolvedExposedBy();
+
+    if (exposedBy.isDefined()) {
+        return exposedBy.isAccessPoint() and self.eContainer.interface;
+    } else {
+        return false;
+    }
+}
+
+@cached
 operation ASM!EClass getExposedGraphName() : String {
     if (self.isExposedGraph()) {
         return self.name.substring(self.getContainerClass().name.length + 1);
@@ -57,29 +73,61 @@ operation ASM!EClass getExposedGraphName() : String {
 }
 
 @cached
-operation ASM!EClass getGraphs() : Collection {
-	var annotations = self.eAnnotations.selectOne(a | a.source = extendedMetadataURI);
-	if (annotations.isDefined()) {
-		return annotations.details.select(d | d.key.startsWith("graphs.")).collect(d | d.value.resolve());
+operation ASM!EClass getExposedGraphs() : Set {
+    if (self.isAccessPoint()) {
+        return getAllExposedGraphs().select(g | g.getResolvedExposedBy() == self);
+    } else {
+        return new Set;
+    }
+}
+
+@cached
+operation ASM!EClass getExposedServices() : Set {
+    if (self.isAccessPoint()) {
+        return getAllExposedServices().select(s | s.getResolvedExposedBy() == self);
+    } else {
+        return new Set;
+    }
+}
+
+@cached
+operation ASM!EClass getGraphs() : Set {
+	var annotation = self.getExtensionAnnotation(false);
+	if (self.isMappedTransferObjectType() and annotation.isDefined()) {
+		return annotation.details.select(d | d.key.startsWith("graphs.")).collect(d | d.value.resolve()).asSet();
 	} else {
 		return new Set;
 	}
 }
 
 @cached
-operation ASM!EClass getExposedMappedTransferObjectTypes() : Collection {
+operation ASM!EOperation getGraphs() : Set {
+	var annotation = self.getExtensionAnnotation(false);
+	if (annotation.isDefined()) {
+		return annotation.details.select(d | d.key.startsWith("graphs.")).collect(d | d.value.resolve()).asSet();
+	} else {
+		return new Set;
+	}
+}
+
+@cached
+operation ASM!EClass getExposedMappedTransferObjectTypes() : Set {
     if (self.isExposedGraph()) {
-        return getAllMappedTransferObjectTypes().select(t | t.getGraphs().contains(self));
+        return getAllMappedTransferObjectTypes().select(t | t.getGraphs().contains(self)).asSet();
+    } else if (self.isAccessPoint()) {
+        return self.getExposedGraphs().collect(g | g.getExposedMappedTransferObjectTypes()).flatten().asSet();
     } else {
-        return new Sequence;
+        return new Set;
     }
 }
 
 @cached
-operation ASM!EClass getExposedOperations() : Collection {
+operation ASM!EClass getExposedOperations() : Set {
     if (self.isExposedGraph()) {
-        return self.getExposedMappedTransferObjectTypes().collect(t | t.getNestedClasses()).flatten().select(og | og.interface).collect(og | og.eOperations).flatten();
+        return self.getExposedMappedTransferObjectTypes().collect(t | t.getNestedClasses()).flatten().select(og | og.interface).collect(og | og.eOperations).flatten()
+            .includingAll(self.getExposedMappedTransferObjectTypes().collect(t | t.eOperations).flatten().select(o | o.getGraphs().contains(self)))
+            .asSet();
     } else {
-        return new Sequence;
+        return new Set;
     }
 }

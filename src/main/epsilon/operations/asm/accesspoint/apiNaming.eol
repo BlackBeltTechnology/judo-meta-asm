@@ -1,0 +1,11 @@
+// convert a string (ie. FQName) to OpenAPI Path
+@cached
+operation String toOpenAPIPath() : String {
+    return self.replace("\\.ʘUnboundServices", "").replace("[ʘ#\\.]", "/").replace("[^0-9a-zA-Z_/]", "_");
+}
+
+// convert a string (ie. name) to OpenAPI name (key)
+@cached
+operation String toOpenAPIName() : String {
+    return self.replace("[^0-9a-zA-Z_]", "_");
+}

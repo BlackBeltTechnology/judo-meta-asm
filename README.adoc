@@ -1,3 +1,13 @@
 # judo-meta-asm
 
 ECore Architecture Specific Model Extensio.
+
+Special characters (not supported in names):
+
+* . (package name separator in ASM, navigation expression in PSM/JQL)
+* # (feature name separator in ASM)
+* : (package name separator in PSM)
+* ʘ (embedded [generated] element name separator, ie. set/get/add/remove operations of transfer relations)
+* , (generic separator)
+* operators used in expressions (ie. aritmetic operators, logical operators, etc.)
+* space

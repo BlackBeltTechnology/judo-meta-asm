@@ -1,0 +1,10 @@
+// get annotation details entry for a given access point
+@cached
+operation ASM!EModelElement getAccessPointAnnotation(accessPointFQName : String) : ASM!EStringToStringMapEntry {
+    var annotation = self.getExtensionAnnotation(false);
+    if (annotation.isDefined()) {
+        return annotation.details.selectOne(d | d.key.startsWith(".accessPoints.") and d.value == accessPointFQName);
+    } else {
+        return null;
+    }
+}
