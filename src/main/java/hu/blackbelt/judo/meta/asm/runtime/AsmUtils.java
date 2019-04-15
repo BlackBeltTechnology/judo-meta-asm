@@ -1,16 +1,24 @@
 package hu.blackbelt.judo.meta.asm.runtime;
 
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.OptionalInt;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.*;
+
+@Slf4j
 public class AsmUtils {
     public static final String extendedMetadataUri = "http://blackbelt.hu/judo/meta/ExtendedMetadata";
 
@@ -163,12 +171,168 @@ public class AsmUtils {
     annotation.eol
     */
 
-    /*
-    @cached
-    operation ASM!EStringToStringMapEntry getAnnotation() : ASM!EAnnotation {
-        return ASM!EAnnotation.all.selectOne(a | a.details.contains(self));
+    /**
+     * Get annotation in which the given attribute (map entry) can be found as details.
+     *
+     * @param resourceSet Ecore resource set
+     * @param mapEntry    attribute (map entry)
+     * @return container annotation
+     */
+    public static Optional<EAnnotation> getAnnotation(final ResourceSet resourceSet, final Map.Entry<String, String> mapEntry) {
+        return asStream(resourceSet.getAllContents())
+                .filter(e -> e instanceof EAnnotation).map(e -> (EAnnotation) e)
+                .filter(e -> e.getDetails().contains(mapEntry)).findFirst();
     }
-    */
+
+    /**
+     * Get JUDO extension annotation of a given Ecore model element.
+     * <p>
+     * Annotation will be added if createIfNotExists parameter is <code>true</code> and it is not existing yet.
+     *
+     * @param eModelElement     model element
+     * @param createIfNotExists create annotation is not exists yet
+     * @return JUDO extension annotation
+     */
+    public static Optional<EAnnotation> getExtensionAnnotation(final EModelElement eModelElement, boolean createIfNotExists) {
+        final Optional<EAnnotation> annotation = eModelElement.getEAnnotations().stream().filter(a -> AsmUtils.extendedMetadataUri.equals(a.getSource())).findFirst();
+        if (!annotation.isPresent() && createIfNotExists) {
+            final EAnnotation a = newEAnnotationBuilder().withSource(AsmUtils.extendedMetadataUri).build();
+            eModelElement.getEAnnotations().add(a);
+            return Optional.of(a);
+        } else {
+            return annotation;
+        }
+    }
+
+    /**
+     * Add value to a given model element as indexed list entry of prefixed JUDO extension annotation.
+     * <p>
+     * JUDO extension annotation will be created if it is not existing yet.
+     *
+     * @param eModelElement model element to which annotation value is added
+     * @param prefix        annotation attribute prefix
+     * @param value         annotation attribute value
+     */
+    public static void addAnnotationIfNotExists(final EModelElement eModelElement, final String prefix, final String value) {
+        final Optional<EAnnotation> annotation = getExtensionAnnotation(eModelElement, true);
+        if (annotation.isPresent()) {
+            final EMap<String, String> details = annotation.get().getDetails();
+            if (details.entrySet().stream()
+                    .filter(e -> e.getKey().matches("^" + Pattern.quote(prefix + ".") + "[0-9]+$") && Objects.equals(e.getValue(), value))
+                    .count() == 0) {
+                final OptionalInt max = details.entrySet().stream()
+                        .filter(e -> e.getKey().matches("^" + Pattern.quote(prefix + ".") + "[0-9]+$"))
+                        .mapToInt(e -> Integer.parseInt(e.getKey().replace(prefix + ".", "")))
+                        .max();
+
+                if (max.isPresent()) {
+                    details.put(prefix + "." + (max.getAsInt() + 1), value);
+                } else {
+                    details.put(prefix + "." + 0, value);
+                }
+            } else {
+                log.debug("Annotation (prefix: {}, value: {}) is already added to model element {}", new Object[]{prefix, value, eModelElement});
+            }
+        } else {
+            throw new IllegalStateException("Unable to create JUDO extension annotation");
+        }
+    }
+
+    /**
+     * Get annotated Ecore model element for a given annotation attribute (map entry).
+     *
+     * @param resourceSet Ecore resource set
+     * @param mapEntry    attribute (map entry)
+     * @return owner Ecore model element
+     */
+    public static Optional<? extends EModelElement> getAnnotatedElement(final ResourceSet resourceSet, final Map.Entry<String, String> mapEntry) {
+        final Optional<EAnnotation> annotation = getAnnotation(resourceSet, mapEntry);
+        if (annotation.isPresent()) {
+            return Optional.of(annotation.get().getEModelElement());
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Get annotated Ecore class for a given annotation attribute (map entry).
+     *
+     * @param resourceSet Ecore resource set
+     * @param mapEntry    attribute (map entry)
+     * @return owner Ecore class
+     */
+    public static Optional<? extends EClass> getAnnotatedClass(final ResourceSet resourceSet, final Map.Entry<String, String> mapEntry) {
+        final Optional<? extends EModelElement> element = getAnnotatedElement(resourceSet, mapEntry);
+        if (element.isPresent() && (element.get() instanceof EClass)) {
+            return (Optional<? extends EClass>) element;
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Get annotated Ecore attribute for a given annotation attribute (map entry).
+     *
+     * @param resourceSet Ecore resource set
+     * @param mapEntry    attribute (map entry)
+     * @return owner Ecore attribute
+     */
+    public static Optional<? extends EAttribute> getAnnotatedAttribute(final ResourceSet resourceSet, final Map.Entry<String, String> mapEntry) {
+        final Optional<? extends EModelElement> element = getAnnotatedElement(resourceSet, mapEntry);
+        if (element.isPresent() && (element.get() instanceof EAttribute)) {
+            return (Optional<? extends EAttribute>) element;
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Get annotated Ecore reference for a given annotation attribute (map entry).
+     *
+     * @param resourceSet Ecore resource set
+     * @param mapEntry    attribute (map entry)
+     * @return owner Ecore reference
+     */
+    public static Optional<? extends EReference> getAnnotatedReference(final ResourceSet resourceSet, final Map.Entry<String, String> mapEntry) {
+        final Optional<? extends EModelElement> element = getAnnotatedElement(resourceSet, mapEntry);
+        if (element.isPresent() && (element.get() instanceof EReference)) {
+            return (Optional<? extends EReference>) element;
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Get annotated Ecore operation for a given annotation attribute (map entry).
+     *
+     * @param resourceSet Ecore resource set
+     * @param mapEntry    attribute (map entry)
+     * @return owner Ecore operation
+     */
+    public static Optional<? extends EOperation> getAnnotatedOperation(final ResourceSet resourceSet, final Map.Entry<String, String> mapEntry) {
+        final Optional<? extends EModelElement> element = getAnnotatedElement(resourceSet, mapEntry);
+        if (element.isPresent() && (element.get() instanceof EOperation)) {
+            return (Optional<? extends EOperation>) element;
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Get annotated Ecore parameter for a given annotation attribute (map entry).
+     *
+     * @param resourceSet Ecore resource set
+     * @param mapEntry    attribute (map entry)
+     * @return owner Ecore parameter
+     */
+    public static Optional<? extends EParameter> getAnnotatedParameter(final ResourceSet resourceSet, final Map.Entry<String, String> mapEntry) {
+        final Optional<? extends EModelElement> element = getAnnotatedElement(resourceSet, mapEntry);
+        if (element.isPresent() && (element.get() instanceof EParameter)) {
+            return (Optional<? extends EParameter>) element;
+        } else {
+            return Optional.empty();
+        }
+    }
 
     /*
     class.eol
