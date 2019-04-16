@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmi:id="_MhqQkGBREemrcukq8E6ogQ" name="northwind" nsURI="http://blackbelt.hu/judo/northwind/northwind" nsPrefix="runtimenorthwindNorthwind">
+  <eSubpackages xmi:id="_MijBYmBREemrcukq8E6ogQ" name="entities" nsURI="http://blackbelt.hu/judo/northwind/northwind/entities" nsPrefix="runtimenorthwindNorthwindEntities">
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_MjHCEWBREemrcukq8E6ogQ" name="Person">
+      <eSuperTypes href="http://blackbelt.hu/judo/asm/base#//Identifiable"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_MjHpImBREemrcukq8E6ogQ" name="lastName" lowerBound="1">
+        <eAnnotations xmi:id="_MjIQMGBREemrcukq8E6ogQ" source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details xmi:id="_MjIQMWBREemrcukq8E6ogQ" key="maxLength" value="255"/>
+        </eAnnotations>
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JString"/>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_MjIQM2BREemrcukq8E6ogQ" name="firstName" lowerBound="1">
+        <eAnnotations xmi:id="_MjI3QGBREemrcukq8E6ogQ" source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details xmi:id="_MjI3QWBREemrcukq8E6ogQ" key="maxLength" value="255"/>
+        </eAnnotations>
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JString"/>
+      </eStructuralFeatures>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_MjJeUWBREemrcukq8E6ogQ" name="Employee">
+      <eSuperTypes href="#_MjHCEWBREemrcukq8E6ogQ"/>
+      <eSuperTypes href="http://blackbelt.hu/judo/asm/base#//Identifiable"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_MjKsc2BREemrcukq8E6ogQ" name="birthDate">
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JDate"/>
+      </eStructuralFeatures>
+    </eClassifiers>
+  </eSubpackages>
+</ecore:EPackage>
