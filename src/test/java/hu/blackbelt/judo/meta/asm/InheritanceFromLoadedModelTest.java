@@ -23,7 +23,6 @@ public class InheritanceFromLoadedModelTest {
     public void setUp() {
         resourceSet = new ResourceSetImpl();
         resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("*", new EcoreResourceFactoryImpl());
-
     }
 
     @After
@@ -33,30 +32,48 @@ public class InheritanceFromLoadedModelTest {
 
     @Test
     public void testInheritedAttributesInXMI() throws Exception {
+        log.info("Testing XMI ...");
         AsmModelLoader.loadAsmModel(resourceSet,
                 URI.createURI(new File(srcDir(), "test/resources/inheritance.model").getAbsolutePath()),
                 "test",
                 "1.0.0");
 
-        final EClass employeeClass = (EClass) resourceSet.getResources().get(0).getEObject("//entities/Employee");
-
-        employeeClass.getEAllAttributes().forEach(a -> log.debug("Attribute: {}", a.getName()));
-
-        Assert.assertEquals(3, employeeClass.getEAttributes().size());
+        test(2 + 1);
     }
 
     @Test
     public void testInheritedAttributesInXML() throws Exception {
+        log.info("Testing XML ...");
         AsmModelLoader.loadAsmModel(resourceSet,
                 URI.createURI(new File(srcDir(), "test/resources/asm.model").getAbsolutePath()),
                 "test",
                 "1.0.0");
 
+        test(3 + 8);
+    }
+
+    @Test
+    public void testInheritedAttributesInXMIWithStandardLoader() {
+        log.info("Testing XMI (standard loader) ...");
+        resourceSet.getResource(URI.createURI(new File(srcDir(), "test/resources/inheritance.model").getAbsolutePath()), true);
+
+        test(2 + 1);
+    }
+
+    @Test
+    public void testInheritedAttributesInXMLWithStandardLoader() {
+        log.info("Testing XML (standard loader) ...");
+        resourceSet.getResource(URI.createURI(new File(srcDir(), "test/resources/asm.model").getAbsolutePath()), true);
+
+        test(3 + 8);
+    }
+
+    private void test(int expectedAttributes) {
         final EClass employeeClass = (EClass) resourceSet.getResources().get(0).getEObject("//entities/Employee");
 
-        employeeClass.getEAllAttributes().forEach(a -> log.debug("Attribute: {}", a.getName()));
+        employeeClass.getEAllAttributes().forEach(a -> log.info(" - attribute: {}", a.getName()));
 
-        Assert.assertEquals(3, employeeClass.getEAttributes().size());
+        Assert.assertEquals(expectedAttributes, employeeClass.getEAttributes().size());
     }
 
     public File srcDir() {
