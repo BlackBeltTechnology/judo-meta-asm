@@ -1,44 +1,480 @@
-<?xml version="1.0" encoding="ASCII"?>
-<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="northwind" nsURI="http://blackbelt.hu/judo/meta/asm/northwind" nsPrefix="rtNorthwind">
-  <eSubpackages name="measures" nsURI="http://blackbelt.hu/judo/meta/asm/northwind/measures" nsPrefix="rtNorthwindMeasures"/>
-  <eSubpackages name="types" nsURI="http://blackbelt.hu/judo/meta/asm/northwind/types" nsPrefix="rtNorthwindTypes">
-    <eClassifiers xsi:type="ecore:EEnum" name="Countries">
-      <eLiterals name="HU" literal="HU"/>
-      <eLiterals name="AT" value="1" literal="AT"/>
-      <eLiterals name="RO" value="2" literal="RO"/>
-      <eLiterals name="SK" value="3" literal="SK"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="northwind" nsURI="http://blackbelt.hu/judo/northwind/northwind" nsPrefix="runtimenorthwindNorthwind">
+  <eClassifiers xsi:type="ecore:EClass" name="internalAP" abstract="true" interface="true">
+    <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+      <details key="accessPoint" value="true"/>
+    </eAnnotations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="externalAP" abstract="true" interface="true">
+    <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+      <details key="accessPoint" value="true"/>
+    </eAnnotations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="internalAPʘordersAssignedToEmployee" abstract="true" interface="true">
+    <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+      <details key="exposedBy" value="northwind.internalAP"/>
+      <details key="root" value="northwind.services.OrderInfo"/>
+      <details key="root.collection" value="true"/>
+      <details key="selector" value="ordersAssignedToEmployee"/>
+    </eAnnotations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="externalAPʘproducts" abstract="true" interface="true">
+    <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+      <details key="exposedBy" value="northwind.externalAP"/>
+      <details key="root" value="northwind.services.ProductInfo"/>
+      <details key="root.collection" value="true"/>
+      <details key="selector" value="allProducts"/>
+    </eAnnotations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" name="externalAPʘcategories" abstract="true" interface="true">
+    <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+      <details key="exposedBy" value="northwind.externalAP"/>
+      <details key="root" value="northwind.services.CategoryInfo"/>
+      <details key="root.collection" value="true"/>
+      <details key="selector" value="allCategories"/>
+    </eAnnotations>
+  </eClassifiers>
+  <eSubpackages name="services" nsURI="http://blackbelt.hu/judo/northwind/northwind/services" nsPrefix="runtimenorthwindNorthwindServices">
+    <eClassifiers xsi:type="ecore:EClass" name="ʘUnboundServices" abstract="true" interface="true">
+      <eOperations name="getAllOrders" upperBound="-1" eType="//services/OrderInfo">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="stateful" value="false"/>
+          <details key="exposedBy" value="northwind.internalAP"/>
+        </eAnnotations>
+      </eOperations>
     </eClassifiers>
-    <eClassifiers xsi:type="ecore:EEnum" name="Titles">
-      <eLiterals name="MS" literal="MS"/>
-      <eLiterals name="MRS" value="1" literal="MRS"/>
-      <eLiterals name="MR" value="2" literal="MR"/>
-      <eLiterals name="DR" value="3" literal="DR"/>
-    </eClassifiers>
-    <eSubpackages name="measured" nsURI="http://blackbelt.hu/judo/meta/asm/northwind/types/measured" nsPrefix="rtNorthwindTypesMeasured"/>
-  </eSubpackages>
-  <eSubpackages name="entities" nsURI="http://blackbelt.hu/judo/meta/asm/northwind/entities" nsPrefix="rtNorthwindEntities">
-    <eClassifiers xsi:type="ecore:EClass" name="Category">
+    <eClassifiers xsi:type="ecore:EClass" name="OrderInfo">
       <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
-        <details key="entity" value="true"/>
+        <details key="mappedEntityType" value="northwind.entities.Order"/>
+        <details key="entityIdPresence" value="OPTIONAL"/>
+        <details key="graphs.0" value="northwind.internalAPʘordersAssignedToEmployee"/>
       </eAnnotations>
-      <eSuperTypes href="http://blackbelt.hu/judo/asm/base#//Identifiable"/>
+      <eOperations name="get" eType="//services/OrderInfo">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="stateful" value="false"/>
+          <details key="graphs.0" value="northwind.internalAPʘordersAssignedToEmployee"/>
+        </eAnnotations>
+        <eParameters name="input" lowerBound="1" eType="//services/OrderLink"/>
+      </eOperations>
+      <eOperations name="changeShipment" lowerBound="1" eType="//services/OrderInfo">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="stateful" value="true"/>
+          <details key="graphs.0" value="northwind.internalAPʘordersAssignedToEmployee"/>
+        </eAnnotations>
+        <eParameters name="input" lowerBound="1" eType="//services/ShipmentChange"/>
+      </eOperations>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="itemsWithCategoryPicture" upperBound="-1" eType="//services/OrderItemProduct" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="items" upperBound="-1" eType="//services/OrderItem" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="comments" upperBound="-1" eType="//services/Comment" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="orderDate" lowerBound="1">
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JTimestamp"/>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="shippedDate">
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JTimestamp"/>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="shipperName" lowerBound="1">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="maxLength" value="255"/>
+        </eAnnotations>
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JString"/>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="totalPrice" lowerBound="1">
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JDouble"/>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="discount" lowerBound="1">
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JDouble"/>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="discountedItemsWithSingleManufacturer" lowerBound="1">
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JInteger"/>
+      </eStructuralFeatures>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="ProductInfo">
+      <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+        <details key="mappedEntityType" value="northwind.entities.Product"/>
+        <details key="entityIdPresence" value="OPTIONAL"/>
+        <details key="graphs.0" value="northwind.internalAPʘordersAssignedToEmployee"/>
+        <details key="graphs.1" value="northwind.externalAPʘproducts"/>
+        <details key="graphs.2" value="northwind.externalAPʘcategories"/>
+      </eAnnotations>
+      <eOperations name="get" eType="//services/ProductInfo">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="stateful" value="false"/>
+          <details key="graphs.0" value="northwind.internalAPʘordersAssignedToEmployee"/>
+          <details key="graphs.1" value="northwind.externalAPʘproducts"/>
+          <details key="graphs.2" value="northwind.externalAPʘcategories"/>
+        </eAnnotations>
+        <eParameters name="input" lowerBound="1" eType="//services/ProductLink"/>
+      </eOperations>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="category" lowerBound="1" eType="//services/CategoryInfo"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="productName">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="maxLength" value="255"/>
+        </eAnnotations>
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JString"/>
+      </eStructuralFeatures>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="CategoryInfo">
+      <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+        <details key="mappedEntityType" value="northwind.entities.Category"/>
+        <details key="entityIdPresence" value="OPTIONAL"/>
+        <details key="graphs.0" value="northwind.internalAPʘordersAssignedToEmployee"/>
+        <details key="graphs.1" value="northwind.externalAPʘproducts"/>
+        <details key="graphs.2" value="northwind.externalAPʘcategories"/>
+      </eAnnotations>
+      <eOperations name="get" eType="//services/CategoryInfo">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="stateful" value="false"/>
+          <details key="graphs.0" value="northwind.internalAPʘordersAssignedToEmployee"/>
+          <details key="graphs.1" value="northwind.externalAPʘproducts"/>
+          <details key="graphs.2" value="northwind.externalAPʘcategories"/>
+        </eAnnotations>
+        <eParameters name="input" lowerBound="1" eType="//services/CategoryLink"/>
+      </eOperations>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="products" upperBound="-1" eType="//services/ProductInfo"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="categoryName">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="maxLength" value="255"/>
+        </eAnnotations>
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JString"/>
+      </eStructuralFeatures>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="OrderLink">
+      <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+        <details key="mappedEntityType" value="northwind.entities.Order"/>
+        <details key="entityIdPresence" value="REQUIRED"/>
+      </eAnnotations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="ShipmentChange">
+      <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="shippperName">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="maxLength" value="255"/>
+        </eAnnotations>
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JString"/>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="shippedDate">
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JTimestamp"/>
+      </eStructuralFeatures>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="ProductLink">
+      <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+        <details key="mappedEntityType" value="northwind.entities.Product"/>
+        <details key="entityIdPresence" value="REQUIRED"/>
+      </eAnnotations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="CategoryLink">
+      <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+        <details key="mappedEntityType" value="northwind.entities.Category"/>
+        <details key="entityIdPresence" value="REQUIRED"/>
+      </eAnnotations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="OrderInfoʘitemsWithCategoryPicture" abstract="true" interface="true">
+      <eOperations name="get" upperBound="-1" eType="//services/OrderItemProduct">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="stateful" value="false"/>
+        </eAnnotations>
+      </eOperations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="OrderInfoʘitems" abstract="true" interface="true">
+      <eOperations name="set">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="stateful" value="true"/>
+        </eAnnotations>
+        <eParameters name="input" upperBound="-1" eType="//services/OrderInfoʘitemsʘReference"/>
+      </eOperations>
+      <eOperations name="addAll">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="stateful" value="true"/>
+        </eAnnotations>
+        <eParameters name="input" lowerBound="1" upperBound="-1" eType="//services/OrderInfoʘitemsʘReference"/>
+      </eOperations>
+      <eOperations name="removeAll">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="stateful" value="true"/>
+        </eAnnotations>
+        <eParameters name="input" lowerBound="1" upperBound="-1" eType="//services/OrderInfoʘitemsʘReference"/>
+      </eOperations>
+      <eOperations name="get" upperBound="-1" eType="//services/OrderItem">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="stateful" value="false"/>
+        </eAnnotations>
+      </eOperations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="OrderInfoʘcomments" abstract="true" interface="true">
+      <eOperations name="get" upperBound="-1" eType="//services/Comment">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="stateful" value="false"/>
+        </eAnnotations>
+      </eOperations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="OrderItemʘproduct" abstract="true" interface="true">
+      <eOperations name="set">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="stateful" value="true"/>
+        </eAnnotations>
+        <eParameters name="input" lowerBound="1" eType="//services/OrderItemʘproductʘReference"/>
+      </eOperations>
+      <eOperations name="unset">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="stateful" value="true"/>
+        </eAnnotations>
+      </eOperations>
+      <eOperations name="getRange" upperBound="-1" eType="//services/ProductInfo">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="stateful" value="false"/>
+        </eAnnotations>
+      </eOperations>
+      <eOperations name="get" lowerBound="1" eType="//services/ProductInfo">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="stateful" value="false"/>
+        </eAnnotations>
+      </eOperations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="OrderItemʘcategory" abstract="true" interface="true">
+      <eOperations name="set">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="stateful" value="true"/>
+        </eAnnotations>
+        <eParameters name="input" lowerBound="1" eType="//services/OrderItemʘcategoryʘReference"/>
+      </eOperations>
+      <eOperations name="unset">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="stateful" value="true"/>
+        </eAnnotations>
+      </eOperations>
+      <eOperations name="get" lowerBound="1" eType="//services/CategoryInfo">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="stateful" value="false"/>
+        </eAnnotations>
+      </eOperations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="ProductInfoʘcategory" abstract="true" interface="true">
+      <eOperations name="set">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="stateful" value="true"/>
+        </eAnnotations>
+        <eParameters name="input" lowerBound="1" eType="//services/ProductInfoʘcategoryʘReference"/>
+      </eOperations>
+      <eOperations name="unset">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="stateful" value="true"/>
+        </eAnnotations>
+      </eOperations>
+      <eOperations name="getRange" upperBound="-1" eType="//services/CategoryInfo">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="stateful" value="false"/>
+        </eAnnotations>
+      </eOperations>
+      <eOperations name="get" lowerBound="1" eType="//services/CategoryInfo">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="stateful" value="false"/>
+        </eAnnotations>
+      </eOperations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="CategoryInfoʘproducts" abstract="true" interface="true">
+      <eOperations name="set">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="stateful" value="true"/>
+        </eAnnotations>
+        <eParameters name="input" upperBound="-1" eType="//services/CategoryInfoʘproductsʘReference"/>
+      </eOperations>
+      <eOperations name="addAll">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="stateful" value="true"/>
+        </eAnnotations>
+        <eParameters name="input" lowerBound="1" upperBound="-1" eType="//services/CategoryInfoʘproductsʘReference"/>
+      </eOperations>
+      <eOperations name="removeAll">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="stateful" value="true"/>
+        </eAnnotations>
+        <eParameters name="input" lowerBound="1" upperBound="-1" eType="//services/CategoryInfoʘproductsʘReference"/>
+      </eOperations>
+      <eOperations name="getRange" upperBound="-1" eType="//services/ProductInfo">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="stateful" value="false"/>
+        </eAnnotations>
+      </eOperations>
+      <eOperations name="get" upperBound="-1" eType="//services/ProductInfo">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="stateful" value="false"/>
+        </eAnnotations>
+      </eOperations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="OrderItemProduct">
+      <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+        <details key="mappedEntityType" value="northwind.entities.OrderDetail"/>
+        <details key="entityIdPresence" value="REQUIRED"/>
+        <details key="graphs.0" value="northwind.internalAPʘordersAssignedToEmployee"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="productName" lowerBound="1">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="maxLength" value="255"/>
+        </eAnnotations>
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JString"/>
+      </eStructuralFeatures>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="OrderItem">
+      <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+        <details key="mappedEntityType" value="northwind.entities.OrderDetail"/>
+        <details key="entityIdPresence" value="OPTIONAL"/>
+        <details key="graphs.0" value="northwind.internalAPʘordersAssignedToEmployee"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="product" lowerBound="1" eType="//services/ProductInfo"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="category" lowerBound="1" eType="//services/CategoryInfo"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="productName" lowerBound="1">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="maxLength" value="255"/>
+        </eAnnotations>
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JString"/>
+      </eStructuralFeatures>
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="categoryName" lowerBound="1">
         <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
           <details key="maxLength" value="255"/>
         </eAnnotations>
         <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JString"/>
       </eStructuralFeatures>
-      <eStructuralFeatures xsi:type="ecore:EAttribute" name="description">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="unitPrice" lowerBound="1">
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JDouble"/>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="quantity" lowerBound="1">
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JInteger"/>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="discount" lowerBound="1">
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JDouble"/>
+      </eStructuralFeatures>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="OrderInfoʘitemsʘReference">
+      <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+        <details key="mappedEntityType" value="northwind.entities.OrderDetail"/>
+        <details key="entityIdPresence" value="REQUIRED"/>
+      </eAnnotations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="Comment">
+      <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="note">
         <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
           <details key="maxLength" value="250"/>
         </eAnnotations>
         <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JString"/>
       </eStructuralFeatures>
-      <eStructuralFeatures xsi:type="ecore:EAttribute" name="picture">
-        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JByteArray"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="author">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="maxLength" value="255"/>
+        </eAnnotations>
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JString"/>
       </eStructuralFeatures>
-      <eStructuralFeatures xsi:type="ecore:EReference" name="products" upperBound="-1" eType="//entities/Product" eOpposite="//entities/Product/category"/>
-      <eStructuralFeatures xsi:type="ecore:EReference" name="owner" lowerBound="1" eType="//entities/Employee" eOpposite="//entities/Employee/category"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="timestamp">
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JTimestamp"/>
+      </eStructuralFeatures>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="OrderItemʘproductʘReference">
+      <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+        <details key="mappedEntityType" value="northwind.entities.Product"/>
+        <details key="entityIdPresence" value="REQUIRED"/>
+      </eAnnotations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="OrderItemʘcategoryʘReference">
+      <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+        <details key="mappedEntityType" value="northwind.entities.Category"/>
+        <details key="entityIdPresence" value="REQUIRED"/>
+      </eAnnotations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="ProductInfoʘcategoryʘReference">
+      <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+        <details key="mappedEntityType" value="northwind.entities.Category"/>
+        <details key="entityIdPresence" value="REQUIRED"/>
+      </eAnnotations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="CategoryInfoʘproductsʘReference">
+      <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+        <details key="mappedEntityType" value="northwind.entities.Product"/>
+        <details key="entityIdPresence" value="REQUIRED"/>
+      </eAnnotations>
+    </eClassifiers>
+  </eSubpackages>
+  <eSubpackages name="entities" nsURI="http://blackbelt.hu/judo/northwind/northwind/entities" nsPrefix="runtimenorthwindNorthwindEntities">
+    <eClassifiers xsi:type="ecore:EClass" name="ʘStatic" abstract="true">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="totalNumberOfOrders" lowerBound="1" volatile="true" unsettable="true" derived="true">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="getterExpression" value="0 // COUNT(northwind::entities::Order)"/>
+        </eAnnotations>
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JLong"/>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="ordersAssignedToEmployee" upperBound="-1" eType="//entities/Order" volatile="true" unsettable="true" derived="true">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="getterExpression" value="northwind::entities::Employee.orders"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="allProducts" upperBound="-1" eType="//entities/Product" volatile="true" unsettable="true" derived="true">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="getterExpression" value="northwind::entities::Product"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="allCategories" upperBound="-1" eType="//entities/Category" volatile="true" unsettable="true" derived="true">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="getterExpression" value="northwind::entities::Category"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="Order">
+      <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+        <details key="entity" value="true"/>
+      </eAnnotations>
+      <eSuperTypes href="http://blackbelt.hu/judo/asm/base#//Identifiable"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="shipperName" volatile="true" unsettable="true" derived="true">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="maxLength" value="255"/>
+          <details key="getterExpression" value="self.shipper.companyName"/>
+        </eAnnotations>
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JString"/>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="totalPrice" lowerBound="1" volatile="true" unsettable="true" derived="true">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="getterExpression" value="0 /* self.orderDetails->sum(od | od.quantity * od.unitPrice * (1 - od.discount)) */"/>
+        </eAnnotations>
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JDouble"/>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="discount" lowerBound="1" volatile="true" unsettable="true" derived="true">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="getterExpression" value="0 /* self.orderDetails->sum(od | od.discount) */"/>
+        </eAnnotations>
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JDouble"/>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="discountedItemsWithSingleManufacturer" volatile="true" unsettable="true" derived="true">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="getterExpression" value="0 /* self.orderDetails[od | od.discount > 0].product[p | p.manufacturers->size() == 0]->size() */"/>
+        </eAnnotations>
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JInteger"/>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="itemsWithCategoryPicture" upperBound="-1" eType="//entities/OrderDetail" volatile="true" unsettable="true" derived="true">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="getterExpression" value="self.orderDetails /* self.orderDetails[od | od.product.category.picture->isDefined()] */"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="orderDate">
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JTimestamp"/>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="requiredDate">
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JTimestamp"/>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="shippedDate">
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JTimestamp"/>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="freight">
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JDouble"/>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="shipName">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="maxLength" value="255"/>
+        </eAnnotations>
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JString"/>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="customer" eType="//entities/Customer" eOpposite="//entities/Customer/orders"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="shipper" eType="//entities/Shipper" eOpposite="//entities/Shipper/orders"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="employee" eType="//entities/Employee" eOpposite="//entities/Employee/orders"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="shipAddress" eType="//entities/InternationalAddress" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="orderDetails" lowerBound="1" upperBound="-1" eType="//entities/OrderDetail" containment="true"/>
     </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="Product">
       <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
@@ -81,48 +517,60 @@
       <eStructuralFeatures xsi:type="ecore:EReference" name="manufacturers" upperBound="-1" eType="//entities/Company" eOpposite="//entities/Company/manufacturedProducts"/>
       <eStructuralFeatures xsi:type="ecore:EReference" name="store" lowerBound="1" eType="//entities/Store" eOpposite="//entities/Store/products"/>
     </eClassifiers>
-    <eClassifiers xsi:type="ecore:EClass" name="Customer">
+    <eClassifiers xsi:type="ecore:EClass" name="Category">
       <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
         <details key="entity" value="true"/>
       </eAnnotations>
       <eSuperTypes href="http://blackbelt.hu/judo/asm/base#//Identifiable"/>
-      <eStructuralFeatures xsi:type="ecore:EReference" name="orders" upperBound="-1" eType="//entities/Order" eOpposite="//entities/Order/customer"/>
-      <eStructuralFeatures xsi:type="ecore:EReference" name="addresses" upperBound="-1" eType="//entities/Address" containment="true"/>
-    </eClassifiers>
-    <eClassifiers xsi:type="ecore:EClass" name="Order">
-      <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
-        <details key="entity" value="true"/>
-      </eAnnotations>
-      <eSuperTypes href="http://blackbelt.hu/judo/asm/base#//Identifiable"/>
-      <eStructuralFeatures xsi:type="ecore:EAttribute" name="orderDate">
-        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JTimestamp"/>
-      </eStructuralFeatures>
-      <eStructuralFeatures xsi:type="ecore:EAttribute" name="requiredDate">
-        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JTimestamp"/>
-      </eStructuralFeatures>
-      <eStructuralFeatures xsi:type="ecore:EAttribute" name="shippedDate">
-        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JTimestamp"/>
-      </eStructuralFeatures>
-      <eStructuralFeatures xsi:type="ecore:EAttribute" name="freight">
-        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JDouble"/>
-      </eStructuralFeatures>
-      <eStructuralFeatures xsi:type="ecore:EAttribute" name="shipName">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="categoryName" lowerBound="1">
         <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
           <details key="maxLength" value="255"/>
         </eAnnotations>
         <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JString"/>
       </eStructuralFeatures>
-      <eStructuralFeatures xsi:type="ecore:EReference" name="customer" eType="//entities/Customer" eOpposite="//entities/Customer/orders"/>
-      <eStructuralFeatures xsi:type="ecore:EReference" name="shipper" eType="//entities/Shipper" eOpposite="//entities/Shipper/orders"/>
-      <eStructuralFeatures xsi:type="ecore:EReference" name="employee" eType="//entities/Employee" eOpposite="//entities/Employee/orders"/>
-      <eStructuralFeatures xsi:type="ecore:EReference" name="shipAddress" eType="//entities/InternationalAddress" containment="true"/>
-      <eStructuralFeatures xsi:type="ecore:EReference" name="orderDetails" lowerBound="1" upperBound="-1" eType="//entities/OrderDetail" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="description">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="maxLength" value="250"/>
+        </eAnnotations>
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JString"/>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="picture">
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JByteArray"/>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="products" upperBound="-1" eType="//entities/Product" eOpposite="//entities/Product/category"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="owner" lowerBound="1" eType="//entities/Employee" eOpposite="//entities/Employee/category"/>
     </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="OrderDetail">
       <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
         <details key="entity" value="true"/>
       </eAnnotations>
       <eSuperTypes href="http://blackbelt.hu/judo/asm/base#//Identifiable"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="productName" volatile="true" unsettable="true" derived="true">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="maxLength" value="255"/>
+          <details key="getterExpression" value="self.product.productName"/>
+        </eAnnotations>
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JString"/>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="categoryName" volatile="true" unsettable="true" derived="true">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="maxLength" value="255"/>
+          <details key="getterExpression" value="self.product.category.categoryName"/>
+        </eAnnotations>
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JString"/>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" name="price" volatile="true" unsettable="true" derived="true">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="getterExpression" value="self.quantity * self.unitPrice * (1 - self.discount)"/>
+        </eAnnotations>
+        <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JDouble"/>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="category" lowerBound="1" eType="//entities/Category" volatile="true" derived="true">
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+          <details key="getterExpression" value="self.product.category"/>
+          <details key="setterExpression" value="self.product.category"/>
+        </eAnnotations>
+      </eStructuralFeatures>
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="unitPrice" lowerBound="1">
         <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JDouble"/>
       </eStructuralFeatures>
@@ -134,11 +582,19 @@
       </eStructuralFeatures>
       <eStructuralFeatures xsi:type="ecore:EReference" name="product" lowerBound="1" eType="//entities/Product"/>
     </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" name="Customer">
+      <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+        <details key="entity" value="true"/>
+      </eAnnotations>
+      <eSuperTypes href="http://blackbelt.hu/judo/asm/base#//Identifiable"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="orders" upperBound="-1" eType="//entities/Order" eOpposite="//entities/Order/customer"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" name="addresses" upperBound="-1" eType="//entities/Address" containment="true"/>
+    </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="Company">
       <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
         <details key="entity" value="true"/>
       </eAnnotations>
-      <eSuperTypes href="/Project/judo-tatami/judo-tatami-psm2asm/target/asm.model#//entities/Customer"/>
+      <eSuperTypes href="#//entities/Customer"/>
       <eSuperTypes href="http://blackbelt.hu/judo/asm/base#//Identifiable"/>
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="companyName" lowerBound="1">
         <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
@@ -176,7 +632,7 @@
       <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
         <details key="entity" value="true"/>
       </eAnnotations>
-      <eSuperTypes href="/Project/judo-tatami/judo-tatami-psm2asm/target/asm.model#//entities/Company"/>
+      <eSuperTypes href="#//entities/Company"/>
       <eSuperTypes href="http://blackbelt.hu/judo/asm/base#//Identifiable"/>
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="homePage">
         <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
@@ -210,7 +666,7 @@
       <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
         <details key="entity" value="true"/>
       </eAnnotations>
-      <eSuperTypes href="/Project/judo-tatami/judo-tatami-psm2asm/target/asm.model#//entities/Order"/>
+      <eSuperTypes href="#//entities/Order"/>
       <eSuperTypes href="http://blackbelt.hu/judo/asm/base#//Identifiable"/>
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="customsDescription" lowerBound="1">
         <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
@@ -245,7 +701,7 @@
       <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
         <details key="entity" value="true"/>
       </eAnnotations>
-      <eSuperTypes href="/Project/judo-tatami/judo-tatami-psm2asm/target/asm.model#//entities/Person"/>
+      <eSuperTypes href="#//entities/Person"/>
       <eSuperTypes href="http://blackbelt.hu/judo/asm/base#//Identifiable"/>
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="titleOfCourtesy">
         <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
@@ -325,7 +781,7 @@
       <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
         <details key="entity" value="true"/>
       </eAnnotations>
-      <eSuperTypes href="/Project/judo-tatami/judo-tatami-psm2asm/target/asm.model#//entities/Order"/>
+      <eSuperTypes href="#//entities/Order"/>
       <eSuperTypes href="http://blackbelt.hu/judo/asm/base#//Identifiable"/>
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="webshopUrl" lowerBound="1">
         <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
@@ -338,8 +794,8 @@
       <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
         <details key="entity" value="true"/>
       </eAnnotations>
-      <eSuperTypes href="/Project/judo-tatami/judo-tatami-psm2asm/target/asm.model#//entities/InternationalOrder"/>
-      <eSuperTypes href="/Project/judo-tatami/judo-tatami-psm2asm/target/asm.model#//entities/OnlineOrder"/>
+      <eSuperTypes href="#//entities/InternationalOrder"/>
+      <eSuperTypes href="#//entities/OnlineOrder"/>
       <eSuperTypes href="http://blackbelt.hu/judo/asm/base#//Identifiable"/>
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="onlineTrackingNumber">
         <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
@@ -389,8 +845,8 @@
       <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
         <details key="entity" value="true"/>
       </eAnnotations>
-      <eSuperTypes href="/Project/judo-tatami/judo-tatami-psm2asm/target/asm.model#//entities/Person"/>
-      <eSuperTypes href="/Project/judo-tatami/judo-tatami-psm2asm/target/asm.model#//entities/Customer"/>
+      <eSuperTypes href="#//entities/Person"/>
+      <eSuperTypes href="#//entities/Customer"/>
       <eSuperTypes href="http://blackbelt.hu/judo/asm/base#//Identifiable"/>
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="phone">
         <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
@@ -403,7 +859,7 @@
       <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
         <details key="entity" value="true"/>
       </eAnnotations>
-      <eSuperTypes href="/Project/judo-tatami/judo-tatami-psm2asm/target/asm.model#//entities/Address"/>
+      <eSuperTypes href="#//entities/Address"/>
       <eSuperTypes href="http://blackbelt.hu/judo/asm/base#//Identifiable"/>
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="country" eType="//types/Countries"/>
     </eClassifiers>
@@ -429,5 +885,20 @@
       <eStructuralFeatures xsi:type="ecore:EReference" name="products" upperBound="-1" eType="//entities/Product" eOpposite="//entities/Product/store"/>
     </eClassifiers>
   </eSubpackages>
-  <eSubpackages name="services" nsURI="http://blackbelt.hu/judo/meta/asm/northwind/services" nsPrefix="rtNorthwindServices"/>
+  <eSubpackages name="types" nsURI="http://blackbelt.hu/judo/northwind/northwind/types" nsPrefix="runtimenorthwindNorthwindTypes">
+    <eClassifiers xsi:type="ecore:EEnum" name="Titles">
+      <eLiterals name="MS" literal="MS"/>
+      <eLiterals name="MRS" value="1" literal="MRS"/>
+      <eLiterals name="MR" value="2" literal="MR"/>
+      <eLiterals name="DR" value="3" literal="DR"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EEnum" name="Countries">
+      <eLiterals name="HU" literal="HU"/>
+      <eLiterals name="AT" value="1" literal="AT"/>
+      <eLiterals name="RO" value="2" literal="RO"/>
+      <eLiterals name="SK" value="3" literal="SK"/>
+    </eClassifiers>
+    <eSubpackages name="measured" nsURI="http://blackbelt.hu/judo/northwind/northwind/types/measured" nsPrefix="runtimenorthwindNorthwindTypesMeasured"/>
+  </eSubpackages>
+  <eSubpackages name="measures" nsURI="http://blackbelt.hu/judo/northwind/northwind/measures" nsPrefix="runtimenorthwindNorthwindMeasures"/>
 </ecore:EPackage>
