@@ -73,7 +73,7 @@ public class InheritanceFromLoadedModelTest {
 
         employeeClass.getEAllAttributes().forEach(a -> log.info(" - attribute: {}", a.getName()));
 
-        Assert.assertEquals(expectedAttributes, employeeClass.getEAttributes().size());
+        Assert.assertEquals(expectedAttributes, employeeClass.getEAllAttributes().size());
     }
 
     public File srcDir() {
