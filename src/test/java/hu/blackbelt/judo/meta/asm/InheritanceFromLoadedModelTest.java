@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ExtensibleURIConverterImpl;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.junit.After;
@@ -33,10 +34,9 @@ public class InheritanceFromLoadedModelTest {
     @Test
     public void testInheritedAttributesInXMI() throws Exception {
         log.info("Testing XMI ...");
-        AsmModelLoader.loadAsmModel(resourceSet,
-                URI.createURI(new File(srcDir(), "test/resources/inheritance.model").getAbsolutePath()),
-                "test",
-                "1.0.0");
+        final File modelFile = new File(srcDir(), "test/resources/inheritance.model");
+        AsmModelLoader.loadAsmModel(resourceSet, URI.createURI(modelFile.getAbsolutePath()),"test","1.0.0");
+        resourceSet.setURIConverter(new ModelFileBasedUriConverter(modelFile));
 
         test(2 + 1);
     }
@@ -44,10 +44,9 @@ public class InheritanceFromLoadedModelTest {
     @Test
     public void testInheritedAttributesInXML() throws Exception {
         log.info("Testing XML ...");
-        AsmModelLoader.loadAsmModel(resourceSet,
-                URI.createURI(new File(srcDir(), "test/resources/asm.model").getAbsolutePath()),
-                "test",
-                "1.0.0");
+        final File modelFile = new File(srcDir(), "test/resources/asm.model");
+        AsmModelLoader.loadAsmModel(resourceSet, URI.createURI(modelFile.getAbsolutePath()),"test","1.0.0");
+        resourceSet.setURIConverter(new ModelFileBasedUriConverter(modelFile));
 
         test(3 + 8);
     }
@@ -55,7 +54,9 @@ public class InheritanceFromLoadedModelTest {
     @Test
     public void testInheritedAttributesInXMIWithStandardLoader() {
         log.info("Testing XMI (standard loader) ...");
-        resourceSet.getResource(URI.createURI(new File(srcDir(), "test/resources/inheritance.model").getAbsolutePath()), true);
+        final File modelFile = new File(srcDir(), "test/resources/inheritance.model");
+        resourceSet.getResource(URI.createURI(modelFile.getAbsolutePath()), true);
+        resourceSet.setURIConverter(new ModelFileBasedUriConverter(modelFile));
 
         test(2 + 1);
     }
@@ -63,7 +64,9 @@ public class InheritanceFromLoadedModelTest {
     @Test
     public void testInheritedAttributesInXMLWithStandardLoader() {
         log.info("Testing XML (standard loader) ...");
-        resourceSet.getResource(URI.createURI(new File(srcDir(), "test/resources/asm.model").getAbsolutePath()), true);
+        final File modelFile = new File(srcDir(), "test/resources/asm.model");
+        resourceSet.getResource(URI.createURI(modelFile.getAbsolutePath()), true);
+        resourceSet.setURIConverter(new ModelFileBasedUriConverter(modelFile));
 
         test(3 + 8);
     }
@@ -71,7 +74,7 @@ public class InheritanceFromLoadedModelTest {
     private void test(int expectedAttributes) {
         final EClass employeeClass = (EClass) resourceSet.getResources().get(0).getEObject("//entities/Employee");
 
-        employeeClass.getEAllAttributes().forEach(a -> log.info(" - attribute: {}", a.getName()));
+        employeeClass.getEAllAttributes().forEach(a -> log.debug(" - attribute: {}", a.getName()));
 
         Assert.assertEquals(expectedAttributes, employeeClass.getEAllAttributes().size());
     }
@@ -83,5 +86,44 @@ public class InheritanceFromLoadedModelTest {
             targetDir.mkdir();
         }
         return targetDir;
+    }
+
+    public static class ModelFileBasedUriConverter extends ExtensibleURIConverterImpl {
+
+        private final File baseFile;
+
+        public ModelFileBasedUriConverter(final File baseFile) {
+            this.baseFile = baseFile;
+        }
+
+        @Override
+        public URI normalize(URI uri) {
+            String fragment = uri.fragment();
+            String query = uri.query();
+            URI trimmedURI = uri.trimFragment().trimQuery();
+            URI result = getInternalURIMap().getURI(trimmedURI);
+            String scheme = result.scheme();
+            if (scheme == null) {
+                if (result.hasAbsolutePath()) {
+                    result = URI.createURI("file:" + result);
+                } else {
+                    result = URI.createFileURI(new File(baseFile, result.toString()).getAbsolutePath());
+                }
+            }
+
+            if (result == trimmedURI) {
+                return uri;
+            }
+
+            if (query != null) {
+                result = result.appendQuery(query);
+            }
+            if (fragment != null) {
+                result = result.appendFragment(fragment);
+            }
+
+
+            return normalize(result);
+        }
     }
 }
