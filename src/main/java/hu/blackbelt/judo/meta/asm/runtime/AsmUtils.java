@@ -5,6 +5,7 @@ import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,16 @@ import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.*;
 @Slf4j
 public class AsmUtils {
     public static final String extendedMetadataUri = "http://blackbelt.hu/judo/meta/ExtendedMetadata";
+
+    private static final List<String> INTEGER_TYPES = Arrays.asList("byte", "short", "int", "long",
+            "java.math.BigInteger", "java.lang.Byte", "java.lang.Short", "java.lang.Integer", "java.lang.Long");
+    private static final List<String> DECIMAL_TYPES = Arrays.asList("float", "double",
+            "java.math.BigDecimal", "java.lang.Float", "java.lang.Double");
+    private static final List<String> DATE_TYPES = Arrays.asList("java.sql.Date",
+            "java.time.LocalDate", "org.joda.time.LocalDate");
+    private static final List<String> TIMESTAMP_TYPES = Arrays.asList("java.sql.Timestamp",
+            "java.time.LocalDateTime", "java.time.OffsetDateTime", "java.time.ZonedDateTime",
+            "org.joda.time.DateTime", "org.joda.time.LocalDateTime", "org.joda.time.MutableDateTime");
 
     public static <T> Stream<T> asStream(Iterator<T> sourceIterator) {
         return asStream(sourceIterator, false);
@@ -647,4 +658,56 @@ public class AsmUtils {
     }
     */
 
+    public static boolean isInteger(final EDataType eDataType) {
+        final String instanceClassName = eDataType.getInstanceClassName();
+        return instanceClassName != null && INTEGER_TYPES.contains(instanceClassName);
+    }
+
+    public static boolean isDecimal(final EDataType eDataType) {
+        final String instanceClassName = eDataType.getInstanceClassName();
+        return instanceClassName != null && DECIMAL_TYPES.contains(instanceClassName);
+    }
+
+    public static boolean isNumeric(final EDataType eDataType) {
+        return isInteger(eDataType) || isDecimal(eDataType);
+    }
+
+    public static boolean isBoolean(final EDataType eDataType) {
+        final String instanceClassName = eDataType.getInstanceClassName();
+        return "boolean".equals(instanceClassName)
+                || "java.lang.Boolean".equals(instanceClassName);
+    }
+
+    public static boolean isString(final EDataType eDataType) {
+        final String instanceClassName = eDataType.getInstanceClassName();
+        return "byte[]".equals(instanceClassName)
+                || "java.lang.String".equals(instanceClassName);
+    }
+
+    public static boolean isDate(final EDataType eDataType) {
+        final String instanceClassName = eDataType.getInstanceClassName();
+        if ("java.util.Date".equals(instanceClassName)) {
+            return !isTimestampJavaUtilDate(eDataType);
+        } else {
+            return instanceClassName != null && DATE_TYPES.contains(instanceClassName);
+        }
+    }
+
+    public static boolean isTimestamp(final EDataType eDataType) {
+        final String instanceClassName = eDataType.getInstanceClassName();
+        if ("java.util.Date".equals(instanceClassName)) {
+            return isTimestampJavaUtilDate(eDataType);
+        } else {
+            return instanceClassName != null && TIMESTAMP_TYPES.contains(instanceClassName);
+        }
+    }
+
+    public static boolean isEnumeration(final EDataType eDataType) {
+        return eDataType instanceof EEnum;
+    }
+
+    static boolean isTimestampJavaUtilDate(final EDataType eDataType) {
+        // TODO - check annotations of EDataType in ASM model, false by default
+        return false;
+    }
 }
