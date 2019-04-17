@@ -1,11 +1,11 @@
 package hu.blackbelt.judo.meta.asm;
 
-import hu.blackbelt.judo.meta.asm.runtime.AsmModelLoader;
+import hu.blackbelt.epsilon.runtime.execution.impl.NioFilesystemnRelativePathURIHandlerImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ExtensibleURIConverterImpl;
+import org.eclipse.emf.ecore.resource.URIHandler;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.junit.After;
@@ -14,11 +14,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.nio.file.FileSystems;
+
+import static hu.blackbelt.judo.meta.asm.runtime.AsmModelLoader.*;
 
 @Slf4j
 public class InheritanceFromLoadedModelTest {
 
     ResourceSet resourceSet;
+    URIHandler uriHandler;
 
     @Before
     public void setUp() {
@@ -35,9 +39,7 @@ public class InheritanceFromLoadedModelTest {
     public void testInheritedAttributesInXMI() throws Exception {
         log.info("Testing XMI ...");
         final File modelFile = new File(srcDir(), "test/resources/inheritance.model");
-        AsmModelLoader.loadAsmModel(resourceSet, URI.createURI(modelFile.getAbsolutePath()),"test","1.0.0");
-        resourceSet.setURIConverter(new ModelFileBasedUriConverter(modelFile));
-
+        loadAsmModel(resourceSet, URI.createURI(modelFile.getAbsolutePath()),"test","1.0.0");
         test(2 + 1);
     }
 
@@ -45,19 +47,44 @@ public class InheritanceFromLoadedModelTest {
     public void testInheritedAttributesInXML() throws Exception {
         log.info("Testing XML ...");
         final File modelFile = new File(srcDir(), "test/resources/asm.model");
-        AsmModelLoader.loadAsmModel(resourceSet, URI.createURI(modelFile.getAbsolutePath()),"test","1.0.0");
-        resourceSet.setURIConverter(new ModelFileBasedUriConverter(modelFile));
-
+        loadAsmModel(resourceSet, URI.createURI(modelFile.getAbsolutePath()),"test","1.0.0");
         test(3 + 8);
     }
+
+    @Test
+    public void testInheritedAttributesInXMIWithNIOLoader() throws Exception {
+        log.info("Testing XMI (custom uri handler) ...");
+        final File modelFile = new File(srcDir(), "test/resources/inheritance.model");
+
+        uriHandler = new NioFilesystemnRelativePathURIHandlerImpl("urn", FileSystems.getDefault(),
+                modelFile.getParentFile().getAbsolutePath());
+
+        resourceSet = createAsmResourceSet(uriHandler);
+        loadAsmModel(resourceSet, URI.createURI("urn:inheritance.model"),"test","1.0.0");
+        test(2 + 1);
+    }
+
+    @Test
+    public void testInheritedAttributesInXMLWithNIOLoader() throws Exception {
+        log.info("Testing XML (custom uri handler) ...");
+        final File modelFile = new File(srcDir(), "test/resources/asm.model");
+
+        uriHandler = new NioFilesystemnRelativePathURIHandlerImpl("urn", FileSystems.getDefault(),
+                modelFile.getParentFile().getAbsolutePath());
+
+        resourceSet = createAsmResourceSet(uriHandler);
+
+        loadAsmModel(resourceSet, URI.createURI("urn:asm.model"),"test","1.0.0");
+        test(3 + 8);
+    }
+
 
     @Test
     public void testInheritedAttributesInXMIWithStandardLoader() {
         log.info("Testing XMI (standard loader) ...");
         final File modelFile = new File(srcDir(), "test/resources/inheritance.model");
         resourceSet.getResource(URI.createURI(modelFile.getAbsolutePath()), true);
-        resourceSet.setURIConverter(new ModelFileBasedUriConverter(modelFile));
-
+        setupRelativeUriRoot(resourceSet, URI.createURI(modelFile.getAbsolutePath()));
         test(2 + 1);
     }
 
@@ -66,8 +93,7 @@ public class InheritanceFromLoadedModelTest {
         log.info("Testing XML (standard loader) ...");
         final File modelFile = new File(srcDir(), "test/resources/asm.model");
         resourceSet.getResource(URI.createURI(modelFile.getAbsolutePath()), true);
-        resourceSet.setURIConverter(new ModelFileBasedUriConverter(modelFile));
-
+        setupRelativeUriRoot(resourceSet, URI.createURI(modelFile.getAbsolutePath()));
         test(3 + 8);
     }
 
@@ -86,44 +112,5 @@ public class InheritanceFromLoadedModelTest {
             targetDir.mkdir();
         }
         return targetDir;
-    }
-
-    public static class ModelFileBasedUriConverter extends ExtensibleURIConverterImpl {
-
-        private final File baseFile;
-
-        public ModelFileBasedUriConverter(final File baseFile) {
-            this.baseFile = baseFile;
-        }
-
-        @Override
-        public URI normalize(URI uri) {
-            String fragment = uri.fragment();
-            String query = uri.query();
-            URI trimmedURI = uri.trimFragment().trimQuery();
-            URI result = getInternalURIMap().getURI(trimmedURI);
-            String scheme = result.scheme();
-            if (scheme == null) {
-                if (result.hasAbsolutePath()) {
-                    result = URI.createURI("file:" + result);
-                } else {
-                    result = URI.createFileURI(new File(baseFile, result.toString()).getAbsolutePath());
-                }
-            }
-
-            if (result == trimmedURI) {
-                return uri;
-            }
-
-            if (query != null) {
-                result = result.appendQuery(query);
-            }
-            if (fragment != null) {
-                result = result.appendFragment(fragment);
-            }
-
-
-            return normalize(result);
-        }
     }
 }

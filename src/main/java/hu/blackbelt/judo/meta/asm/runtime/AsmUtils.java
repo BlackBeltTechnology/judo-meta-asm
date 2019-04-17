@@ -22,6 +22,7 @@ import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.*;
 @Slf4j
 public class AsmUtils {
     public static final String extendedMetadataUri = "http://blackbelt.hu/judo/meta/ExtendedMetadata";
+    public static final String SEPARATOR = "ʘ";
 
     private static final List<String> INTEGER_TYPES = Arrays.asList("byte", "short", "int", "long",
             "java.math.BigInteger", "java.lang.Byte", "java.lang.Short", "java.lang.Integer", "java.lang.Long");
@@ -408,7 +409,7 @@ public class AsmUtils {
     public static List<EClass> getNestedClasses(ResourceSet resourceSet, EClass eClass) {
         return asStream(resourceSet.getAllContents())
                 .filter(e -> e instanceof EClass).map(e -> (EClass) e)
-                .filter(c -> c.getName().startsWith(eClass.getName() + "ʘ") && !c.getName().substring(eClass.getName().length() + 1).contains("ʘ")).collect(Collectors.toList());
+                .filter(c -> c.getName().startsWith(eClass.getName() + SEPARATOR) && !c.getName().substring(eClass.getName().length() + 1).contains(SEPARATOR)).collect(Collectors.toList());
     }
 
     /*

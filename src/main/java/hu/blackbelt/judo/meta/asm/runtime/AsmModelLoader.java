@@ -2,12 +2,15 @@ package hu.blackbelt.judo.meta.asm.runtime;
 
 import com.google.common.collect.Maps;
 import hu.blackbelt.epsilon.runtime.execution.EmfUtils;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EcorePackage;
+import org.eclipse.emf.ecore.resource.ContentHandler;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.URIHandler;
+import org.eclipse.emf.ecore.resource.impl.ExtensibleURIConverterImpl;
 import org.eclipse.emf.ecore.resource.impl.ResourceFactoryRegistryImpl;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.XMIResource;
@@ -64,6 +67,45 @@ public class AsmModelLoader {
         return loadAsmModel(resourceSet, null, uri, name, version, null, null);
     }
 
+    public static void setupRelativeUriRoot(ResourceSet resourceSet, URI uri) {
+        EList<URIHandler> uriHandlers = resourceSet.getURIConverter().getURIHandlers();
+        EList<ContentHandler> contentHandlers = resourceSet.getURIConverter().getContentHandlers();
+
+        // Set custom URI handler where URL without base part replaced with the base URI
+        resourceSet.setURIConverter(new ExtensibleURIConverterImpl() {
+            @Override
+            public URI normalize(URI uriPar) {
+
+                String fragment = uriPar.fragment();
+                String query = uriPar.query();
+                URI trimmedURI = uriPar.trimFragment().trimQuery();
+                URI result = getInternalURIMap().getURI(trimmedURI);
+                String scheme = result.scheme();
+                if (scheme == null) {
+                    result = uri;
+                }
+
+                if (result == trimmedURI) {
+                    return uriPar;
+                }
+
+                if (query != null) {
+                    result = result.appendQuery(query);
+                }
+                if (fragment != null) {
+                    result = result.appendFragment(fragment);
+                }
+                return normalize(result);
+            }
+        });
+
+        resourceSet.getURIConverter().getURIHandlers().clear();
+        resourceSet.getURIConverter().getURIHandlers().addAll(uriHandlers);
+        resourceSet.getURIConverter().getContentHandlers().clear();
+        resourceSet.getURIConverter().getContentHandlers().addAll(contentHandlers);
+
+    }
+
     public static AsmModel loadAsmModel(ResourceSet resourceSet, AsmPackageRegistration asmPackageRegistration, URI uri, String name, String version, String checksum, String acceptedMetaVersionRange) throws Exception {
         Resource resource = resourceSet.createResource(uri);
         Map<Object, Object> loadOptions = new HashMap<>();
@@ -88,6 +130,8 @@ public class AsmModelLoader {
         if (acceptedMetaVersionRange != null)  {
             b.metaVersionRange(acceptedMetaVersionRange);
         }
+
+        setupRelativeUriRoot(resourceSet, uri);
 
         return b.build();
     }
