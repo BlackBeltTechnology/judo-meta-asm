@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import static java.util.Optional.empty;
 import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.*;
 
 @Slf4j
@@ -262,7 +263,7 @@ public class AsmUtils {
         if (annotation.isPresent()) {
             return Optional.of(annotation.get().getEModelElement());
         } else {
-            return Optional.empty();
+            return empty();
         }
     }
 
@@ -278,7 +279,7 @@ public class AsmUtils {
         if (element.isPresent() && (element.get() instanceof EClass)) {
             return (Optional<? extends EClass>) element;
         } else {
-            return Optional.empty();
+            return empty();
         }
     }
 
@@ -294,7 +295,7 @@ public class AsmUtils {
         if (element.isPresent() && (element.get() instanceof EAttribute)) {
             return (Optional<? extends EAttribute>) element;
         } else {
-            return Optional.empty();
+            return empty();
         }
     }
 
@@ -310,7 +311,7 @@ public class AsmUtils {
         if (element.isPresent() && (element.get() instanceof EReference)) {
             return (Optional<? extends EReference>) element;
         } else {
-            return Optional.empty();
+            return empty();
         }
     }
 
@@ -326,7 +327,7 @@ public class AsmUtils {
         if (element.isPresent() && (element.get() instanceof EOperation)) {
             return (Optional<? extends EOperation>) element;
         } else {
-            return Optional.empty();
+            return empty();
         }
     }
 
@@ -342,7 +343,7 @@ public class AsmUtils {
         if (element.isPresent() && (element.get() instanceof EParameter)) {
             return (Optional<? extends EParameter>) element;
         } else {
-            return Optional.empty();
+            return empty();
         }
     }
 
@@ -430,7 +431,6 @@ public class AsmUtils {
         return asStream(resourceSet.getAllContents())
                 .filter(e -> e instanceof EClass)
                 .map(e -> (EClass) e)
-                .filter(e -> isEntity(e))
                 .filter(e -> getClassFQName(e).equals(fqName)).findFirst();
     }
 
@@ -479,17 +479,17 @@ public class AsmUtils {
                 if (failIfNotFound) {
                     log.warn("No annotation " + name + " found on element: " + eModelElement.toString());
                 } else {
-                    return Optional.empty();
+                    return empty();
                 }
             }
         } else {
             if (failIfNotFound) {
                 log.warn("No annotation " + name + " found on element: " + eModelElement.toString());
             } else {
-                return Optional.empty();
+                return empty();
             }
         }
-        return Optional.empty();
+        return empty();
     }
 
 
@@ -756,12 +756,70 @@ public class AsmUtils {
      * @param type The given ECLass type.
      * @return
      */
-    public Optional<EClass> getMappedEntityType(ResourceSet resourceSet, EClass type) {
+    public static Optional<EClass> getMappedEntityType(ResourceSet resourceSet, EClass type) {
         Optional<String> mappedEntityTypeFQName =  getExtensionAnnotationValue(type, "mappedEntityType", false);
         if (mappedEntityTypeFQName.isPresent()) {
             return getClassByFQName(resourceSet, mappedEntityTypeFQName.get());
         } else {
-            return Optional.empty();
+            return empty();
+        }
+    }
+
+
+    /**
+     * Returns the given attribute's mapped attribute when extension annotation is given and attribute is presented the parent's class and
+     * the given attribute name also.
+     *
+     * @param resourceSet ECore resource set
+     * @param type The given EAttibute type.
+     * @return
+     */
+    public static Optional<EAttribute> getMappedAttribute(ResourceSet resourceSet, EAttribute type) {
+        Optional<String> mappedAttributeName =  getExtensionAnnotationValue(type, "mappedAttribute", false);
+        Optional<EClass> mappedEntityType =  getMappedEntityType(resourceSet, type.getEContainingClass());
+        if (mappedAttributeName.isPresent()) {
+            if (!mappedEntityType.isPresent()) {
+                log.warn("Mapped attribute container class is not mapped: " + getAttributeFQName(type));
+                return empty();
+            } else {
+                if (mappedEntityType.get().getEStructuralFeature(mappedAttributeName.get()) instanceof EAttribute) {
+                    return Optional.of((EAttribute) mappedEntityType.get().getEStructuralFeature(mappedAttributeName.get()));
+                } else {
+                    log.warn("The given mapped alias is not attribute type: " + getAttributeFQName(type));
+                    return empty();
+                }
+            }
+        } else {
+            return empty();
+        }
+    }
+
+
+    /**
+     * Returns the given reference's mapped reference when extension annotation is given and reference is presented the parent's class and
+     * the given reference name also.
+     *
+     * @param resourceSet ECore resource set
+     * @param type The given EReference type.
+     * @return
+     */
+    public static Optional<EReference> getMappedReference(ResourceSet resourceSet, EReference type) {
+        Optional<String> mappedReferenceName =  getExtensionAnnotationValue(type, "mappedReference", false);
+        Optional<EClass> mappedEntityType =  getMappedEntityType(resourceSet, type.getEContainingClass());
+        if (mappedReferenceName.isPresent()) {
+            if (!mappedEntityType.isPresent()) {
+                log.warn("Mapped reference container class is not mapped: " + getReferenceFQName(type));
+                return empty();
+            } else {
+                if (mappedEntityType.get().getEStructuralFeature(mappedReferenceName.get()) instanceof EReference) {
+                    return Optional.of((EReference) mappedEntityType.get().getEStructuralFeature(mappedReferenceName.get()));
+                } else {
+                    log.warn("The given mapped alias is not attribute type: " + getReferenceFQName(type));
+                    return empty();
+                }
+            }
+        } else {
+            return empty();
         }
     }
 
