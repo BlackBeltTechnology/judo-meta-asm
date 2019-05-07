@@ -175,8 +175,8 @@ public class AsmUtils {
         return self.getClass().getFQName() + "#" + self.name;
     }
     */
-    public static String getFQName(EAttribute eAttribute) {
-        return getFQName(eAttribute.getEContainingClass()) + "#" + eAttribute.getName();
+    public static String getAttributeFQName(EAttribute eAttribute) {
+        return getClassFQName(eAttribute.getEContainingClass()) + "#" + eAttribute.getName();
     }
 
     /*
@@ -393,11 +393,11 @@ public class AsmUtils {
     /*
     @cached
     operation ASM!EClassifier getFQName() : String {
-        return self.ePackage.getFullName() + "." + self.name;
+        return self.ePackage.getPackageFQName() + "." + self.name;
     }
     */
-    public static String getFQName(EClassifier eClassifier) {
-        return getFullName(eClassifier.getEPackage()) + "." + eClassifier.getName();
+    public static String getClassFQName(EClassifier eClassifier) {
+        return getPackageFQName(eClassifier.getEPackage()) + "." + eClassifier.getName();
     }
 
     /*
@@ -418,6 +418,23 @@ public class AsmUtils {
         return ASM!EClass.all.selectOne(c | self.name.startsWith(c.name + "ʘ") and not "ʘ".isSubstringOf(self.name.substring(c.name.length() + 1)));
     }
     */
+
+
+    /**
+     * Returns the EClass of the given fully qualified name.
+     * @param resourceSet The resourceset
+     * @param fqName Fully qualified name
+     * @return the EClass instance of the given name
+     */
+    public static Optional<EClass> getClassByFQName(ResourceSet resourceSet, String fqName) {
+        return asStream(resourceSet.getAllContents())
+                .filter(e -> e instanceof EClass)
+                .map(e -> (EClass) e)
+                .filter(e -> isEntity(e))
+                .filter(e -> getClassFQName(e).equals(fqName)).findFirst();
+    }
+
+
 
     /*
     modelElement.eol
@@ -443,6 +460,39 @@ public class AsmUtils {
         }
     }
     */
+
+    /**
+     * Get the the Extension annotation's given element in map. If failNotFound true it log a warning, otherwise
+     * if the extension annotation or the given name not found returns null.
+     * @param eModelElement The model element which is used to determinate
+     * @param name The entry name of extension annotation
+     * @param failIfNotFound When the extension or name in details not found log warn.
+     * @return The value of annotation
+     */
+    public static Optional<String> getExtensionAnnotationValue(EModelElement eModelElement, String name, boolean failIfNotFound) {
+        Optional<EAnnotation> annotation = getExtensionAnnotation(eModelElement, false);
+        if (annotation.isPresent()) {
+            final EMap<String, String> details = annotation.get().getDetails();
+            if (details.containsKey(name)) {
+                return Optional.of(details.get(name));
+            } else {
+                if (failIfNotFound) {
+                    log.warn("No annotation " + name + " found on element: " + eModelElement.toString());
+                } else {
+                    return Optional.empty();
+                }
+            }
+        } else {
+            if (failIfNotFound) {
+                log.warn("No annotation " + name + " found on element: " + eModelElement.toString());
+            } else {
+                return Optional.empty();
+            }
+        }
+        return Optional.empty();
+    }
+
+
 
     /*
     @cached
@@ -489,11 +539,19 @@ public class AsmUtils {
         }
     }
     */
+
+    /**
+     * Check the given element's extension annotation on the given name is true. When the element have no
+     * extension annotation returns false.
+     *
+     * @param eModelElement
+     * @param name
+     * @return
+     */
     public static boolean annotatedAsTrue(EModelElement eModelElement, String name) {
-        Optional<EAnnotation> annotations = eModelElement.getEAnnotations().stream()
-                .filter(a -> a.getSource().equals(extendedMetadataUri)).findFirst();
-        if (annotations.isPresent()) {
-            Optional<Map.Entry<String, String>> d = annotations.get().getDetails().stream()
+        Optional<EAnnotation> annotation = getExtensionAnnotation(eModelElement, false);
+        if (annotation.isPresent()) {
+            Optional<Map.Entry<String, String>> d = annotation.get().getDetails().stream()
                     .filter(e -> e.getKey().equals(name)).findFirst();
             if (d.isPresent() && d.get().getValue() != null) {
                 return Boolean.valueOf(d.get().getValue());
@@ -521,6 +579,15 @@ public class AsmUtils {
         }
     }
     */
+
+    /**
+     * Check the given element's extension annotation on the given name is false. When the element have no
+     * extension annotation returns false.
+     *
+     * @param eModelElement
+     * @param name
+     * @return
+     */
     public static boolean annotatedAsFalse(EModelElement eModelElement, String name) {
         Optional<EAnnotation> annotations = eModelElement.getEAnnotations().stream()
                 .filter(a -> a.getSource().equals(extendedMetadataUri)).findFirst();
@@ -548,7 +615,7 @@ public class AsmUtils {
     */
     /*
     @cached
-    operation ASM!EPackage getFullName() : String {
+    operation ASM!EPackage getPackageFQName() : String {
         var package = self.eSuperPackage;
         var name = "";
         while (package.isDefined()) {
@@ -559,7 +626,14 @@ public class AsmUtils {
         return name + self.name;
     }
     */
-    public static String getFullName(EPackage ePackage) {
+
+    /**
+     * Get the fully qualified name of the package.
+     *
+     * @param ePackage
+     * @return
+     */
+    public static String getPackageFQName(EPackage ePackage) {
         EPackage pack = ePackage.getESuperPackage();
         String fqName = "";
         while (pack != null) {
@@ -625,8 +699,14 @@ public class AsmUtils {
         return self.eContainingClass.getFQName() + "#" + self.name;
     }
     */
-    public static String getFQName(EReference eReference) {
-        return getFQName(eReference.getEContainingClass()) + "#" + eReference.getName();
+
+    /**
+     *
+     * @param eReference
+     * @return
+     */
+    public static String getReferenceFQName(EReference eReference) {
+        return getClassFQName(eReference.getEContainingClass()) + "#" + eReference.getName();
     }
 
     /*
@@ -657,7 +737,34 @@ public class AsmUtils {
                 .eClassifiers.selectOne(clazz | clazz.name = "Identifiable");
         return identifierClass;
     }
+
+    @cached
+    operation ASM!EClass getEntityType() : ASM!EClass {
+        var entityTypeName = self.getAnnotationValue("mappedEntityType", false);
+        if (entityTypeName.isDefined()) {
+            return entityTypeName.resolve();
+        } else {
+            return null;
+        }
+    }
     */
+
+    /**
+     * Returns the given class mapped entity when extension annotation is given and class is presented in the conaining fully qualified name.
+     *
+     * @param resourceSet ECore resource set
+     * @param type The given ECLass type.
+     * @return
+     */
+    public Optional<EClass> getMappedEntityType(ResourceSet resourceSet, EClass type) {
+        Optional<String> mappedEntityTypeFQName =  getExtensionAnnotationValue(type, "mappedEntityType", false);
+        if (mappedEntityTypeFQName.isPresent()) {
+            return getClassByFQName(resourceSet, mappedEntityTypeFQName.get());
+        } else {
+            return Optional.empty();
+        }
+    }
+
 
     public static boolean isInteger(final EDataType eDataType) {
         final String instanceClassName = eDataType.getInstanceClassName();
