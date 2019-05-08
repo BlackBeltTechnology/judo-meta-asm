@@ -1,5 +1,7 @@
 package hu.blackbelt.judo.meta.asm.runtime;
 
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.ecore.*;
@@ -21,6 +23,7 @@ import static java.util.Optional.empty;
 import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.*;
 
 @Slf4j
+@RequiredArgsConstructor
 public class AsmUtils {
     public static final String extendedMetadataUri = "http://blackbelt.hu/judo/meta/ExtendedMetadata";
     public static final String SEPARATOR = "ʘ";
@@ -35,11 +38,16 @@ public class AsmUtils {
             "java.time.LocalDateTime", "java.time.OffsetDateTime", "java.time.ZonedDateTime",
             "org.joda.time.DateTime", "org.joda.time.LocalDateTime", "org.joda.time.MutableDateTime");
 
-    public static <T> Stream<T> asStream(Iterator<T> sourceIterator) {
+    
+    @NonNull
+    ResourceSet resourceSet;
+    
+    
+    public <T> Stream<T> asStream(Iterator<T> sourceIterator) {
         return asStream(sourceIterator, false);
     }
 
-    public static <T> Stream<T> asStream(Iterator<T> sourceIterator, boolean parallel) {
+    public <T> Stream<T> asStream(Iterator<T> sourceIterator, boolean parallel) {
         Iterable<T> iterable = () -> sourceIterator;
         return StreamSupport.stream(iterable.spliterator(), parallel);
     }
@@ -176,7 +184,7 @@ public class AsmUtils {
         return self.getClass().getFQName() + "#" + self.name;
     }
     */
-    public static String getAttributeFQName(EAttribute eAttribute) {
+    public String getAttributeFQName(EAttribute eAttribute) {
         return getClassFQName(eAttribute.getEContainingClass()) + "#" + eAttribute.getName();
     }
 
@@ -187,11 +195,10 @@ public class AsmUtils {
     /**
      * Get annotation in which the given attribute (map entry) can be found as details.
      *
-     * @param resourceSet Ecore resource set
      * @param mapEntry    attribute (map entry)
      * @return container annotation
      */
-    public static Optional<EAnnotation> getAnnotation(final ResourceSet resourceSet, final Map.Entry<String, String> mapEntry) {
+    public Optional<EAnnotation> getAnnotation(final Map.Entry<String, String> mapEntry) {
         return asStream(resourceSet.getAllContents())
                 .filter(e -> e instanceof EAnnotation).map(e -> (EAnnotation) e)
                 .filter(e -> e.getDetails().contains(mapEntry)).findFirst();
@@ -206,7 +213,7 @@ public class AsmUtils {
      * @param createIfNotExists create annotation is not exists yet
      * @return JUDO extension annotation
      */
-    public static Optional<EAnnotation> getExtensionAnnotation(final EModelElement eModelElement, boolean createIfNotExists) {
+    public Optional<EAnnotation> getExtensionAnnotation(final EModelElement eModelElement, boolean createIfNotExists) {
         final Optional<EAnnotation> annotation = eModelElement.getEAnnotations().stream().filter(a -> AsmUtils.extendedMetadataUri.equals(a.getSource())).findFirst();
         if (!annotation.isPresent() && createIfNotExists) {
             final EAnnotation a = newEAnnotationBuilder().withSource(AsmUtils.extendedMetadataUri).build();
@@ -226,7 +233,7 @@ public class AsmUtils {
      * @param prefix        annotation attribute prefix
      * @param value         annotation attribute value
      */
-    public static void addAnnotationIfNotExists(final EModelElement eModelElement, final String prefix, final String value) {
+    public void addAnnotationIfNotExists(final EModelElement eModelElement, final String prefix, final String value) {
         final Optional<EAnnotation> annotation = getExtensionAnnotation(eModelElement, true);
         if (annotation.isPresent()) {
             final EMap<String, String> details = annotation.get().getDetails();
@@ -254,12 +261,11 @@ public class AsmUtils {
     /**
      * Get annotated Ecore model element for a given annotation attribute (map entry).
      *
-     * @param resourceSet Ecore resource set
      * @param mapEntry    attribute (map entry)
      * @return owner Ecore model element
      */
-    public static Optional<? extends EModelElement> getAnnotatedElement(final ResourceSet resourceSet, final Map.Entry<String, String> mapEntry) {
-        final Optional<EAnnotation> annotation = getAnnotation(resourceSet, mapEntry);
+    public Optional<? extends EModelElement> getAnnotatedElement(final Map.Entry<String, String> mapEntry) {
+        final Optional<EAnnotation> annotation = getAnnotation(mapEntry);
         if (annotation.isPresent()) {
             return Optional.of(annotation.get().getEModelElement());
         } else {
@@ -270,12 +276,11 @@ public class AsmUtils {
     /**
      * Get annotated Ecore class for a given annotation attribute (map entry).
      *
-     * @param resourceSet Ecore resource set
      * @param mapEntry    attribute (map entry)
      * @return owner Ecore class
      */
-    public static Optional<? extends EClass> getAnnotatedClass(final ResourceSet resourceSet, final Map.Entry<String, String> mapEntry) {
-        final Optional<? extends EModelElement> element = getAnnotatedElement(resourceSet, mapEntry);
+    public Optional<? extends EClass> getAnnotatedClass(final Map.Entry<String, String> mapEntry) {
+        final Optional<? extends EModelElement> element = getAnnotatedElement(mapEntry);
         if (element.isPresent() && (element.get() instanceof EClass)) {
             return (Optional<? extends EClass>) element;
         } else {
@@ -286,12 +291,11 @@ public class AsmUtils {
     /**
      * Get annotated Ecore attribute for a given annotation attribute (map entry).
      *
-     * @param resourceSet Ecore resource set
      * @param mapEntry    attribute (map entry)
      * @return owner Ecore attribute
      */
-    public static Optional<? extends EAttribute> getAnnotatedAttribute(final ResourceSet resourceSet, final Map.Entry<String, String> mapEntry) {
-        final Optional<? extends EModelElement> element = getAnnotatedElement(resourceSet, mapEntry);
+    public Optional<? extends EAttribute> getAnnotatedAttribute(final Map.Entry<String, String> mapEntry) {
+        final Optional<? extends EModelElement> element = getAnnotatedElement(mapEntry);
         if (element.isPresent() && (element.get() instanceof EAttribute)) {
             return (Optional<? extends EAttribute>) element;
         } else {
@@ -302,12 +306,11 @@ public class AsmUtils {
     /**
      * Get annotated Ecore reference for a given annotation attribute (map entry).
      *
-     * @param resourceSet Ecore resource set
      * @param mapEntry    attribute (map entry)
      * @return owner Ecore reference
      */
-    public static Optional<? extends EReference> getAnnotatedReference(final ResourceSet resourceSet, final Map.Entry<String, String> mapEntry) {
-        final Optional<? extends EModelElement> element = getAnnotatedElement(resourceSet, mapEntry);
+    public Optional<? extends EReference> getAnnotatedReference(final Map.Entry<String, String> mapEntry) {
+        final Optional<? extends EModelElement> element = getAnnotatedElement(mapEntry);
         if (element.isPresent() && (element.get() instanceof EReference)) {
             return (Optional<? extends EReference>) element;
         } else {
@@ -318,12 +321,11 @@ public class AsmUtils {
     /**
      * Get annotated Ecore operation for a given annotation attribute (map entry).
      *
-     * @param resourceSet Ecore resource set
      * @param mapEntry    attribute (map entry)
      * @return owner Ecore operation
      */
-    public static Optional<? extends EOperation> getAnnotatedOperation(final ResourceSet resourceSet, final Map.Entry<String, String> mapEntry) {
-        final Optional<? extends EModelElement> element = getAnnotatedElement(resourceSet, mapEntry);
+    public Optional<? extends EOperation> getAnnotatedOperation(final Map.Entry<String, String> mapEntry) {
+        final Optional<? extends EModelElement> element = getAnnotatedElement(mapEntry);
         if (element.isPresent() && (element.get() instanceof EOperation)) {
             return (Optional<? extends EOperation>) element;
         } else {
@@ -334,12 +336,11 @@ public class AsmUtils {
     /**
      * Get annotated Ecore parameter for a given annotation attribute (map entry).
      *
-     * @param resourceSet Ecore resource set
      * @param mapEntry    attribute (map entry)
      * @return owner Ecore parameter
      */
-    public static Optional<? extends EParameter> getAnnotatedParameter(final ResourceSet resourceSet, final Map.Entry<String, String> mapEntry) {
-        final Optional<? extends EModelElement> element = getAnnotatedElement(resourceSet, mapEntry);
+    public Optional<? extends EParameter> getAnnotatedParameter(final Map.Entry<String, String> mapEntry) {
+        final Optional<? extends EModelElement> element = getAnnotatedElement(mapEntry);
         if (element.isPresent() && (element.get() instanceof EParameter)) {
             return (Optional<? extends EParameter>) element;
         } else {
@@ -357,7 +358,7 @@ public class AsmUtils {
         return self.eSuperTypes.size > 0;
     }
     */
-    public static boolean hasSupertype(EClass eClass) {
+    public boolean hasSupertype(EClass eClass) {
         return eClass.getEAllSuperTypes().size() > 0;
     }
 
@@ -368,7 +369,7 @@ public class AsmUtils {
         return self.annotatedAsTrue("entity");
     }
     */
-    public static boolean isEntity(EClass eClass) {
+    public boolean isEntity(EClass eClass) {
         return annotatedAsTrue(eClass, "entity");
     }
 
@@ -379,7 +380,7 @@ public class AsmUtils {
         return self.annotatedAsTrue("facade");
     }
     */
-    public static boolean isFacade(EClass eClass) {
+    public boolean isFacade(EClass eClass) {
         return annotatedAsTrue(eClass, "facade");
     }
 
@@ -397,7 +398,7 @@ public class AsmUtils {
         return self.ePackage.getPackageFQName() + "." + self.name;
     }
     */
-    public static String getClassFQName(EClassifier eClassifier) {
+    public String getClassFQName(EClassifier eClassifier) {
         return getPackageFQName(eClassifier.getEPackage()) + "." + eClassifier.getName();
     }
 
@@ -407,7 +408,7 @@ public class AsmUtils {
         return ASM!EClass.all.select(c | c.name.startsWith(self.name + "ʘ") and not "ʘ".isSubstringOf(c.name.substring(self.name.length() + 1)));
     }
     */
-    public static List<EClass> getNestedClasses(ResourceSet resourceSet, EClass eClass) {
+    public List<EClass> getNestedClasses(EClass eClass) {
         return asStream(resourceSet.getAllContents())
                 .filter(e -> e instanceof EClass).map(e -> (EClass) e)
                 .filter(c -> c.getName().startsWith(eClass.getName() + SEPARATOR) && !c.getName().substring(eClass.getName().length() + 1).contains(SEPARATOR)).collect(Collectors.toList());
@@ -423,11 +424,10 @@ public class AsmUtils {
 
     /**
      * Returns the EClass of the given fully qualified name.
-     * @param resourceSet The resourceset
      * @param fqName Fully qualified name
      * @return the EClass instance of the given name
      */
-    public static Optional<EClass> getClassByFQName(ResourceSet resourceSet, String fqName) {
+    public Optional<EClass> getClassByFQName(String fqName) {
         return asStream(resourceSet.getAllContents())
                 .filter(e -> e instanceof EClass)
                 .map(e -> (EClass) e)
@@ -469,7 +469,7 @@ public class AsmUtils {
      * @param failIfNotFound When the extension or name in details not found log warn.
      * @return The value of annotation
      */
-    public static Optional<String> getExtensionAnnotationValue(EModelElement eModelElement, String name, boolean failIfNotFound) {
+    public Optional<String> getExtensionAnnotationValue(EModelElement eModelElement, String name, boolean failIfNotFound) {
         Optional<EAnnotation> annotation = getExtensionAnnotation(eModelElement, false);
         if (annotation.isPresent()) {
             final EMap<String, String> details = annotation.get().getDetails();
@@ -548,7 +548,7 @@ public class AsmUtils {
      * @param name
      * @return
      */
-    public static boolean annotatedAsTrue(EModelElement eModelElement, String name) {
+    public boolean annotatedAsTrue(EModelElement eModelElement, String name) {
         Optional<EAnnotation> annotation = getExtensionAnnotation(eModelElement, false);
         if (annotation.isPresent()) {
             Optional<Map.Entry<String, String>> d = annotation.get().getDetails().stream()
@@ -588,7 +588,7 @@ public class AsmUtils {
      * @param name
      * @return
      */
-    public static boolean annotatedAsFalse(EModelElement eModelElement, String name) {
+    public boolean annotatedAsFalse(EModelElement eModelElement, String name) {
         Optional<EAnnotation> annotations = eModelElement.getEAnnotations().stream()
                 .filter(a -> a.getSource().equals(extendedMetadataUri)).findFirst();
         if (annotations.isPresent()) {
@@ -633,7 +633,7 @@ public class AsmUtils {
      * @param ePackage
      * @return
      */
-    public static String getPackageFQName(EPackage ePackage) {
+    public String getPackageFQName(EPackage ePackage) {
         EPackage pack = ePackage.getESuperPackage();
         String fqName = "";
         while (pack != null) {
@@ -705,7 +705,7 @@ public class AsmUtils {
      * @param eReference
      * @return
      */
-    public static String getReferenceFQName(EReference eReference) {
+    public String getReferenceFQName(EReference eReference) {
         return getClassFQName(eReference.getEContainingClass()) + "#" + eReference.getName();
     }
 
@@ -752,14 +752,13 @@ public class AsmUtils {
     /**
      * Returns the given class mapped entity when extension annotation is given and class is presented in the conaining fully qualified name.
      *
-     * @param resourceSet ECore resource set
      * @param type The given ECLass type.
      * @return
      */
-    public static Optional<EClass> getMappedEntityType(ResourceSet resourceSet, EClass type) {
+    public Optional<EClass> getMappedEntityType(EClass type) {
         Optional<String> mappedEntityTypeFQName =  getExtensionAnnotationValue(type, "mappedEntityType", false);
         if (mappedEntityTypeFQName.isPresent()) {
-            return getClassByFQName(resourceSet, mappedEntityTypeFQName.get());
+            return getClassByFQName(mappedEntityTypeFQName.get());
         } else {
             return empty();
         }
@@ -770,13 +769,12 @@ public class AsmUtils {
      * Returns the given attribute's mapped attribute when extension annotation is given and attribute is presented the parent's class and
      * the given attribute name also.
      *
-     * @param resourceSet ECore resource set
      * @param type The given EAttibute type.
      * @return
      */
-    public static Optional<EAttribute> getMappedAttribute(ResourceSet resourceSet, EAttribute type) {
+    public Optional<EAttribute> getMappedAttribute(EAttribute type) {
         Optional<String> mappedAttributeName =  getExtensionAnnotationValue(type, "mappedAttribute", false);
-        Optional<EClass> mappedEntityType =  getMappedEntityType(resourceSet, type.getEContainingClass());
+        Optional<EClass> mappedEntityType =  getMappedEntityType(type.getEContainingClass());
         if (mappedAttributeName.isPresent()) {
             if (!mappedEntityType.isPresent()) {
                 log.warn("Mapped attribute container class is not mapped: " + getAttributeFQName(type));
@@ -799,13 +797,12 @@ public class AsmUtils {
      * Returns the given reference's mapped reference when extension annotation is given and reference is presented the parent's class and
      * the given reference name also.
      *
-     * @param resourceSet ECore resource set
      * @param type The given EReference type.
      * @return
      */
-    public static Optional<EReference> getMappedReference(ResourceSet resourceSet, EReference type) {
+    public Optional<EReference> getMappedReference(EReference type) {
         Optional<String> mappedReferenceName =  getExtensionAnnotationValue(type, "mappedReference", false);
-        Optional<EClass> mappedEntityType =  getMappedEntityType(resourceSet, type.getEContainingClass());
+        Optional<EClass> mappedEntityType =  getMappedEntityType(type.getEContainingClass());
         if (mappedReferenceName.isPresent()) {
             if (!mappedEntityType.isPresent()) {
                 log.warn("Mapped reference container class is not mapped: " + getReferenceFQName(type));
@@ -824,33 +821,33 @@ public class AsmUtils {
     }
 
 
-    public static boolean isInteger(final EDataType eDataType) {
+    public boolean isInteger(final EDataType eDataType) {
         final String instanceClassName = eDataType.getInstanceClassName();
         return instanceClassName != null && INTEGER_TYPES.contains(instanceClassName);
     }
 
-    public static boolean isDecimal(final EDataType eDataType) {
+    public boolean isDecimal(final EDataType eDataType) {
         final String instanceClassName = eDataType.getInstanceClassName();
         return instanceClassName != null && DECIMAL_TYPES.contains(instanceClassName);
     }
 
-    public static boolean isNumeric(final EDataType eDataType) {
+    public boolean isNumeric(final EDataType eDataType) {
         return isInteger(eDataType) || isDecimal(eDataType);
     }
 
-    public static boolean isBoolean(final EDataType eDataType) {
+    public boolean isBoolean(final EDataType eDataType) {
         final String instanceClassName = eDataType.getInstanceClassName();
         return "boolean".equals(instanceClassName)
                 || "java.lang.Boolean".equals(instanceClassName);
     }
 
-    public static boolean isString(final EDataType eDataType) {
+    public boolean isString(final EDataType eDataType) {
         final String instanceClassName = eDataType.getInstanceClassName();
         return "byte[]".equals(instanceClassName)
                 || "java.lang.String".equals(instanceClassName);
     }
 
-    public static boolean isDate(final EDataType eDataType) {
+    public boolean isDate(final EDataType eDataType) {
         final String instanceClassName = eDataType.getInstanceClassName();
         if ("java.util.Date".equals(instanceClassName)) {
             return !isTimestampJavaUtilDate(eDataType);
@@ -859,7 +856,7 @@ public class AsmUtils {
         }
     }
 
-    public static boolean isTimestamp(final EDataType eDataType) {
+    public boolean isTimestamp(final EDataType eDataType) {
         final String instanceClassName = eDataType.getInstanceClassName();
         if ("java.util.Date".equals(instanceClassName)) {
             return isTimestampJavaUtilDate(eDataType);
@@ -868,7 +865,7 @@ public class AsmUtils {
         }
     }
 
-    public static boolean isEnumeration(final EDataType eDataType) {
+    public boolean isEnumeration(final EDataType eDataType) {
         return eDataType instanceof EEnum;
     }
 

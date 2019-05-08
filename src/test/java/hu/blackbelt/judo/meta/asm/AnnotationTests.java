@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import static hu.blackbelt.judo.meta.asm.runtime.AsmModelLoader.loadAsmModel;
-import static hu.blackbelt.judo.meta.asm.runtime.AsmUtils.*;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -26,12 +25,14 @@ import static org.junit.Assert.assertTrue;
 public class AnnotationTests {
 
     ResourceSet resourceSet;
+    AsmUtils asmUtils;
 
     @Before
     public void setUp() throws Exception {
         resourceSet = new ResourceSetImpl();
         resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("*", new EcoreResourceFactoryImpl());
 
+        asmUtils = new AsmUtils(resourceSet);
         loadAsmModel(resourceSet,
                 URI.createURI(new File(srcDir(), "test/resources/asm.model").getAbsolutePath()),
                 "test",
@@ -48,7 +49,7 @@ public class AnnotationTests {
         final EClass order = (EClass) resourceSet.getResources().get(0).getEObject("//entities/Order");
 
         final Map.Entry<String, String> annotationDetailsEntry = order.getEAnnotations().iterator().next().getDetails().entrySet().iterator().next();
-        final Optional<EAnnotation> eAnnotation = getAnnotation(resourceSet, annotationDetailsEntry);
+        final Optional<EAnnotation> eAnnotation = asmUtils.getAnnotation(annotationDetailsEntry);
 
         assertTrue(eAnnotation.isPresent());
         Assert.assertEquals(AsmUtils.extendedMetadataUri, eAnnotation.get().getSource());
@@ -58,7 +59,7 @@ public class AnnotationTests {
     public void testGetExtensionAnnotationExisting() {
         final EClass order = (EClass) resourceSet.getResources().get(0).getEObject("//entities/Order");
 
-        final Optional<EAnnotation> existing = getExtensionAnnotation(order, false);
+        final Optional<EAnnotation> existing = asmUtils.getExtensionAnnotation(order, false);
 
         assertTrue(existing.isPresent());
         assertTrue(Boolean.valueOf(existing.get().getDetails().get("entity")));
@@ -75,7 +76,7 @@ public class AnnotationTests {
     @Test
     public void testGetExtensionAnnotationValue() {
         final EClass orderInfo = (EClass) resourceSet.getResources().get(0).getEObject("//services/OrderInfo");
-        Optional<String> value = getExtensionAnnotationValue(orderInfo, "mappedEntityType", false);
+        Optional<String> value = asmUtils.getExtensionAnnotationValue(orderInfo, "mappedEntityType", false);
 
         assertTrue(value.isPresent());
         assertThat(value.get(), equalTo("northwind.entities.Order"));
@@ -86,7 +87,7 @@ public class AnnotationTests {
     public void testPackageFQName() {
         final EPackage ePackage = (EPackage) resourceSet.getResources().get(0).getEObject("//services");
 
-        assertThat(getPackageFQName(ePackage), equalTo("northwind.services"));
+        assertThat(asmUtils.getPackageFQName(ePackage), equalTo("northwind.services"));
     }
 
 
@@ -94,7 +95,7 @@ public class AnnotationTests {
     public void testClassFQName() {
         final EClass orderInfo = (EClass) resourceSet.getResources().get(0).getEObject("//services/OrderInfo");
 
-        assertThat(getClassFQName(orderInfo), equalTo("northwind.services.OrderInfo"));
+        assertThat(asmUtils.getClassFQName(orderInfo), equalTo("northwind.services.OrderInfo"));
     }
 
 
@@ -103,7 +104,7 @@ public class AnnotationTests {
         final EClass orderInfo = (EClass) resourceSet.getResources().get(0).getEObject("//services/OrderInfo");
         final EAttribute orderDate = (EAttribute) orderInfo.getEStructuralFeature("orderDate");
 
-        assertThat(getAttributeFQName(orderDate), equalTo("northwind.services.OrderInfo#orderDate"));
+        assertThat(asmUtils.getAttributeFQName(orderDate), equalTo("northwind.services.OrderInfo#orderDate"));
     }
 
 
@@ -111,7 +112,7 @@ public class AnnotationTests {
     @Test
     public void testGetClassByFQName() {
         final EClass orderInfo = (EClass) resourceSet.getResources().get(0).getEObject("//services/OrderInfo");
-        Optional<EClass> founded = getClassByFQName(resourceSet, "northwind.services.OrderInfo");
+        Optional<EClass> founded = asmUtils.getClassByFQName("northwind.services.OrderInfo");
 
         assertTrue(founded.isPresent());
         assertThat(founded.get(), equalTo(orderInfo));
@@ -123,7 +124,7 @@ public class AnnotationTests {
         final EClass order = (EClass) resourceSet.getResources().get(0).getEObject("//entities/Order");
         final EClass orderInfo = (EClass) resourceSet.getResources().get(0).getEObject("//services/OrderInfo");
 
-        Optional<EClass> mappedType = getMappedEntityType(resourceSet, orderInfo);
+        Optional<EClass> mappedType = asmUtils.getMappedEntityType(orderInfo);
         assertTrue(mappedType.isPresent());
         assertThat(mappedType.get(), equalTo(order));
     }
@@ -136,7 +137,7 @@ public class AnnotationTests {
         final EAttribute orderDate = (EAttribute) order.getEStructuralFeature("orderDate");
         final EAttribute orderInfoDate = (EAttribute) orderInfo.getEStructuralFeature("orderDate");
 
-        Optional<EAttribute> mappedAttribute = getMappedAttribute(resourceSet, orderInfoDate);
+        Optional<EAttribute> mappedAttribute = asmUtils.getMappedAttribute(orderInfoDate);
         assertTrue(mappedAttribute.isPresent());
         assertThat(mappedAttribute.get(), equalTo(orderDate));
     }
@@ -150,7 +151,7 @@ public class AnnotationTests {
         final EReference orderDetails = (EReference) order.getEStructuralFeature("orderDetails");
         final EReference orderInfoItems = (EReference) orderInfo.getEStructuralFeature("items");
 
-        Optional<EReference> mappedReference = getMappedReference(resourceSet, orderInfoItems);
+        Optional<EReference> mappedReference = asmUtils.getMappedReference(orderInfoItems);
         assertTrue(mappedReference.isPresent());
         assertThat(mappedReference.get(), equalTo(orderDetails));
     }
