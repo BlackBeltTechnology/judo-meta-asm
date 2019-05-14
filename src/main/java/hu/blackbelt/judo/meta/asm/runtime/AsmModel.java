@@ -2,11 +2,13 @@ package hu.blackbelt.judo.meta.asm.runtime;
 
 import lombok.*;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 
 import java.util.Dictionary;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @AllArgsConstructor
 @ToString
@@ -43,4 +45,19 @@ public class AsmModel {
 
         return ret;
     }
+
+
+    public <T> Stream<T> asStream(Iterator<T> sourceIterator) {
+        return asStream(sourceIterator, false);
+    }
+
+    public <T> Stream<T> asStream(Iterator<T> sourceIterator, boolean parallel) {
+        Iterable<T> iterable = () -> sourceIterator;
+        return StreamSupport.stream(iterable.spliterator(), parallel);
+    }
+
+    public <T> Stream<T> all() {
+        return asStream((Iterator<T>) resourceSet.getAllContents(), false);
+    }
+
 }

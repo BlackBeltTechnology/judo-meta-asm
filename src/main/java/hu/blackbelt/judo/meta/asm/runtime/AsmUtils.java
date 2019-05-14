@@ -51,6 +51,11 @@ public class AsmUtils {
         Iterable<T> iterable = () -> sourceIterator;
         return StreamSupport.stream(iterable.spliterator(), parallel);
     }
+
+    public <T> Stream<T> all() {
+        return asStream((Iterator<T>) resourceSet.getAllContents(), false);
+    }
+
     /*
     accesPoint.eol
     */
@@ -199,7 +204,7 @@ public class AsmUtils {
      * @return container annotation
      */
     public Optional<EAnnotation> getAnnotation(final Map.Entry<String, String> mapEntry) {
-        return asStream(resourceSet.getAllContents())
+        return all()
                 .filter(e -> e instanceof EAnnotation).map(e -> (EAnnotation) e)
                 .filter(e -> e.getDetails().contains(mapEntry)).findFirst();
     }
@@ -409,7 +414,7 @@ public class AsmUtils {
     }
     */
     public List<EClass> getNestedClasses(EClass eClass) {
-        return asStream(resourceSet.getAllContents())
+        return all()
                 .filter(e -> e instanceof EClass).map(e -> (EClass) e)
                 .filter(c -> c.getName().startsWith(eClass.getName() + SEPARATOR) && !c.getName().substring(eClass.getName().length() + 1).contains(SEPARATOR)).collect(Collectors.toList());
     }
@@ -428,7 +433,7 @@ public class AsmUtils {
      * @return the EClass instance of the given name
      */
     public Optional<EClass> getClassByFQName(String fqName) {
-        return asStream(resourceSet.getAllContents())
+        return all()
                 .filter(e -> e instanceof EClass)
                 .map(e -> (EClass) e)
                 .filter(e -> getClassFQName(e).equals(fqName)).findFirst();
