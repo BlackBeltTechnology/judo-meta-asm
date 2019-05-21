@@ -71,6 +71,10 @@ operation addGraphAndAccessPointAnnotations() {
             
             if (exposedService.eType.isDefined()) {
                 log.debug("    - return type: " + exposedService.eType.getFQName());
+
+                exposedService.eType.addAnnotationIfNotExists(".accessPoints.", ap.getFQName());
+                exposedService.eType.getEntityType().addAnnotationIfNotExists(".accessPoints.", ap.getFQName());
+
                 exposedService.addAnnotationIfNotExists(".accessPoints.", ap.getFQName());
                 for (a in exposedService.eType.eAttributes) {
                     log.debug("      - attribute: " + a.getFQName());
@@ -79,6 +83,9 @@ operation addGraphAndAccessPointAnnotations() {
                 for (r in exposedService.eType.eReferences) {
                     log.debug("      - reference: " + r.getFQName());
                     r.addAnnotationIfNotExists(".accessPoints.", ap.getFQName());
+
+                    r.eType.addAnnotationIfNotExists(".accessPoints.", ap.getFQName());
+                    r.eType.getEntityType().addAnnotationIfNotExists(".accessPoints.", ap.getFQName());
                 }
             }
             
@@ -93,6 +100,9 @@ operation addGraphAndAccessPointAnnotations() {
                 for (r in p.eType.eReferences) {
                     log.debug("      - reference: " + r.getFQName());
                     r.addAnnotationIfNotExists(".accessPoints.", ap.getFQName());
+
+                    r.eType.addAnnotationIfNotExists(".accessPoints.", ap.getFQName());
+                    r.eType.getEntityType().addAnnotationIfNotExists(".accessPoints.", ap.getFQName());
                 }
             }
         }
