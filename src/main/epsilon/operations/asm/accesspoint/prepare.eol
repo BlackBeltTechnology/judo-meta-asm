@@ -10,6 +10,24 @@ operation ASM!EClass addAccessPointAnnotation(accessPointName : String) {
     }
 }
 
+operation addTransferObjectAnnotations(type : ASM!EClass, accessPointName : String, includeFeatures: Boolean) {
+    type.addAnnotationIfNotExists(".accessPoints.", accessPointName);
+    type.getEntityType().addAnnotationIfNotExists(".accessPoints.", accessPointName);
+
+    if (includeFeatures) {
+	    for (a in type.eAttributes) {
+	        log.debug("      - attribute: " + a.getFQName());
+	        a.addAnnotationIfNotExists(".accessPoints.", accessPointName);
+	    }
+	    for (r in type.eReferences) {
+	        log.debug("      - reference: " + r.getFQName());
+	        r.addAnnotationIfNotExists(".accessPoints.", accessPointName);
+
+            addTransferObjectAnnotations(r.eType, accessPointName, r.containment);
+	    }
+    }
+}
+
 // add (derived) graph and access point annotations
 operation addGraphAndAccessPointAnnotations() {
     // add graphs and access point annotations to transfer object relations and built-in operations
@@ -26,32 +44,13 @@ operation addGraphAndAccessPointAnnotations() {
             
             if (o.eType.isDefined()) {
                 log.debug("    - return type: " + o.eType.getFQName());
-                o.eType.addAccessPointAnnotation(accessPointName);
-                for (a in o.eType.eAttributes) {
-                    log.debug("      - attribute: " + a.getFQName());
-                    a.addAnnotationIfNotExists(".accessPoints.", accessPointName);
-                }
-                for (r in o.eType.eReferences) {
-                    log.debug("      - reference: " + r.getFQName());
-                    r.addAnnotationIfNotExists(".accessPoints.", accessPointName);
-                    r.eReferenceType.addAccessPointAnnotation(accessPointName);
-                }
+                addTransferObjectAnnotations(o.eType, ap.getFQName(), true);
             }
             
             for (p in o.eParameters.select(p | p.eType.isDefined())) {
                 log.debug("    - parameter: " + p.name + ", type: " + p.eType.getFQName());
                 p.addAnnotationIfNotExists(".accessPoints.", accessPointName);
-                p.eType.addAccessPointAnnotation(accessPointName);
-                
-                for (a in p.eType.eAttributes) {
-                    log.debug("      - attribute: " + a.getFQName());
-                    a.addAnnotationIfNotExists(".accessPoints.", accessPointName);
-                }
-                for (r in p.eType.eReferences) {
-                    log.debug("      - reference: " + r.getFQName());
-                    r.addAnnotationIfNotExists(".accessPoints.", accessPointName);
-                    r.eReferenceType.addAccessPointAnnotation(accessPointName);
-                }
+                addTransferObjectAnnotations(p.eType, ap.getFQName(), true);
             }
         }
     }
@@ -61,8 +60,7 @@ operation addGraphAndAccessPointAnnotations() {
         
         for (transferObject in ap.getExposedMappedTransferObjectTypes()) {
             log.debug("  - transfer object type: " + transferObject.getFQName());
-            transferObject.addAnnotationIfNotExists(".accessPoints.", ap.getFQName());
-            transferObject.getEntityType().addAnnotationIfNotExists(".accessPoints.", ap.getFQName());
+            addTransferObjectAnnotations(transferObject, ap.getFQName(), true);
         }
 
         for (exposedService in ap.getExposedServices()) {
@@ -71,39 +69,13 @@ operation addGraphAndAccessPointAnnotations() {
             
             if (exposedService.eType.isDefined()) {
                 log.debug("    - return type: " + exposedService.eType.getFQName());
-
-                exposedService.eType.addAnnotationIfNotExists(".accessPoints.", ap.getFQName());
-                exposedService.eType.getEntityType().addAnnotationIfNotExists(".accessPoints.", ap.getFQName());
-
-                exposedService.addAnnotationIfNotExists(".accessPoints.", ap.getFQName());
-                for (a in exposedService.eType.eAttributes) {
-                    log.debug("      - attribute: " + a.getFQName());
-                    a.addAnnotationIfNotExists(".accessPoints.", ap.getFQName());
-                }
-                for (r in exposedService.eType.eReferences) {
-                    log.debug("      - reference: " + r.getFQName());
-                    r.addAnnotationIfNotExists(".accessPoints.", ap.getFQName());
-
-                    r.eType.addAnnotationIfNotExists(".accessPoints.", ap.getFQName());
-                    r.eType.getEntityType().addAnnotationIfNotExists(".accessPoints.", ap.getFQName());
-                }
+                addTransferObjectAnnotations(exposedService.eType, ap.getFQName(), true);
             }
             
             for (p in exposedService.eParameters.select(p | p.eType.isDefined())) {
                 log.debug("    - parameter: " + p.name + ",  type: " + p.eType.getFQName());
                 p.addAnnotationIfNotExists(".accessPoints.", ap.getFQName());
-                p.eType.addAnnotationIfNotExists(".accessPoints.", ap.getFQName());
-                for (a in p.eType.eAttributes) {
-                    log.debug("      - attribute: " + a.getFQName());
-                    a.addAnnotationIfNotExists(".accessPoints.", ap.getFQName());
-                }
-                for (r in p.eType.eReferences) {
-                    log.debug("      - reference: " + r.getFQName());
-                    r.addAnnotationIfNotExists(".accessPoints.", ap.getFQName());
-
-                    r.eType.addAnnotationIfNotExists(".accessPoints.", ap.getFQName());
-                    r.eType.getEntityType().addAnnotationIfNotExists(".accessPoints.", ap.getFQName());
-                }
+                addTransferObjectAnnotations(p.eType, ap.getFQName(), true);
             }
         }
     }
