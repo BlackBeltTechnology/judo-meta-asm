@@ -44,13 +44,13 @@ operation addGraphAndAccessPointAnnotations() {
             
             if (o.eType.isDefined()) {
                 log.debug("    - return type: " + o.eType.getFQName());
-                addTransferObjectAnnotations(o.eType, ap.getFQName(), true);
+                addTransferObjectAnnotations(o.eType, g.getResolvedExposedBy().getFQName(), true);
             }
             
             for (p in o.eParameters.select(p | p.eType.isDefined())) {
                 log.debug("    - parameter: " + p.name + ", type: " + p.eType.getFQName());
                 p.addAnnotationIfNotExists(".accessPoints.", accessPointName);
-                addTransferObjectAnnotations(p.eType, ap.getFQName(), true);
+                addTransferObjectAnnotations(p.eType, g.getResolvedExposedBy().getFQName(), true);
             }
         }
     }
