@@ -1,4 +1,4 @@
-package hu.blackbelt.judo.meta.asm;
+package hu.blackbelt.judo.meta.asm.runtime;
 
 import hu.blackbelt.epsilon.runtime.execution.api.Log;
 import hu.blackbelt.epsilon.runtime.execution.impl.NioFilesystemnRelativePathURIHandlerImpl;

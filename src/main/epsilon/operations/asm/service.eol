@@ -1,5 +1,4 @@
 import "annotation.eol";
-import "modelElement.eol";
 
 @cached
 operation getAllStatelessOperations() : Collection {
@@ -13,12 +12,12 @@ operation getAllMappedTransferObjectTypes() : Collection {
 
 @cached
 operation ASM!EOperation isStateless() : Boolean {
-    return self.annotatedAsFalse("stateful");
+    return asmUtils.annotatedAsFalse(self, "stateful");
 }
 
 @cached
 operation ASM!EOperation isStateful() : Boolean {
-    return self.annotatedAsTrue("stateful");
+    return asmUtils.annotatedAsTrue(self, "stateful");
 }
 
 @cached
@@ -33,9 +32,9 @@ operation ASM!EClass isMappedTransferObjectType() : Boolean {
 
 @cached
 operation ASM!EClass getEntityType() : ASM!EClass {
-    var entityTypeName = self.getAnnotationValue("mappedEntityType", false);
-    if (entityTypeName.isDefined()) {
-        return entityTypeName.resolve();
+    var entityTypeName = asmUtils.getExtensionAnnotationValue(self, "mappedEntityType", false);
+    if (entityTypeName.isPresent()) {
+        return asmUtils.resolve(entityTypeName.get()).orElse(null);
     } else {
         return null;
     }

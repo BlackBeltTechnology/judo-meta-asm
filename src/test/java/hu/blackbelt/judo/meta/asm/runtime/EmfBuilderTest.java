@@ -1,4 +1,4 @@
-package hu.blackbelt.judo.meta.asm;
+package hu.blackbelt.judo.meta.asm.runtime;
 
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;

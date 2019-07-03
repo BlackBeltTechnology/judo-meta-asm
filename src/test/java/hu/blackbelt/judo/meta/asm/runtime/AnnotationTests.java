@@ -1,4 +1,4 @@
-package hu.blackbelt.judo.meta.asm;
+package hu.blackbelt.judo.meta.asm.runtime;
 
 import hu.blackbelt.judo.meta.asm.runtime.AsmUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -95,7 +95,7 @@ public class AnnotationTests {
     public void testClassFQName() {
         final EClass orderInfo = (EClass) resourceSet.getResources().get(0).getEObject("//services/OrderInfo");
 
-        assertThat(asmUtils.getClassFQName(orderInfo), equalTo("northwind.services.OrderInfo"));
+        assertThat(asmUtils.getClassifierFQName(orderInfo), equalTo("northwind.services.OrderInfo"));
     }
 
 

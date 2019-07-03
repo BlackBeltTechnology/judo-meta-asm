@@ -1,6 +1,3 @@
-import "modelElement.eol";
-import "package.eol";
-
 @cached
 operation ASM!EClass hasSupertype() : Boolean {
 	return self.eSuperTypes.size > 0;
@@ -8,22 +5,12 @@ operation ASM!EClass hasSupertype() : Boolean {
 
 @cached
 operation ASM!EClass isEntity() : Boolean {
-	return self.annotatedAsTrue("entity");
-}
-
-@cached
-operation ASM!EClass isFacade() : Boolean {
-	return self.annotatedAsTrue("facade");
+	return asmUtils.annotatedAsTrue(self, "entity");
 }
 
 @cached
 operation ASM!EClassifier getPackage() : ASM!EPackage {
 	return ASM!EPackage.all.selectOne(p | p.eClassifiers.contains(self));
-}
-
-@cached
-operation ASM!EClassifier getFQName() : String {
-	return self.ePackage.getFullName() + "." + self.name;
 }
 
 @cached

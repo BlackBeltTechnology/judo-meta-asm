@@ -3,6 +3,7 @@ package hu.blackbelt.judo.meta.asm.runtime;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -25,7 +26,12 @@ import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.*;
 @Slf4j
 @RequiredArgsConstructor
 public class AsmUtils {
+
     public static final String extendedMetadataUri = "http://blackbelt.hu/judo/meta/ExtendedMetadata";
+    public static final String NAMESPACE_SEPARATOR = ".";
+    public static final String FEATURE_SEPARATOR = "#";
+    public static final String OPERATION_SEPARATOR = ".";
+
     public static final String SEPARATOR = "ʘ";
 
     private static final List<String> INTEGER_TYPES = Arrays.asList("byte", "short", "int", "long",
@@ -38,22 +44,24 @@ public class AsmUtils {
             "java.time.LocalDateTime", "java.time.OffsetDateTime", "java.time.ZonedDateTime",
             "org.joda.time.DateTime", "org.joda.time.LocalDateTime", "org.joda.time.MutableDateTime");
 
-    
     @NonNull
     ResourceSet resourceSet;
-    
-    
-    public <T> Stream<T> asStream(Iterator<T> sourceIterator) {
+
+    public static <T> Stream<T> asStream(Iterator<T> sourceIterator) {
         return asStream(sourceIterator, false);
     }
 
-    public <T> Stream<T> asStream(Iterator<T> sourceIterator, boolean parallel) {
+    public static <T> Stream<T> asStream(Iterator<T> sourceIterator, boolean parallel) {
         Iterable<T> iterable = () -> sourceIterator;
         return StreamSupport.stream(iterable.spliterator(), parallel);
     }
 
     public <T> Stream<T> all() {
         return asStream((Iterator<T>) resourceSet.getAllContents(), false);
+    }
+
+    public <T> Stream<T> all(final Class<T> clazz) {
+        return all().filter(e -> clazz.isAssignableFrom(e.getClass())).map(e -> (T) e);
     }
 
     /*
@@ -189,8 +197,12 @@ public class AsmUtils {
         return self.getClass().getFQName() + "#" + self.name;
     }
     */
-    public String getAttributeFQName(EAttribute eAttribute) {
-        return getClassFQName(eAttribute.getEContainingClass()) + "#" + eAttribute.getName();
+    public static String getAttributeFQName(final EAttribute eAttribute) {
+        return getClassifierFQName(eAttribute.getEContainingClass()) + FEATURE_SEPARATOR + eAttribute.getName();
+    }
+
+    public static String getOperationFQName(final EOperation eOperation) {
+        return getClassifierFQName(eOperation.getEContainingClass()) + OPERATION_SEPARATOR + eOperation.getName();
     }
 
     /*
@@ -203,7 +215,7 @@ public class AsmUtils {
      * @param mapEntry    attribute (map entry)
      * @return container annotation
      */
-    public Optional<EAnnotation> getAnnotation(final Map.Entry<String, String> mapEntry) {
+    Optional<EAnnotation> getAnnotation(final Map.Entry<String, String> mapEntry) {
         return all()
                 .filter(e -> e instanceof EAnnotation).map(e -> (EAnnotation) e)
                 .filter(e -> e.getDetails().contains(mapEntry)).findFirst();
@@ -218,7 +230,7 @@ public class AsmUtils {
      * @param createIfNotExists create annotation is not exists yet
      * @return JUDO extension annotation
      */
-    public Optional<EAnnotation> getExtensionAnnotation(final EModelElement eModelElement, boolean createIfNotExists) {
+    public static Optional<EAnnotation> getExtensionAnnotation(final EModelElement eModelElement, boolean createIfNotExists) {
         final Optional<EAnnotation> annotation = eModelElement.getEAnnotations().stream().filter(a -> AsmUtils.extendedMetadataUri.equals(a.getSource())).findFirst();
         if (!annotation.isPresent() && createIfNotExists) {
             final EAnnotation a = newEAnnotationBuilder().withSource(AsmUtils.extendedMetadataUri).build();
@@ -238,7 +250,7 @@ public class AsmUtils {
      * @param prefix        annotation attribute prefix
      * @param value         annotation attribute value
      */
-    public void addAnnotationIfNotExists(final EModelElement eModelElement, final String prefix, final String value) {
+    public static void addAnnotationIfNotExists(final EModelElement eModelElement, final String prefix, final String value) {
         final Optional<EAnnotation> annotation = getExtensionAnnotation(eModelElement, true);
         if (annotation.isPresent()) {
             final EMap<String, String> details = annotation.get().getDetails();
@@ -269,7 +281,7 @@ public class AsmUtils {
      * @param mapEntry    attribute (map entry)
      * @return owner Ecore model element
      */
-    public Optional<? extends EModelElement> getAnnotatedElement(final Map.Entry<String, String> mapEntry) {
+    Optional<? extends EModelElement> getAnnotatedElement(final Map.Entry<String, String> mapEntry) {
         final Optional<EAnnotation> annotation = getAnnotation(mapEntry);
         if (annotation.isPresent()) {
             return Optional.of(annotation.get().getEModelElement());
@@ -357,36 +369,12 @@ public class AsmUtils {
     class.eol
     */
 
-    /*
-    @cached
-    operation ASM!EClass hasSupertype() : Boolean {
-        return self.eSuperTypes.size > 0;
-    }
-    */
-    public boolean hasSupertype(EClass eClass) {
+    public static boolean hasSupertype(EClass eClass) {
         return eClass.getEAllSuperTypes().size() > 0;
     }
 
-
-    /*
-    @cached
-    operation ASM!EClass isEntity() : Boolean {
-        return self.annotatedAsTrue("entity");
-    }
-    */
     public boolean isEntity(EClass eClass) {
         return annotatedAsTrue(eClass, "entity");
-    }
-
-
-    /*
-    @cached
-    operation ASM!EClass isFacade() : Boolean {
-        return self.annotatedAsTrue("facade");
-    }
-    */
-    public boolean isFacade(EClass eClass) {
-        return annotatedAsTrue(eClass, "facade");
     }
 
     /*
@@ -396,16 +384,6 @@ public class AsmUtils {
         return ASM!EPackage.all.selectOne(p | p.eClassifiers.contains(self));
     }
     */
-
-    /*
-    @cached
-    operation ASM!EClassifier getFQName() : String {
-        return self.ePackage.getPackageFQName() + "." + self.name;
-    }
-    */
-    public String getClassFQName(EClassifier eClassifier) {
-        return getPackageFQName(eClassifier.getEPackage()) + "." + eClassifier.getName();
-    }
 
     /*
     @cached
@@ -432,38 +410,22 @@ public class AsmUtils {
      * @param fqName Fully qualified name
      * @return the EClass instance of the given name
      */
-    public Optional<EClass> getClassByFQName(String fqName) {
-        return all()
-                .filter(e -> e instanceof EClass)
-                .map(e -> (EClass) e)
-                .filter(e -> getClassFQName(e).equals(fqName)).findFirst();
+    public Optional<EClass> getClassByFQName(final String fqName) {
+        final Optional<EClassifier> classifier = resolve(fqName);
+        if (classifier.isPresent()) {
+            final EClassifier cl = classifier.get();
+            if (cl instanceof EClass) {
+                return Optional.of((EClass) cl);
+            } else {
+                throw new IllegalStateException("Fully qualified name represents no EClass");
+            }
+        } else {
+            return Optional.empty();
+        }
     }
-
-
 
     /*
     modelElement.eol
-    */
-
-    /*
-    @cached
-    operation ASM!EModelElement getAnnotationValue(name : String, failIfNotFound : Boolean) : String {
-        var annotations = self.eAnnotations.selectOne(a | a.source = extendedMetadataURI);
-        if (annotations.isDefined()) {
-            var d = annotations.details.selectOne(d | d.key = name);
-            if (d.isDefined() and d.value.isDefined()) {
-                return d.value;
-            } else {
-                return d;
-            }
-        } else {
-            if (failIfNotFound) {
-                throw "No annotation " + name + " found on element: " + element.name;
-            } else {
-                return null;
-            }
-        }
-    }
     */
 
     /**
@@ -471,178 +433,95 @@ public class AsmUtils {
      * if the extension annotation or the given name not found returns null.
      * @param eModelElement The model element which is used to determinate
      * @param name The entry name of extension annotation
-     * @param failIfNotFound When the extension or name in details not found log warn.
-     * @return The value of annotation
+     * @param logIfNotFound When the extension or name in details not found log warn.
+     * @return The value of annotation (<code>null</code> value is returned if key is found but value is not set)
      */
-    public Optional<String> getExtensionAnnotationValue(EModelElement eModelElement, String name, boolean failIfNotFound) {
-        Optional<EAnnotation> annotation = getExtensionAnnotation(eModelElement, false);
+    public static Optional<String> getExtensionAnnotationValue(final EModelElement eModelElement, final String name, final boolean logIfNotFound) {
+        final Optional<EAnnotation> annotation = getExtensionAnnotation(eModelElement, false);
         if (annotation.isPresent()) {
             final EMap<String, String> details = annotation.get().getDetails();
             if (details.containsKey(name)) {
-                return Optional.of(details.get(name));
+                return Optional.ofNullable(details.get(name));
             } else {
-                if (failIfNotFound) {
+                if (logIfNotFound) {
                     log.warn("No annotation " + name + " found on element: " + eModelElement.toString());
-                } else {
-                    return empty();
                 }
-            }
-        } else {
-            if (failIfNotFound) {
-                log.warn("No annotation " + name + " found on element: " + eModelElement.toString());
-            } else {
                 return empty();
             }
-        }
-        return empty();
-    }
-
-
-
-    /*
-    @cached
-    operation ASM!EModelElement getAnnotationValue(name : String) : String {
-        var annotations = self.eAnnotations.selectOne(a | a.source = extendedMetadataURI);
-        if (annotations.isDefined()) {
-            var d = annotations.details.selectOne(d | d.key = name);
-            if (d.isDefined() and d.value.isDefined()) {
-                return d.value;
-            } else {
-                return d;
-            }
         } else {
-            throw "No annotation " + name + " found on element: " + element.name;
-        }
-    }
-    */
-
-    /*
-    @cached
-    operation ASM!EModelElement hasAnnotation(name : String) : Boolean {
-        var annotations = self.eAnnotations.selectOne(a | a.source = extendedMetadataURI);
-        if (annotations.isDefined()) {
-            var d = annotations.details.selectOne(d | d.key = name);
-            return d.isDefined();
-        }
-        return false;
-    }
-    */
-
-    /*
-    @cached
-    operation ASM!EModelElement annotatedAsTrue(name : String) : Boolean {
-        var annotations = self.eAnnotations.selectOne(a | a.source = extendedMetadataURI);
-        if (annotations.isDefined()) {
-            var d = annotations.details.selectOne(d | d.key = name);
-            if (d.isDefined() and d.value.isDefined()) {
-                return d.value.asBoolean();
-            } else {
-                return false;
+            if (logIfNotFound) {
+                log.warn("No annotation " + name + " found on element: " + eModelElement.toString());
             }
-        } else {
-            return false;
+            return empty();
         }
     }
-    */
 
     /**
      * Check the given element's extension annotation on the given name is true. When the element have no
      * extension annotation returns false.
      *
-     * @param eModelElement
-     * @param name
-     * @return
+     * @param eModelElement The model element which is used to determinate
+     * @param name The entry name of extension annotation
+     * @return <code>true</code> if annotation value represents a Java true value, <code>false</code> otherwise
      */
-    public boolean annotatedAsTrue(EModelElement eModelElement, String name) {
-        Optional<EAnnotation> annotation = getExtensionAnnotation(eModelElement, false);
-        if (annotation.isPresent()) {
-            Optional<Map.Entry<String, String>> d = annotation.get().getDetails().stream()
-                    .filter(e -> e.getKey().equals(name)).findFirst();
-            if (d.isPresent() && d.get().getValue() != null) {
-                return Boolean.valueOf(d.get().getValue());
-            } else {
-                return false;
-            }
-        }
-        return false;
+    public static boolean annotatedAsTrue(final EModelElement eModelElement, final String name) {
+        final Optional<String> value = getExtensionAnnotationValue(eModelElement, name, false);
+        return value.isPresent() && Boolean.valueOf(value.get());
     }
-
-
-    /*
-    @cached
-    operation ASM!EModelElement annotatedAsFalse(name : String) : Boolean {
-        var annotations = self.eAnnotations.selectOne(a | a.source = extendedMetadataURI);
-        if (annotations.isDefined()) {
-            var d = annotations.details.selectOne(d | d.key = name);
-            if (d.isDefined() and d.value.isDefined()) {
-                return not d.value.asBoolean();
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
-    */
 
     /**
      * Check the given element's extension annotation on the given name is false. When the element have no
      * extension annotation returns false.
      *
-     * @param eModelElement
-     * @param name
-     * @return
+     * @param eModelElement The model element which is used to determinate
+     * @param name The entry name of extension annotation
+     * @return <code>true</code> if annotation value represents a Java false value, <code>false</code> otherwise
      */
-    public boolean annotatedAsFalse(EModelElement eModelElement, String name) {
-        Optional<EAnnotation> annotations = eModelElement.getEAnnotations().stream()
-                .filter(a -> a.getSource().equals(extendedMetadataUri)).findFirst();
-        if (annotations.isPresent()) {
-            Optional<Map.Entry<String, String>> d = annotations.get().getDetails().stream()
-                    .filter(e -> e.getKey().equals(name)).findFirst();
-            if (d.isPresent() && d.get().getValue() != null) {
-                return !Boolean.valueOf(d.get().getValue());
-            } else {
-                return false;
-            }
-        }
-        return false;
+    public static boolean annotatedAsFalse(final EModelElement eModelElement, final String name) {
+        final Optional<String> value = getExtensionAnnotationValue(eModelElement, name, false);
+        return value.isPresent() && !Boolean.valueOf(value.get());
     }
 
-    /*
-    @cached
-    operation String resolve() : ASM!ENamedElement {
-        return ASM!EClassifier.all.selectOne(e | e.getFQName() == self);
+    /**
+     * Resolve a name to get a classifier. Fully qualified names are checked first, searching by name in second turn.
+     *
+     * @param fqName name to resolve
+     * @return resolved classifier
+     */
+    public Optional<EClassifier> resolve(final String fqName) {
+        final Optional<EClassifier> resolved = all(EClassifier.class)
+                .filter(c -> Objects.equals(fqName, getClassifierFQName(c)))
+                .findAny();
+
+        if (resolved.isPresent()) {
+            return resolved;
+        } else {
+            log.warn("EClassifier by fully qualified name '" + fqName + "' not found, trying to resolve by name only");
+            return all(EClassifier.class)
+                    .filter(c -> Objects.equals(fqName, c.getName()))
+                    .findAny();
+        }
     }
-    */
+
+    public static String getClassifierFQName(final EClassifier eClassifier) {
+        return getPackageFQName(eClassifier.getEPackage()) + NAMESPACE_SEPARATOR + eClassifier.getName();
+    }
 
     /*
     package.eol
-    */
-    /*
-    @cached
-    operation ASM!EPackage getPackageFQName() : String {
-        var package = self.eSuperPackage;
-        var name = "";
-        while (package.isDefined()) {
-            name = package.name + "." + name;
-            package = package.eSuperPackage;
-        }
-
-        return name + self.name;
-    }
     */
 
     /**
      * Get the fully qualified name of the package.
      *
-     * @param ePackage
-     * @return
+     * @param ePackage package
+     * @return fully qualified name of the package
      */
-    public String getPackageFQName(EPackage ePackage) {
+    public static String getPackageFQName(final EPackage ePackage) {
         EPackage pack = ePackage.getESuperPackage();
         String fqName = "";
         while (pack != null) {
-            fqName = pack.getName() + "." + fqName;
+            fqName = pack.getName() + NAMESPACE_SEPARATOR + fqName;
             pack = pack.getESuperPackage();
         }
 
@@ -710,8 +589,8 @@ public class AsmUtils {
      * @param eReference
      * @return
      */
-    public String getReferenceFQName(EReference eReference) {
-        return getClassFQName(eReference.getEContainingClass()) + "#" + eReference.getName();
+    public static String getReferenceFQName(EReference eReference) {
+        return getClassifierFQName(eReference.getEContainingClass()) + FEATURE_SEPARATOR + eReference.getName();
     }
 
     /*
@@ -826,33 +705,33 @@ public class AsmUtils {
     }
 
 
-    public boolean isInteger(final EDataType eDataType) {
+    public static boolean isInteger(final EDataType eDataType) {
         final String instanceClassName = eDataType.getInstanceClassName();
         return instanceClassName != null && INTEGER_TYPES.contains(instanceClassName);
     }
 
-    public boolean isDecimal(final EDataType eDataType) {
+    public static boolean isDecimal(final EDataType eDataType) {
         final String instanceClassName = eDataType.getInstanceClassName();
         return instanceClassName != null && DECIMAL_TYPES.contains(instanceClassName);
     }
 
-    public boolean isNumeric(final EDataType eDataType) {
+    public static boolean isNumeric(final EDataType eDataType) {
         return isInteger(eDataType) || isDecimal(eDataType);
     }
 
-    public boolean isBoolean(final EDataType eDataType) {
+    public static boolean isBoolean(final EDataType eDataType) {
         final String instanceClassName = eDataType.getInstanceClassName();
         return "boolean".equals(instanceClassName)
                 || "java.lang.Boolean".equals(instanceClassName);
     }
 
-    public boolean isString(final EDataType eDataType) {
+    public static boolean isString(final EDataType eDataType) {
         final String instanceClassName = eDataType.getInstanceClassName();
         return "byte[]".equals(instanceClassName)
                 || "java.lang.String".equals(instanceClassName);
     }
 
-    public boolean isDate(final EDataType eDataType) {
+    public static boolean isDate(final EDataType eDataType) {
         final String instanceClassName = eDataType.getInstanceClassName();
         if ("java.util.Date".equals(instanceClassName)) {
             return !isTimestampJavaUtilDate(eDataType);
@@ -861,7 +740,7 @@ public class AsmUtils {
         }
     }
 
-    public boolean isTimestamp(final EDataType eDataType) {
+    public static boolean isTimestamp(final EDataType eDataType) {
         final String instanceClassName = eDataType.getInstanceClassName();
         if ("java.util.Date".equals(instanceClassName)) {
             return isTimestampJavaUtilDate(eDataType);
@@ -870,12 +749,27 @@ public class AsmUtils {
         }
     }
 
-    public boolean isEnumeration(final EDataType eDataType) {
+    public static boolean isEnumeration(final EDataType eDataType) {
         return eDataType instanceof EEnum;
     }
 
     static boolean isTimestampJavaUtilDate(final EDataType eDataType) {
         // TODO - check annotations of EDataType in ASM model, false by default
         return false;
+    }
+
+    /*
+     * Get all contents with a type from resource set of a given EObject.
+     *
+     * @param eObject EObject in the resource set
+     * @param clazz   type class for filtering
+     * @param <T>     type for filtering
+     * @return stream of contents
+     */
+    public static <T> Stream<T> getAllContents(final EObject eObject, final Class<T> clazz) {
+        final ResourceSet resourceSet = eObject.eResource().getResourceSet();
+        final Iterable<Notifier> asmContents = resourceSet::getAllContents;
+        return StreamSupport.stream(asmContents.spliterator(), true)
+                .filter(e -> clazz.isAssignableFrom(e.getClass())).map(e -> (T) e);
     }
 }

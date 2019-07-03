@@ -1,4 +1,4 @@
-package hu.blackbelt.judo.meta.asm;
+package hu.blackbelt.judo.meta.asm.runtime;
 
 import com.google.common.collect.ImmutableList;
 import lombok.extern.slf4j.Slf4j;

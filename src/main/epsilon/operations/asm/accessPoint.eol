@@ -17,14 +17,14 @@ operation getAllExposedServices() : Set {
 
 @cached
 operation ASM!EClass isAccessPoint() : Boolean {
-    return self.interface and self.annotatedAsTrue("accessPoint");
+    return self.interface and asmUtils.annotatedAsTrue(self, "accessPoint");
 }
 
 @cached
 operation ASM!EClass getResolvedExposedBy() : ASM!EClass {
-    var exposedBy = self.getAnnotationValue("exposedBy", false);
-    if (exposedBy.isDefined()) {
-        return exposedBy.resolve();
+    var exposedBy = asmUtils.getExtensionAnnotationValue(self, "exposedBy", false);
+    if (exposedBy.isPresent()) {
+        return asmUtils.resolve(exposedBy.get()).orElse(null);
     } else {
         return null;
     }
@@ -32,9 +32,9 @@ operation ASM!EClass getResolvedExposedBy() : ASM!EClass {
 
 @cached
 operation ASM!EClass getResolvedRoot() : ASM!EClass {
-    var root = self.getAnnotationValue("root", false);
-    if (root.isDefined()) {
-        return root.resolve();
+    var root = asmUtils.getExtensionAnnotationValue(self, "root", false);
+    if (root.isPresent()) {
+        return asmUtils.resolve(root.get()).orElse(null);
     } else {
         return null;
     }
@@ -94,7 +94,7 @@ operation ASM!EClass getExposedServices() : Set {
 operation ASM!EClass getGraphs() : Set {
 	var annotation = self.getExtensionAnnotation(false);
 	if (self.isMappedTransferObjectType() and annotation.isDefined()) {
-		return annotation.details.select(d | d.key.startsWith("graphs.")).collect(d | d.value.resolve()).asSet();
+		return annotation.details.select(d | d.key.startsWith("graphs.")).collect(d | asmUtils.resolve(d.value).orElse(null)).asSet();
 	} else {
 		return new Set;
 	}
@@ -104,7 +104,7 @@ operation ASM!EClass getGraphs() : Set {
 operation ASM!EOperation getGraphs() : Set {
 	var annotation = self.getExtensionAnnotation(false);
 	if (annotation.isDefined()) {
-		return annotation.details.select(d | d.key.startsWith("graphs.")).collect(d | d.value.resolve()).asSet();
+		return annotation.details.select(d | d.key.startsWith("graphs.")).collect(d | asmUtils.resolve(d.value).orElse(null)).asSet();
 	} else {
 		return new Set;
 	}

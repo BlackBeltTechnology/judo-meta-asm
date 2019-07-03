@@ -1,15 +1,8 @@
-import "modelElement.eol";
-
-@cached
-operation ASM!EOperation getFQName() : String {
-	return self.eContainingClass.getFQName() + "#" + self.name;
-}
-
 @cached
 operation ASM!EOperation getResolvedExposedBy() : ASM!EClass {
-    var exposedBy = self.getAnnotationValue("exposedBy", false);
-    if (exposedBy.isDefined()) {
-        return exposedBy.resolve();
+    var exposedBy = asmUtils.getExtensionAnnotationValue(self, "exposedBy", false);
+    if (exposedBy.isPresent()) {
+        return asmUtils.resolve(exposedBy.get()).orElse(null);
     } else {
         return null;
     }
