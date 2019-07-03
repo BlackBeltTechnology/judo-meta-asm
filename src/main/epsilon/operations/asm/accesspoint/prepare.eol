@@ -37,8 +37,9 @@ operation addGraphAndAccessPointAnnotations() {
         log.debug("Exposed graph: " + g.getFQName());
         log.debug("  - access point: " + accessPointName);
         log.debug("  - mapped transfer object types: " + g.getExposedMappedTransferObjectTypes().collect(t | t.getFQName()));
-        
-        for (o in g.getExposedOperations()) {
+
+        // TODO - expose bound services
+        /*for (o in g.getExposedOperations()) {
             log.debug("  - exposed operation: " + o.getFQName());
             o.addAnnotationIfNotExists(".graphs.", g.getFQName());
             
@@ -52,7 +53,7 @@ operation addGraphAndAccessPointAnnotations() {
                 p.addAnnotationIfNotExists(".accessPoints.", accessPointName);
                 addTransferObjectAnnotations(p.eType, g.getResolvedExposedBy().getFQName(), true);
             }
-        }
+        }*/
     }
 
     for (ap in getAllAccessPoints()) {

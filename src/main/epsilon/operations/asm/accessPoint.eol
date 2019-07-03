@@ -123,11 +123,13 @@ operation ASM!EClass getExposedMappedTransferObjectTypes() : Set {
 
 @cached
 operation ASM!EClass getExposedOperations() : Set {
-    if (self.isExposedGraph()) {
+    // TODO
+    throw "Need to update";
+    /*if (self.isExposedGraph()) {
         return self.getExposedMappedTransferObjectTypes().collect(t | t.getNestedClasses()).flatten().select(og | og.interface).collect(og | og.eOperations).flatten()
             .includingAll(self.getExposedMappedTransferObjectTypes().collect(t | t.eOperations).flatten().select(o | o.getGraphs().contains(self)))
             .asSet();
     } else {
         return new Set;
-    }
+    }*/
 }
