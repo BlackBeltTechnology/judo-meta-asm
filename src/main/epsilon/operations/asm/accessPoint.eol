@@ -1,4 +1,12 @@
-import "service.eol";
+@cached
+operation ASM!EOperation getResolvedExposedBy() : ASM!EClass {
+    var exposedBy = asmUtils.getExtensionAnnotationValue(self, "exposedBy", false);
+    if (exposedBy.isPresent()) {
+        return asmUtils.resolve(exposedBy.get()).orElse(null);
+    } else {
+        return null;
+    }
+}
 
 @cached
 operation getAllAccessPoints() : Set {
@@ -46,7 +54,7 @@ operation ASM!EClass isExposedGraph() : Boolean {
     var root = self.getResolvedRoot();
     
     if (exposedBy.isDefined() and root.isDefined()) {
-        return exposedBy.isAccessPoint() and root.isMappedTransferObjectType() and self.interface;
+        return exposedBy.isAccessPoint() and asmUtils.isMappedTransferObjectType(root) and self.interface;
     } else {
         return false;
     }
@@ -66,7 +74,7 @@ operation ASM!EOperation isExposedService() : Boolean {
 @cached
 operation ASM!EClass getExposedGraphName() : String {
     if (self.isExposedGraph()) {
-        return self.name.substring(self.getContainerClass().name.length + 1);
+        return self.name.substring(asmUtils.getContainerClass(self).get().name.length + 1);
     } else {
         return null;
     }
@@ -92,9 +100,9 @@ operation ASM!EClass getExposedServices() : Set {
 
 @cached
 operation ASM!EClass getGraphs() : Set {
-	var annotation = self.getExtensionAnnotation(false);
-	if (self.isMappedTransferObjectType() and annotation.isDefined()) {
-		return annotation.details.select(d | d.key.startsWith("graphs.")).collect(d | asmUtils.resolve(d.value).orElse(null)).asSet();
+	var annotation = asmUtils.getExtensionAnnotation(self, false);
+	if (asmUtils.isMappedTransferObjectType(self) and annotation.isPresent()) {
+		return annotation.get().details.select(d | d.key.startsWith("graphs.")).collect(d | asmUtils.resolve(d.value).orElse(null)).asSet();
 	} else {
 		return new Set;
 	}
@@ -102,9 +110,9 @@ operation ASM!EClass getGraphs() : Set {
 
 @cached
 operation ASM!EOperation getGraphs() : Set {
-	var annotation = self.getExtensionAnnotation(false);
-	if (annotation.isDefined()) {
-		return annotation.details.select(d | d.key.startsWith("graphs.")).collect(d | asmUtils.resolve(d.value).orElse(null)).asSet();
+	var annotation = asmUtils.getExtensionAnnotation(self, false);
+	if (annotation.isPresent()) {
+		return annotation.get().details.select(d | d.key.startsWith("graphs.")).collect(d | asmUtils.resolve(d.value).orElse(null)).asSet();
 	} else {
 		return new Set;
 	}
@@ -113,7 +121,7 @@ operation ASM!EOperation getGraphs() : Set {
 @cached
 operation ASM!EClass getExposedMappedTransferObjectTypes() : Set {
     if (self.isExposedGraph()) {
-        return getAllMappedTransferObjectTypes().select(t | t.getGraphs().contains(self)).asSet();
+        return asmUtils.getAllMappedTransferObjectTypes().select(t | t.getGraphs().contains(self)).asSet();
     } else if (self.isAccessPoint()) {
         return self.getExposedGraphs().collect(g | g.getExposedMappedTransferObjectTypes()).flatten().asSet();
     } else {
@@ -126,7 +134,7 @@ operation ASM!EClass getExposedOperations() : Set {
     // TODO
     throw "Need to update";
     /*if (self.isExposedGraph()) {
-        return self.getExposedMappedTransferObjectTypes().collect(t | t.getNestedClasses()).flatten().select(og | og.interface).collect(og | og.eOperations).flatten()
+        return self.getExposedMappedTransferObjectTypes().collect(t | asmUtils.getNestedClasses(t)).flatten().select(og | og.interface).collect(og | og.eOperations).flatten()
             .includingAll(self.getExposedMappedTransferObjectTypes().collect(t | t.eOperations).flatten().select(o | o.getGraphs().contains(self)))
             .asSet();
     } else {

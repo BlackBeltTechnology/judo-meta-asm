@@ -1,8 +1,1 @@
 import "accessPoint.eol";
-import "attribute.eol";
-import "annotation.eol";
-import "class.eol";
-import "operation.eol";
-import "service.eol";
-import "reference.eol";
-import "type.eol";

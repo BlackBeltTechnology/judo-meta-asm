@@ -1,4 +1,0 @@
-@cached
-operation ASM!EReference isEmbedded() : Boolean {
-	return asmUtils.annotatedAsTrue(self, "embedded");
-}

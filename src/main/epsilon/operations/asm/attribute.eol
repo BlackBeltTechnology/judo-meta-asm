@@ -1,9 +1,0 @@
-@cached
-operation ASM!EAttribute isID() : Boolean {
-	return asmUtils.annotatedAsTrue(self, "id");
-}
-
-@cached
-operation ASM!EAttribute getClass() : ASM!EClass {
-	return ASM!EClass.all.selectOne(c | c.eAllAttributes.includes(self));
-}

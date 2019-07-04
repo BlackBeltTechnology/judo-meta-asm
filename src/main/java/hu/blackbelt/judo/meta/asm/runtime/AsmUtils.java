@@ -4,6 +4,8 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.emf.common.notify.Notifier;
+import org.eclipse.emf.common.util.BasicEList;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -365,45 +367,57 @@ public class AsmUtils {
         }
     }
 
-    /*
-    class.eol
-    */
-
-    public static boolean hasSupertype(EClass eClass) {
-        return eClass.getEAllSuperTypes().size() > 0;
-    }
-
-    public boolean isEntity(EClass eClass) {
+    public static boolean isEntityType(final EClass eClass) {
         return annotatedAsTrue(eClass, "entity");
     }
 
-    /*
-    // TODO: Really used?
-    @cached
-    operation ASM!EClassifier getPackage() : ASM!EPackage {
-        return ASM!EPackage.all.selectOne(p | p.eClassifiers.contains(self));
-    }
-    */
-
-    /*
-    @cached
-    operation ASM!EClass getNestedClasses() : Collection {
-        return ASM!EClass.all.select(c | c.name.startsWith(self.name + "ʘ") and not "ʘ".isSubstringOf(c.name.substring(self.name.length() + 1)));
-    }
-    */
-    public List<EClass> getNestedClasses(EClass eClass) {
-        return all()
-                .filter(e -> e instanceof EClass).map(e -> (EClass) e)
-                .filter(c -> c.getName().startsWith(eClass.getName() + SEPARATOR) && !c.getName().substring(eClass.getName().length() + 1).contains(SEPARATOR)).collect(Collectors.toList());
+    public boolean isMappedTransferObjectType(final EClass eClass) {
+        return getEntityType(eClass).isPresent();
     }
 
-    /*
-    @cached
-    operation ASM!EClass getContainerClass() : ASM!EClass {
-        return ASM!EClass.all.selectOne(c | self.name.startsWith(c.name + "ʘ") and not "ʘ".isSubstringOf(self.name.substring(c.name.length() + 1)));
+    public EList<EOperation> getAllStatelessOperations() {
+        return new BasicEList<>(all(EOperation.class)
+                .filter(o -> isStateless(o))
+                .collect(Collectors.toList()));
     }
-    */
 
+    public EList<EClass> getAllMappedTransferObjectTypes() {
+        return new BasicEList<>(all(EClass.class)
+                .filter(c -> isMappedTransferObjectType(c))
+                .collect(Collectors.toList()));
+    }
+
+    public Optional<EClass> getEntityType(final EClass eClass) {
+        final Optional<String> mappedEntityTypeFQName = getExtensionAnnotationValue(eClass, "mappedEntityType", false);
+        if (mappedEntityTypeFQName.isPresent()) {
+            final Optional<EClassifier> resolved = resolve(mappedEntityTypeFQName.get());
+            if (resolved.isPresent()) {
+                final EClassifier eClassifier = resolved.get();
+                if (eClassifier instanceof EClass) {
+                    return Optional.of((EClass) eClassifier);
+                } else {
+                    log.error("Invalid mapped entity type: {}", mappedEntityTypeFQName.get());
+                    return Optional.empty();
+                }
+            } else {
+                log.error("Unable to resolve mapped entity type: {}", mappedEntityTypeFQName.get());
+                return Optional.empty();
+            }
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public EList<EClass> getNestedClasses(final EClass eClass) {
+        return new BasicEList<>(all(EClass.class)
+                .filter(c -> c.getName().startsWith(eClass.getName() + SEPARATOR) && !c.getName().substring(eClass.getName().length() + 1).contains(SEPARATOR)).collect(Collectors.toList()));
+    }
+
+    public Optional<EClass> getContainerClass(final EClass eClass)  {
+        return all(EClass.class)
+                .filter(c -> getClassifierFQName(eClass).startsWith(getClassifierFQName(c) + SEPARATOR) && !eClass.getName().substring(c.getName().length() + 1).contains(SEPARATOR))
+                .findAny();
+    }
 
     /**
      * Returns the EClass of the given fully qualified name.
@@ -423,10 +437,6 @@ public class AsmUtils {
             return Optional.empty();
         }
     }
-
-    /*
-    modelElement.eol
-    */
 
     /**
      * Get the the Extension annotation's given element in map. If failNotFound true it log a warning, otherwise
@@ -528,6 +538,35 @@ public class AsmUtils {
         return fqName + ePackage.getName();
     }
 
+    /**
+     * Check if an operation is stateless.
+     *
+     * @param eOperation operation
+     * @return <code>true</code> if operation is marked as stateless, <code>false</code> otherwise
+     */
+    public static boolean isStateless(final EOperation eOperation) {
+        return annotatedAsFalse(eOperation, "stateful");
+    }
+
+    /**
+     * Check if an operation is stateful.
+     *
+     * @param eOperation operation
+     * @return <code>true</code> if operation is marked as stateful, <code>false</code> otherwise
+     */
+    public static boolean isStateful(final EOperation eOperation) {
+        return annotatedAsTrue(eOperation, "stateful");
+    }
+
+    /**
+     * Check if an operation is bound.
+     *
+     * @param eOperation operation
+     * @return <code>true</code> if operation is bound (to transfer object type), <code>false</code> otherwise
+     */
+    public boolean isBound(final EOperation eOperation) {
+        return isMappedTransferObjectType(eOperation.getEContainingClass());
+    }
 
     /*
     service.eol
@@ -727,8 +766,7 @@ public class AsmUtils {
 
     public static boolean isString(final EDataType eDataType) {
         final String instanceClassName = eDataType.getInstanceClassName();
-        return "byte[]".equals(instanceClassName)
-                || "java.lang.String".equals(instanceClassName);
+        return "java.lang.String".equals(instanceClassName);
     }
 
     public static boolean isDate(final EDataType eDataType) {
@@ -738,6 +776,12 @@ public class AsmUtils {
         } else {
             return instanceClassName != null && DATE_TYPES.contains(instanceClassName);
         }
+    }
+
+    public static boolean isByteArray(final EDataType eDataType) {
+        final String instanceClassName = eDataType.getInstanceClassName();
+        return "byte[]".equals(instanceClassName)
+                || "java.sql.Blob".equals(instanceClassName);
     }
 
     public static boolean isTimestamp(final EDataType eDataType) {

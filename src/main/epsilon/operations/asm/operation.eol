@@ -1,9 +1,0 @@
-@cached
-operation ASM!EOperation getResolvedExposedBy() : ASM!EClass {
-    var exposedBy = asmUtils.getExtensionAnnotationValue(self, "exposedBy", false);
-    if (exposedBy.isPresent()) {
-        return asmUtils.resolve(exposedBy.get()).orElse(null);
-    } else {
-        return null;
-    }
-}
