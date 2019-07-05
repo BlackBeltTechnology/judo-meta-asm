@@ -9,11 +9,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -224,7 +220,6 @@ public class AsmUtils {
         final String sourceUri = getAnnotationUri(annotationName);
 
         final Optional<EAnnotation> annotation = getExtensionAnnotationsAsStreamByName(eModelElement, annotationName)
-                .filter(a -> Objects.equals(a.getSource(), sourceUri))
                 .filter(a -> Objects.equals(a.getDetails().get(EXTENDED_METADATA_DETAILS_VALUE_KEY), value))
                 .findAny();
 
@@ -237,6 +232,29 @@ public class AsmUtils {
             newAnnotation.getDetails().put(EXTENDED_METADATA_DETAILS_VALUE_KEY, value);
             eModelElement.getEAnnotations().add(newAnnotation);
         }
+    }
+
+    /**
+     * Add new JUDO extension annotation to a given model element with a given value (if not exists yet).
+     *
+     * @param eModelElement  model element to which annotation value is added
+     * @param annotationName annotation name
+     * @param details        annotation details
+     */
+    public static void addExtensionAnnotationDetails(final EModelElement eModelElement, final String annotationName, final Map<String, String> details) {
+        final String sourceUri = getAnnotationUri(annotationName);
+
+        Optional<EAnnotation> annotation = getExtensionAnnotationsAsStreamByName(eModelElement, annotationName)
+                .findAny();
+
+        if (!annotation.isPresent()) {
+            annotation = Optional.of(newEAnnotationBuilder()
+                    .withSource(sourceUri)
+                    .build());
+            eModelElement.getEAnnotations().add(annotation.get());
+        }
+
+        annotation.get().getDetails().putAll(details);
     }
 
     /**
@@ -326,6 +344,31 @@ public class AsmUtils {
         final Optional<EAnnotation> eAnnotation = getExtensionAnnotationByName(eModelElement, annotationName, false);
         if (eAnnotation.isPresent()) {
             final String value = eAnnotation.get().getDetails().get(EXTENDED_METADATA_DETAILS_VALUE_KEY);
+            if (value == null && logIfNotFound) {
+                log.warn("No annotation value {} found on element {}", annotationName, eModelElement);
+            }
+            return Optional.ofNullable(value);
+        } else {
+            if (logIfNotFound) {
+                log.warn("No annotation {} found on element {}", annotationName, eModelElement);
+            }
+            return empty();
+        }
+    }
+
+    /**
+     * Get the the Extension annotation's given element in map. If failNotFound true it log a warning, otherwise
+     * if the extension annotation or the given name not found returns null.
+     * @param eModelElement The model element which is used to determinate
+     * @param annotationName The entry name of extension annotation
+     * @param attributeName Name of annotation attribute (key of details)
+     * @param logIfNotFound When the extension or name in details not found log warn.
+     * @return The value of annotation (<code>null</code> value is returned if key is found but value is not set)
+     */
+    public static Optional<String> getExtensionAnnotationCustomValue(final EModelElement eModelElement, final String annotationName, final String attributeName, final boolean logIfNotFound) {
+        final Optional<EAnnotation> eAnnotation = getExtensionAnnotationByName(eModelElement, annotationName, false);
+        if (eAnnotation.isPresent()) {
+            final String value = eAnnotation.get().getDetails().get(attributeName);
             if (value == null && logIfNotFound) {
                 log.warn("No annotation value {} found on element {}", annotationName, eModelElement);
             }
