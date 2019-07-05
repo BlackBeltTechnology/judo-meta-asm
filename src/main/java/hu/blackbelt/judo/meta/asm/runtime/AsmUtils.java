@@ -172,6 +172,16 @@ public class AsmUtils {
     }
 
     /**
+     * Get source URI of an annotation name.
+     *
+     * @param annotationName annotation name
+     * @return source URI
+     */
+    public static String getAnnotationUri(final String annotationName) {
+        return EXTENDED_METADATA_URI + "/" + annotationName;
+    }
+
+    /**
      * Get single JUDO extension annotation of a given Ecore model element by annotation name.
      *
      * Annotation will be added if createIfNotExists parameter is <code>true</code> and it not exists yet.
@@ -618,10 +628,6 @@ public class AsmUtils {
 
     <T> Stream<T> all(final Class<T> clazz) {
         return all().filter(e -> clazz.isAssignableFrom(e.getClass())).map(e -> (T) e);
-    }
-
-    static String getAnnotationUri(final String annotationName) {
-        return EXTENDED_METADATA_URI + "/" + annotationName;
     }
 
     /**
