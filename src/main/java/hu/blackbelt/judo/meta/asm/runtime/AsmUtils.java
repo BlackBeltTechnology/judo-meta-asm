@@ -7,6 +7,7 @@ import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.UniqueEList;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
@@ -224,7 +225,7 @@ public class AsmUtils {
      * @param annotationName annotation name
      * @param value          annotation value
      */
-    public static void addExtensionAnnotation(final EModelElement eModelElement, final String annotationName, final String value) {
+    public static boolean addExtensionAnnotation(final EModelElement eModelElement, final String annotationName, final String value) {
         final String sourceUri = getAnnotationUri(annotationName);
 
         final Optional<EAnnotation> annotation = getExtensionAnnotationsAsStreamByName(eModelElement, annotationName)
@@ -233,12 +234,14 @@ public class AsmUtils {
 
         if (annotation.isPresent()) {
             log.debug("Annotation (prefix: {}, value: {}) is already added to model element {}", new Object[]{annotationName, value, eModelElement});
+            return false;
         } else {
             final EAnnotation newAnnotation = newEAnnotationBuilder()
                     .withSource(sourceUri)
                     .build();
             newAnnotation.getDetails().put(EXTENDED_METADATA_DETAILS_VALUE_KEY, value);
             eModelElement.getEAnnotations().add(newAnnotation);
+            return true;
         }
     }
 
@@ -420,7 +423,17 @@ public class AsmUtils {
     public Optional<EClass> getMappedEntityType(final EClass eClass) {
         final Optional<String> mappedEntityTypeFQName = getExtensionAnnotationValue(eClass, "mappedEntityType", false);
         if (mappedEntityTypeFQName.isPresent()) {
-            return getClassByFQName(mappedEntityTypeFQName.get());
+            final Optional<EClass> entityType = getClassByFQName(mappedEntityTypeFQName.get());
+            if (entityType.isPresent()) {
+                if (isEntityType(entityType.get())) {
+                    return entityType;
+                } else {
+                    log.error("Invalid entity type: {}", mappedEntityTypeFQName.get());
+                    return Optional.empty();
+                }
+            } else {
+                return Optional.empty();
+            }
         } else {
             return Optional.empty();
         }
@@ -474,14 +487,18 @@ public class AsmUtils {
     }
 
     public Optional<EClass> getResolvedExposedBy(final EAnnotation eAnnotation) {
-        if (eAnnotation.getDetails().containsKey("exposedBy")) {
-            final String exposedByFqName = eAnnotation.getDetails().get("exposedBy");
-            final Optional<EClass> resolvedExposedBy = getClassByFQName(exposedByFqName);
-            if (resolvedExposedBy.isPresent()) {
-                if (isAccessPoint(resolvedExposedBy.get())) {
-                    return resolvedExposedBy;
+        if (Objects.equals(eAnnotation.getSource(), getAnnotationUri("exposedBy"))) {
+            if (eAnnotation.getDetails().containsKey(EXTENDED_METADATA_DETAILS_VALUE_KEY)) {
+                final String exposedByFqName = eAnnotation.getDetails().get(EXTENDED_METADATA_DETAILS_VALUE_KEY);
+                final Optional<EClass> resolvedExposedBy = getClassByFQName(exposedByFqName);
+                if (resolvedExposedBy.isPresent()) {
+                    if (isAccessPoint(resolvedExposedBy.get())) {
+                        return resolvedExposedBy;
+                    } else {
+                        log.error("Exposed by is not an access point: {}", exposedByFqName);
+                        return Optional.empty();
+                    }
                 } else {
-                    log.error("Exposed by is not an access point: {}", exposedByFqName);
                     return Optional.empty();
                 }
             } else {
@@ -574,14 +591,18 @@ public class AsmUtils {
     }
 
     public Optional<EAnnotation> getResolvedExposedGraph(final EAnnotation eAnnotation) {
-        if (eAnnotation.getDetails().containsKey("exposedGraph")) {
-            final String exposedGraphFqName = eAnnotation.getDetails().get("exposedGraph");
-            final Optional<EAnnotation> resolvedExposedGraph = getExposedGraphByFqName(exposedGraphFqName);
-            if (resolvedExposedGraph.isPresent()) {
-                if (isGraph(resolvedExposedGraph.get())) {
-                    return resolvedExposedGraph;
+        if (Objects.equals(eAnnotation.getSource(), getAnnotationUri("exposedGraph"))) {
+            if (eAnnotation.getDetails().containsKey(EXTENDED_METADATA_DETAILS_VALUE_KEY)) {
+                final String exposedGraphFqName = eAnnotation.getDetails().get(EXTENDED_METADATA_DETAILS_VALUE_KEY);
+                final Optional<EAnnotation> resolvedExposedGraph = getExposedGraphByFqName(exposedGraphFqName);
+                if (resolvedExposedGraph.isPresent()) {
+                    if (isGraph(resolvedExposedGraph.get())) {
+                        return resolvedExposedGraph;
+                    } else {
+                        log.error("Exposed graph is not a graph: {}", exposedGraphFqName);
+                        return Optional.empty();
+                    }
                 } else {
-                    log.error("Exposed graph is not a graph: {}", exposedGraphFqName);
                     return Optional.empty();
                 }
             } else {
@@ -589,6 +610,22 @@ public class AsmUtils {
             }
         } else {
             return Optional.empty();
+        }
+    }
+
+    public EList<EClass> getMappedTransferObjectGraph(final EClass eClass) {
+        return isMappedTransferObjectType(eClass) ?
+                getMappedTransferObjectGraph(eClass, new UniqueEList<>()) :
+                ECollections.emptyEList();
+    }
+
+    private EList<EClass> getMappedTransferObjectGraph(final EClass eClass, final EList<EClass> visited) {
+        if (visited.contains(eClass)) {
+            return visited;
+        } else {
+            visited.add(eClass);
+            eClass.getEAllReferences().forEach(target -> getMappedTransferObjectGraph(target.getEReferenceType(), visited));
+            return visited;
         }
     }
 
@@ -817,6 +854,107 @@ public class AsmUtils {
         return new BasicEList<>(all(EOperation.class)
                 .filter(op -> isExposedService(op))
                 .collect(Collectors.toList()));
+    }
+
+    public void addAccessPointAnnotationsToTransferObjectType(final EClass eClass, final String accessPointFqName) {
+        // TODO - add access point annotations to parameters recusrively
+    }
+
+    public void enrichWithAnnotations() {
+        getAllAccessPoints().forEach(accessPoint -> {
+            final String accessPointFqName = getClassifierFQName(accessPoint);
+            if (log.isDebugEnabled()) {
+                log.debug("Access point: {}", accessPointFqName);
+            }
+            getExposedServicesOfAccessPoint(accessPoint).forEach(exposedService -> {
+                if (log.isDebugEnabled()) {
+                    log.debug("  - exposed service: {}", getOperationFQName(exposedService));
+                }
+                exposedService.getEParameters().forEach(inputParameter -> {
+                    if (log.isDebugEnabled()) {
+                        log.debug("      - input parameter ({}): {}", inputParameter.getName(), getClassifierFQName(inputParameter.getEType()));
+                    }
+                    final EClassifier type = inputParameter.getEType();
+                    if ((type instanceof EClass) && (isMappedTransferObjectType((EClass) type))) {
+                        addAccessPointAnnotationsToTransferObjectType((EClass) type, accessPointFqName);
+                    }
+                });
+                if (exposedService.getEType() != null) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("      - output parameter: {}", getClassifierFQName(exposedService.getEType()));
+                    }
+                    final EClassifier type = exposedService.getEType();
+                    if ((type instanceof EClass) && (isMappedTransferObjectType((EClass) type))) {
+                        addAccessPointAnnotationsToTransferObjectType((EClass) type, accessPointFqName);
+                    }
+                }
+                exposedService.getEExceptions().forEach(faultParameter -> {
+                    if (log.isDebugEnabled()) {
+                        log.debug("      - fault parameter ({}): {}", faultParameter.getName(), getClassifierFQName(faultParameter));
+                    }
+                    final EClassifier type = faultParameter;
+                    if ((type instanceof EClass) && (isMappedTransferObjectType((EClass) type))) {
+                        addAccessPointAnnotationsToTransferObjectType((EClass) type, accessPointFqName);
+                    }
+                });
+            });
+            getGraphListOfAccessPoint(accessPoint).forEach(exposedGraph -> {
+                final String exposedGraphFqName = accessPointFqName + "/" + getGraphName(exposedGraph).orElse("");
+                if (log.isDebugEnabled()) {
+                    log.debug("  - exposed graph: {}", exposedGraphFqName);
+                }
+
+                final String rootFqName = exposedGraph.getDetails().get("root");
+                if (rootFqName != null) {
+                    final Optional<EClass> root = getClassByFQName(rootFqName);
+                    if (root.isPresent()) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("    - root: {}", rootFqName);
+                        }
+
+                        getMappedTransferObjectGraph(root.get()).forEach(mappedTransferObjectType -> {
+                            if (log.isDebugEnabled()) {
+                                log.debug("    - mapped transfer object type: {}", getClassifierFQName(mappedTransferObjectType));
+                            }
+                            final Optional<EClass> entityType = getMappedEntityType(mappedTransferObjectType);
+                            if (entityType.isPresent()) {
+                                if (log.isDebugEnabled()) {
+                                    log.debug("      - entity type: {}", getClassifierFQName(entityType.get()));
+                                }
+
+                                addExtensionAnnotation(mappedTransferObjectType, "accessPoint", accessPointFqName);
+                                addExtensionAnnotation(mappedTransferObjectType, "exposedGraph", exposedGraphFqName);
+
+                                mappedTransferObjectType.getEAllOperations().forEach(boundOperation -> {
+                                    if (log.isDebugEnabled()) {
+                                        log.debug("    - bound operation: ", getOperationFQName(boundOperation));
+                                    }
+
+                                    addExtensionAnnotation(mappedTransferObjectType, "accessPoint", accessPointFqName);
+                                    addExtensionAnnotation(boundOperation, "exposedGraph", exposedGraphFqName);
+
+                                    boundOperation.getEParameters().forEach(inputParameter -> {
+                                        if (log.isDebugEnabled()) {
+                                            log.debug("        - input parameter ({}): {}", inputParameter.getName(), getClassifierFQName(inputParameter.getEType()));
+                                        }
+                                    });
+                                    if (boundOperation.getEType() != null) {
+                                        if (log.isDebugEnabled()) {
+                                            log.debug("        - output parameter: {}", getClassifierFQName(boundOperation.getEType()));
+                                        }
+                                    }
+                                    boundOperation.getEExceptions().forEach(faultParameter -> {
+                                        if (log.isDebugEnabled()) {
+                                            log.debug("        - fault parameter ({}): {}", faultParameter.getName(), getClassifierFQName(faultParameter));
+                                        }
+                                    });
+                                });
+                            }
+                        });
+                    }
+                }
+            });
+        });
     }
 
     static boolean isTimestampJavaUtilDate(final EDataType eDataType) {

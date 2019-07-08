@@ -91,7 +91,8 @@
                             </resources>
                         </configuration>
                     </execution>
-                </executions>            </plugin>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -148,8 +149,7 @@
                         </Import-Package>
                         <Include-Resource>
                             {maven-resources},
-                            meta/asm=model,
-                            judo/asm/operations=src/main/epsilon/operations/asm
+                            meta/asm=model
                         </Include-Resource>
                     </instructions>
                 </configuration>
