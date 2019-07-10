@@ -862,6 +862,7 @@ public class AsmUtils {
             eClass.getEAllReferences().forEach(eReference -> addExposedByAnnotationToTransferObjectType(eReference.getEReferenceType(), accessPointFqName));
 
             eClass.getEAllAttributes().forEach(eAttribute -> addExtensionAnnotation(eAttribute, "exposedBy", accessPointFqName));
+            eClass.getEAllReferences().forEach(eReference-> addExtensionAnnotation(eReference, "exposedBy", accessPointFqName));
         }
     }
 
