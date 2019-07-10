@@ -481,7 +481,7 @@ public class AsmUtils {
 
     public boolean isUnbound(final EOperation eOperation) {
         // TODO - is it really enough to check interface flag? (bound services must be part of mapped transfer object types
-        return eOperation.getEContainingClass() != null && eOperation.getEContainingClass().isInterface();
+        return eOperation.getEContainingClass() != null && eOperation.getEContainingClass().isInterface() && !getContainerClass(eOperation.getEContainingClass()).isPresent();
     }
 
     public static boolean isEntityType(final EClass eClass) {
@@ -899,6 +899,7 @@ public class AsmUtils {
                         if (log.isDebugEnabled()) {
                             log.debug("        - built-in operation: {}", getOperationFQName(builtInOperation));
                         }
+                        addExtensionAnnotation(builtInOperation, "exposedBy", accessPointFqName);
                         addExtensionAnnotation(builtInOperation, "exposedGraph", exposedGraphFqName);
 
                         builtInOperation.getEParameters().forEach(inputParameter -> {
@@ -945,6 +946,7 @@ public class AsmUtils {
                         log.debug("    - bound operation: ", getOperationFQName(boundOperation));
                     }
 
+                    addExtensionAnnotation(boundOperation, "exposedBy", exposedGraphFqName);
                     addExtensionAnnotation(boundOperation, "exposedGraph", exposedGraphFqName);
 
                     boundOperation.getEParameters().forEach(inputParameter -> {
