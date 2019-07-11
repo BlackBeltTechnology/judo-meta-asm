@@ -1,53 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="northwind" nsURI="http://blackbelt.hu/judo/northwind/northwind" nsPrefix="runtimenorthwindNorthwind">
   <eClassifiers xsi:type="ecore:EClass" name="internalAP" abstract="true" interface="true">
-    <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
-      <details key="accessPoint" value="true"/>
+    <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata/accessPoint">
+      <details key="value" value="true"/>
     </eAnnotations>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="externalAP" abstract="true" interface="true">
-    <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
-      <details key="accessPoint" value="true"/>
+    <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata/accessPoint">
+      <details key="value" value="true"/>
     </eAnnotations>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="internalAPʘordersAssignedToEmployee" abstract="true" interface="true">
-    <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
-      <details key="exposedBy" value="northwind.internalAP"/>
-      <details key="root" value="northwind.services.OrderInfo"/>
-      <details key="root.collection" value="true"/>
-      <details key="selector" value="ordersAssignedToEmployee"/>
+    <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+      <details key="value" value="northwind.internalAP"/>
+    </eAnnotations>
+    <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata/root">
+      <details key="value" value="northwind.services.OrderInfo"/>
+      <details key="collection" value="true"/>
+    </eAnnotations>
+    <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata/selector">
+      <details key="value" value="ordersAssignedToEmployee"/>
     </eAnnotations>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="externalAPʘproducts" abstract="true" interface="true">
-    <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+    <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
       <details key="exposedBy" value="northwind.externalAP"/>
-      <details key="root" value="northwind.services.ProductInfo"/>
-      <details key="root.collection" value="true"/>
-      <details key="selector" value="allProducts"/>
+    </eAnnotations>
+    <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata/root">
+      <details key="value" value="northwind.services.ProductInfo"/>
+      <details key="collection" value="true"/>
+    </eAnnotations>
+    <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata/selector">
+      <details key="value" value="allProducts"/>
     </eAnnotations>
   </eClassifiers>
   <eClassifiers xsi:type="ecore:EClass" name="externalAPʘcategories" abstract="true" interface="true">
-    <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
+    <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
       <details key="exposedBy" value="northwind.externalAP"/>
-      <details key="root" value="northwind.services.CategoryInfo"/>
-      <details key="root.collection" value="true"/>
-      <details key="selector" value="allCategories"/>
+    </eAnnotations>
+    <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata/root">
+      <details key="value" value="northwind.services.CategoryInfo"/>
+      <details key="collection" value="true"/>
+    </eAnnotations>
+    <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata/selector">
+      <details key="value" value="allCategories"/>
     </eAnnotations>
   </eClassifiers>
   <eSubpackages name="services" nsURI="http://blackbelt.hu/judo/northwind/northwind/services" nsPrefix="runtimenorthwindNorthwindServices">
     <eClassifiers xsi:type="ecore:EClass" name="ʘUnboundServices" abstract="true" interface="true">
       <eOperations name="getAllOrders" upperBound="-1" eType="//services/OrderInfo">
-        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
-          <details key="stateful" value="false"/>
-          <details key="exposedBy" value="northwind.internalAP"/>
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details key="value" value="false"/>
+        </eAnnotations>
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details key="value" value="northwind.internalAP"/>
         </eAnnotations>
       </eOperations>
     </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="OrderInfo">
-      <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
-        <details key="mappedEntityType" value="northwind.entities.Order"/>
+      <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata/mappedEntityType">
+        <details key="value" value="northwind.entities.Order"/>
         <details key="entityIdPresence" value="OPTIONAL"/>
-        <details key="graphs.0" value="northwind.internalAPʘordersAssignedToEmployee"/>
+      </eAnnotations>
+      <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata/graph">
+        <details key="value" value="northwind.internalAPʘordersAssignedToEmployee"/>
       </eAnnotations>
       <eOperations name="get" eType="//services/OrderInfo">
         <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
@@ -69,16 +85,16 @@
         </eAnnotations>
       </eStructuralFeatures>
       <eStructuralFeatures xsi:type="ecore:EReference" name="items" upperBound="-1" eType="//services/OrderItem" containment="true">
-        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
-          <details key="mappedReference" value="orderDetails"/>
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata/mappedReference">
+          <details key="value" value="orderDetails"/>
         </eAnnotations>
       </eStructuralFeatures>
       <eStructuralFeatures xsi:type="ecore:EReference" name="comments" upperBound="-1" eType="//services/Comment" containment="true">
         <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata"/>
       </eStructuralFeatures>
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="orderDate" lowerBound="1">
-        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
-          <details key="mappedAttribute" value="orderDate"/>
+        <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata/mappedAttribute">
+          <details key="value" value="orderDate"/>
         </eAnnotations>
         <eType xsi:type="ecore:EDataType" href="http://blackbelt.hu/judo/asm/types#//JTimestamp"/>
       </eStructuralFeatures>
@@ -476,8 +492,8 @@
       </eStructuralFeatures>
     </eClassifiers>
     <eClassifiers xsi:type="ecore:EClass" name="Order">
-      <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata">
-        <details key="entity" value="true"/>
+      <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata/entity">
+        <details key="value" value="true"/>
       </eAnnotations>
       <eSuperTypes href="http://blackbelt.hu/judo/asm/base#//Identifiable"/>
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="shipperName" volatile="true" unsettable="true" derived="true">

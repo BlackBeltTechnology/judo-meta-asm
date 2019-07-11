@@ -1,6 +1,5 @@
-package hu.blackbelt.judo.meta.asm;
+package hu.blackbelt.judo.meta.asm.runtime;
 
-import hu.blackbelt.judo.meta.asm.runtime.AsmUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.*;
@@ -45,24 +44,13 @@ public class AnnotationTests {
     }
 
     @Test
-    public void testGetAnnotation() {
-        final EClass order = (EClass) resourceSet.getResources().get(0).getEObject("//entities/Order");
-
-        final Map.Entry<String, String> annotationDetailsEntry = order.getEAnnotations().iterator().next().getDetails().entrySet().iterator().next();
-        final Optional<EAnnotation> eAnnotation = asmUtils.getAnnotation(annotationDetailsEntry);
-
-        assertTrue(eAnnotation.isPresent());
-        Assert.assertEquals(AsmUtils.extendedMetadataUri, eAnnotation.get().getSource());
-    }
-
-    @Test
     public void testGetExtensionAnnotationExisting() {
         final EClass order = (EClass) resourceSet.getResources().get(0).getEObject("//entities/Order");
 
-        final Optional<EAnnotation> existing = asmUtils.getExtensionAnnotation(order, false);
+        final Optional<EAnnotation> existing = asmUtils.getExtensionAnnotationByName(order, "entity", false);
 
         assertTrue(existing.isPresent());
-        assertTrue(Boolean.valueOf(existing.get().getDetails().get("entity")));
+        assertTrue(Boolean.valueOf(existing.get().getDetails().get(AsmUtils.EXTENDED_METADATA_DETAILS_VALUE_KEY)));
     }
 
     public void testGetExtensionAnnotationNotExistingButCreated() {
@@ -95,7 +83,7 @@ public class AnnotationTests {
     public void testClassFQName() {
         final EClass orderInfo = (EClass) resourceSet.getResources().get(0).getEObject("//services/OrderInfo");
 
-        assertThat(asmUtils.getClassFQName(orderInfo), equalTo("northwind.services.OrderInfo"));
+        assertThat(asmUtils.getClassifierFQName(orderInfo), equalTo("northwind.services.OrderInfo"));
     }
 
 

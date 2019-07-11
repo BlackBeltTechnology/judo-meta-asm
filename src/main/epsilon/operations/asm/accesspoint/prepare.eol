@@ -1,27 +1,27 @@
 // add (derived) access point annotations recursively to EClass (classes that are navigable via references)
 operation ASM!EClass addAccessPointAnnotation(accessPointName : String) {
-    self.addAnnotationIfNotExists(".accessPoints.", accessPointName);
+    asmUtilsaddAnnotationIfNotExists(self, ".accessPoints.", accessPointName);
     
     for (r in self.eAllReferences.select(r | r.containment)) {
-        var annotation = r.eType.getExtensionAnnotation(false);
-        if (annotation.isDefined() and not annotation.details.selectOne(d | d.key.startsWith(".accessPoints.") and d.value = accessPointName).isDefined()) {
+        var annotation = asmUtils.getExtensionAnnotation(r.eType, false);
+        if (annotation.isPresent() and not annotation.get().details.selectOne(d | d.key.startsWith(".accessPoints.") and d.value = accessPointName).isDefined()) {
             r.eType.addAccessPointAnnotation(accessPointName);
         }
     }
 }
 
 operation addTransferObjectAnnotations(type : ASM!EClass, accessPointName : String, includeFeatures: Boolean) {
-    type.addAnnotationIfNotExists(".accessPoints.", accessPointName);
-    type.getEntityType().addAnnotationIfNotExists(".accessPoints.", accessPointName);
+    asmUtils.addAnnotationIfNotExists(type, ".accessPoints.", accessPointName);
+    asmUtils.addAnnotationIfNotExists(asmUtils.getEntityType(type).get(), ".accessPoints.", accessPointName);
 
     if (includeFeatures) {
 	    for (a in type.eAttributes) {
-	        log.debug("      - attribute: " + a.getFQName());
-	        a.addAnnotationIfNotExists(".accessPoints.", accessPointName);
+	        log.debug("      - attribute: " + asmUtils.getAttributeFQName(a));
+	        asmUtils.addAnnotationIfNotExists(a, ".accessPoints.", accessPointName);
 	    }
 	    for (r in type.eReferences) {
-	        log.debug("      - reference: " + r.getFQName());
-	        r.addAnnotationIfNotExists(".accessPoints.", accessPointName);
+	        log.debug("      - reference: " + asmUtils.getReferenceFQName(r));
+	        asmUtils.addAnnotationIfNotExists(r, ".accessPoints.", accessPointName);
 
             addTransferObjectAnnotations(r.eType, accessPointName, r.containment);
 	    }
@@ -32,16 +32,16 @@ operation addTransferObjectAnnotations(type : ASM!EClass, accessPointName : Stri
 operation addGraphAndAccessPointAnnotations() {
     // add graphs and access point annotations to transfer object relations and built-in operations
     for (g in getAllExposedGraphs()) {
-        var accessPointName = g.getResolvedExposedBy().getFQName();
+        var accessPointName = asmUtils.getClassifierFQName(g.getResolvedExposedBy());
         
-        log.debug("Exposed graph: " + g.getFQName());
+        log.debug("Exposed graph: " + asmUtils.getClassifierFQName(g));
         log.debug("  - access point: " + accessPointName);
-        log.debug("  - mapped transfer object types: " + g.getExposedMappedTransferObjectTypes().collect(t | t.getFQName()));
+        log.debug("  - mapped transfer object types: " + g.getExposedMappedTransferObjectTypes().collect(t | asmUtils.getClassifierFQName(t)));
 
         // TODO - expose bound services
         /*for (o in g.getExposedOperations()) {
             log.debug("  - exposed operation: " + o.getFQName());
-            o.addAnnotationIfNotExists(".graphs.", g.getFQName());
+            asmUtils.addAnnotationIfNotExists(o, ".graphs.", g.getFQName());
             
             if (o.eType.isDefined()) {
                 log.debug("    - return type: " + o.eType.getFQName());
@@ -50,33 +50,33 @@ operation addGraphAndAccessPointAnnotations() {
             
             for (p in o.eParameters.select(p | p.eType.isDefined())) {
                 log.debug("    - parameter: " + p.name + ", type: " + p.eType.getFQName());
-                p.addAnnotationIfNotExists(".accessPoints.", accessPointName);
+                asmUtils.addAnnotationIfNotExists(p, ".accessPoints.", accessPointName);
                 addTransferObjectAnnotations(p.eType, g.getResolvedExposedBy().getFQName(), true);
             }
         }*/
     }
 
     for (ap in getAllAccessPoints()) {
-        log.debug("Access point: " + ap.getFQName());
+        log.debug("Access point: " + asmUtils.getClassifierFQName(ap));
         
         for (transferObject in ap.getExposedMappedTransferObjectTypes()) {
-            log.debug("  - transfer object type: " + transferObject.getFQName());
-            addTransferObjectAnnotations(transferObject, ap.getFQName(), true);
+            log.debug("  - transfer object type: " + asmUtils.getClassifierFQName(transferObject));
+            addTransferObjectAnnotations(transferObject, asmUtils.getClassifierFQName(ap), true);
         }
 
         for (exposedService in ap.getExposedServices()) {
-            log.debug("  - exposed service: " + exposedService.getFQName());
-            exposedService.addAnnotationIfNotExists(".accessPoints.", ap.getFQName());
+            log.debug("  - exposed service: " + asmUtils.getOperationFQName(exposedService));
+            asmUtils.addAnnotationIfNotExists(exposedService, ".accessPoints.", asmUtils.getClassifierFQName(ap));
             
             if (exposedService.eType.isDefined()) {
-                log.debug("    - return type: " + exposedService.eType.getFQName());
-                addTransferObjectAnnotations(exposedService.eType, ap.getFQName(), true);
+                log.debug("    - return type: " + asmUtils.getClassifierFQName(exposedService.eType));
+                addTransferObjectAnnotations(exposedService.eType, asmUtils.getClassifierFQName(ap), true);
             }
             
             for (p in exposedService.eParameters.select(p | p.eType.isDefined())) {
-                log.debug("    - parameter: " + p.name + ",  type: " + p.eType.getFQName());
-                p.addAnnotationIfNotExists(".accessPoints.", ap.getFQName());
-                addTransferObjectAnnotations(p.eType, ap.getFQName(), true);
+                log.debug("    - parameter: " + p.name + ",  type: " + asmUtils.getClassifierFQName(p.eType));
+                asmUtils.addAnnotationIfNotExists(p, ".accessPoints.", asmUtils.getClassifierFQName(ap));
+                addTransferObjectAnnotations(p.eType, asmUtils.getClassifierFQName(ap), true);
             }
         }
     }
