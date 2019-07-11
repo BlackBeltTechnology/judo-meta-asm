@@ -466,22 +466,46 @@ public class AsmUtils {
      * @return <code>true</code> if operation is bound (to transfer object type), <code>false</code> otherwise
      */
     public boolean isBound(final EOperation eOperation) {
-        return isMappedTransferObjectType(eOperation.getEContainingClass());
+        return isMappedTransferObjectType(eOperation.getEContainingClass()) || isBuiltInOperation(eOperation);
     }
 
+    /**
+     * Check if an class is container of built-in operations.
+     *
+     * Containers are nested class of transfer object types.
+     *
+     * @param eClass class
+     * @return <code>true</code> if class is container of built-in operations, <code>false</code> otherwise.
+     */
     public boolean isBuiltInOperationGroup(final EClass eClass) {
         final Optional<EClass> containerClass = getContainerClass(eClass);
 
         return eClass.isInterface() && containerClass.isPresent() && isMappedTransferObjectType(containerClass.get());
     }
 
+    /**
+     * Check if an operation is built-in.
+     *
+     * Built-in operations are operations created for graph navigation and wiring (set/unset/add/remove references). Container class of built-in operations are nested classes.
+     *
+     * @param eOperation operation
+     * @return <code>true</code> if operation is built-in, <code>false</code> otherwise.
+     */
     public boolean isBuiltInOperation(final EOperation eOperation) {
         return (eOperation.getEContainingClass() != null) && isBuiltInOperationGroup(eOperation.getEContainingClass());
     }
 
+    /**
+     * Check if an operation is unbound.
+     *
+     * Unbound operations must be interfaces and container class must not be mapped transfer object type nor nested class.
+     *
+     * @param eOperation operation
+     * @return <code>true</code> if operation is unbound, <code>false</code> otherwise.
+     */
     public boolean isUnbound(final EOperation eOperation) {
         // TODO - is it really enough to check interface flag? (bound services must be part of mapped transfer object types
-        return eOperation.getEContainingClass() != null && eOperation.getEContainingClass().isInterface() && !getContainerClass(eOperation.getEContainingClass()).isPresent();
+        return eOperation.getEContainingClass() != null && eOperation.getEContainingClass().isInterface() && !getContainerClass(eOperation.getEContainingClass()).isPresent() && !isMappedTransferObjectType(eOperation.getEContainingClass());
     }
 
     public static boolean isEntityType(final EClass eClass) {
