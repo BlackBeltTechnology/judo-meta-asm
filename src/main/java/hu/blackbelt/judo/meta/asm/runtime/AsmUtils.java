@@ -115,7 +115,7 @@ public class AsmUtils {
      * Resolve a name to get a classifier. Fully qualified names are checked first, searching by name in second turn.
      *
      * @param fqName name to resolve
-     * @return resolved classifier
+     * @return resolved classifier (if found)
      */
     public Optional<EClassifier> resolve(final String fqName) {
         final Optional<EClassifier> resolved = all(EClassifier.class)
@@ -136,7 +136,7 @@ public class AsmUtils {
      * Returns the EClass of the given fully qualified name.
      *
      * @param fqName Fully qualified name
-     * @return the EClass instance of the given name
+     * @return the EClass instance of the given name (if found and resolved)
      */
     public Optional<EClass> getClassByFQName(final String fqName) {
         final Optional<EClassifier> classifier = resolve(fqName);
@@ -168,7 +168,7 @@ public class AsmUtils {
      * Get container class of a nested class.
      *
      * @param eClass nested class
-     * @return container class
+     * @return container class (or null if eClass is not nested)
      */
     public Optional<EClass> getContainerClass(final EClass eClass) {
         return all(EClass.class)
@@ -194,7 +194,7 @@ public class AsmUtils {
      * @param eModelElement     model element
      * @param annotationName    annotation name
      * @param createIfNotExists create annotation is not exists yet
-     * @return JUDO extension annotation
+     * @return JUDO extension annotation (or null if createIfNotExists flag is <code>false</code> and annotation not exists yet)
      */
     public static Optional<EAnnotation> getExtensionAnnotationByName(final EModelElement eModelElement, final String annotationName, final boolean createIfNotExists) {
         final Optional<EAnnotation> annotation = getExtensionAnnotationsAsStreamByName(eModelElement, annotationName).findAny();
@@ -274,6 +274,7 @@ public class AsmUtils {
      * @param annotation annotation
      * @return owner Ecore class
      */
+    @Deprecated
     public Optional<EClass> getAnnotatedClass(final EAnnotation annotation) {
         final EModelElement eModelElement = annotation.getEModelElement();
         if (eModelElement != null && eModelElement instanceof EClass) {
@@ -289,6 +290,7 @@ public class AsmUtils {
      * @param annotation annotation
      * @return owner Ecore attribute
      */
+    @Deprecated
     public Optional<EAttribute> getAnnotatedAttribute(final EAnnotation annotation) {
         final EModelElement eModelElement = annotation.getEModelElement();
         if (eModelElement != null && eModelElement instanceof EAttribute) {
@@ -304,6 +306,7 @@ public class AsmUtils {
      * @param annotation annotation
      * @return owner Ecore reference
      */
+    @Deprecated
     public Optional<EReference> getAnnotatedReference(final EAnnotation annotation) {
         final EModelElement eModelElement = annotation.getEModelElement();
         if (eModelElement != null && eModelElement instanceof EReference) {
@@ -319,6 +322,7 @@ public class AsmUtils {
      * @param annotation annotation
      * @return owner Ecore operation
      */
+    @Deprecated
     public Optional<EOperation> getAnnotatedOperation(final EAnnotation annotation) {
         final EModelElement eModelElement = annotation.getEModelElement();
         if (eModelElement != null && eModelElement instanceof EOperation) {
@@ -334,6 +338,7 @@ public class AsmUtils {
      * @param annotation annotation
      * @return owner Ecore parameter
      */
+    @Deprecated
     public Optional<EParameter> getAnnotatedParameter(final EAnnotation annotation) {
         final EModelElement eModelElement = annotation.getEModelElement();
         if (eModelElement != null && eModelElement instanceof EParameter) {
@@ -420,6 +425,12 @@ public class AsmUtils {
         return value.isPresent() && !Boolean.valueOf(value.get());
     }
 
+    /**
+     * Get mapped entity type of a mapped transfer object type.
+     *
+     * @param eClass class of mapped transfer object type
+     * @return mapped entity type (or null if no mappedEntityType annotation found nor it represents a valid entity type)
+     */
     public Optional<EClass> getMappedEntityType(final EClass eClass) {
         final Optional<String> mappedEntityTypeFQName = getExtensionAnnotationValue(eClass, "mappedEntityType", false);
         if (mappedEntityTypeFQName.isPresent()) {
@@ -508,18 +519,44 @@ public class AsmUtils {
         return eOperation.getEContainingClass() != null && eOperation.getEContainingClass().isInterface() && !getContainerClass(eOperation.getEContainingClass()).isPresent() && !isMappedTransferObjectType(eOperation.getEContainingClass());
     }
 
+    /**
+     * Check if a class represents an entity type.
+     *
+     * @param eClass class
+     * @return <code>true</code> if class is an entity type, <code>false</code> otherwise
+     */
     public static boolean isEntityType(final EClass eClass) {
         return annotatedAsTrue(eClass, "entity");
     }
 
+    /**
+     * Check if a class represents a mapped transfer object type.
+     *
+     * @param eClass class
+     * @return <code>true</code> if class is a mapped transfer object type, <code>false</code> otherwise
+     */
     public boolean isMappedTransferObjectType(final EClass eClass) {
         return getMappedEntityType(eClass).isPresent();
     }
 
+    /**
+     * Check if a class represents an access point.
+     *
+     * @param eClass class
+     * @return <code>true</code> if class is an access point, <code>false</code> otherwise
+     */
     public static boolean isAccessPoint(final EClass eClass) {
         return annotatedAsTrue(eClass, "accessPoint");
     }
 
+    /**
+     * Get resolved exposed by annotation.
+     *
+     * Exposed by must be an access point.
+     *
+     * @param eAnnotation annotation
+     * @return access point (or null if no exposedBy annotation found nor it is a valid access point)
+     */
     public Optional<EClass> getResolvedExposedBy(final EAnnotation eAnnotation) {
         if (Objects.equals(eAnnotation.getSource(), getAnnotationUri("exposedBy"))) {
             if (eAnnotation.getDetails().containsKey(EXTENDED_METADATA_DETAILS_VALUE_KEY)) {
@@ -543,6 +580,12 @@ public class AsmUtils {
         }
     }
 
+    /**
+     * Get list of access points exposing an unbound operation.
+     *
+     * @param eOperation  unbound operation
+     * @return list of access points (empty list is returned if eOperation is not bound)
+     */
     public EList<EClass> getAccessPointsOfUnboundOperation(final EOperation eOperation) {
         return isUnbound(eOperation) ?
                 new BasicEList<>(eOperation.getEAnnotations().stream()
@@ -553,6 +596,12 @@ public class AsmUtils {
                 ECollections.emptyEList();
     }
 
+    /**
+     * Get list of exposed services (unbound operations) of an access point.
+     *
+     * @param eClass access point
+     * @return list of exposed services (empty list is returned if eClass is not an access point).
+     */
     public EList<EOperation> getExposedServicesOfAccessPoint(final EClass eClass) {
         return isAccessPoint(eClass) ?
                 new BasicEList<>(all(EOperation.class)
@@ -562,10 +611,22 @@ public class AsmUtils {
                 ECollections.emptyEList();
     }
 
+    /**
+     * Check if an operation is exposed by an access point.
+     *
+     * @param eOperation operation
+     * @return <code>true</code> is operation is exposed by an access point, <code>false</code> otherwise
+     */
     public boolean isExposedService(final EOperation eOperation) {
         return !getAccessPointsOfUnboundOperation(eOperation).isEmpty();
     }
 
+    /**
+     * Get resolved root.
+     *
+     * @param eAnnotation annotation (representing an exposed graph)
+     * @return mapped transfer object type (root) of an exposed graph (or null if root is not resolved)
+     */
     public Optional<EClass> getResolvedRoot(final EAnnotation eAnnotation) {
         final String root = eAnnotation.getDetails().get("root");
         final Optional<EClass> resolvedRoot = root != null ? getClassByFQName(root) : Optional.empty();
@@ -581,17 +642,35 @@ public class AsmUtils {
         }
     }
 
+    /**
+     * Check if an annotaion represents an exposed graph.
+     *
+     * @param eAnnotation annotation
+     * @return <code>true</code> if annotation represents an exposed graph, <code>false</code> otherwise
+     */
     public boolean isGraph(final EAnnotation eAnnotation) {
         final Optional<EClass> root = getResolvedRoot(eAnnotation);
         return Objects.equals(eAnnotation.getSource(), getAnnotationUri("graph")) && root.isPresent();
     }
 
+    /**
+     * Get access point of a graph.
+     *
+     * @param eAnnotation annotation (representing an exposed graph)
+     * @return access point of the exposed graph
+     */
     public Optional<EClass> getAccessPointOfGraph(final EAnnotation eAnnotation) {
         return isGraph(eAnnotation) ?
                 Optional.of((EClass) eAnnotation.getEModelElement()) :
                 Optional.empty();
     }
 
+    /**
+     * Get list of exposed graphs of an access point.
+     *
+     * @param eClass class (representing an access point)
+     * @return list of access points (empty list is returned is class is not an access point)
+     */
     public EList<EAnnotation> getGraphListOfAccessPoint(final EClass eClass) {
         return isAccessPoint(eClass) ?
                 new BasicEList<>(eClass.getEAnnotations().stream()
@@ -600,10 +679,22 @@ public class AsmUtils {
                 ECollections.emptyEList();
     }
 
+    /**
+     * Get name of a graph.
+     *
+     * @param eAnnotation annotation (representing a graph)
+     * @return name of the graph (or null is annotation is not an exposed graph)
+     */
     public Optional<String> getGraphName(final EAnnotation eAnnotation) {
         return isGraph(eAnnotation) ? Optional.ofNullable(eAnnotation.getDetails().get(EXTENDED_METADATA_DETAILS_VALUE_KEY)) : Optional.empty();
     }
 
+    /**
+     * Get exposed graph by fully qualified name.
+     *
+     * @param fqName fully qualified name of an exposed graph.
+     * @return exposed graph (if found and resolved), null otherwise
+     */
     public Optional<EAnnotation> getExposedGraphByFqName(final String fqName) {
         final Matcher m = EXPOSED_GRAPH_PATTERN.matcher(fqName);
         if (m.matches()) {
@@ -624,6 +715,11 @@ public class AsmUtils {
         }
     }
 
+    /**
+     * Get exposed graph of an annotation
+     * @param eAnnotation annotation
+     * @return exposed graph represented by the given annotation (or null is graph is not defined by the given annotation nor if can be resolved)
+     */
     public Optional<EAnnotation> getResolvedExposedGraph(final EAnnotation eAnnotation) {
         if (Objects.equals(eAnnotation.getSource(), getAnnotationUri("exposedGraph"))) {
             if (eAnnotation.getDetails().containsKey(EXTENDED_METADATA_DETAILS_VALUE_KEY)) {
@@ -647,12 +743,25 @@ public class AsmUtils {
         }
     }
 
+    /**
+     * Get list of mapped transfer object types that are available via target links (recursively) of a given mapped transfer object  type (ie. root of graph).
+     *
+     * @param eClass class (representing a mapped transfer object type)
+     * @return list of mapped transfer object types (empty list is returned if class is not a mapped transfer object type)
+     */
     public EList<EClass> getMappedTransferObjectGraph(final EClass eClass) {
         return isMappedTransferObjectType(eClass) ?
                 getMappedTransferObjectGraph(eClass, new UniqueEList<>()) :
                 ECollections.emptyEList();
     }
 
+    /**
+     * Add (and return) list of mapped transfer object types that are available via target links (recursively) of a given mapped transfer object type to visited list.
+     *
+     * @param eClass class (representing a mapped transfer object type)
+     * @param visited list of navigable mapped transfer object types
+     * @return return visited list
+     */
     private EList<EClass> getMappedTransferObjectGraph(final EClass eClass, final EList<EClass> visited) {
         if (visited.contains(eClass)) {
             return visited;
@@ -663,6 +772,12 @@ public class AsmUtils {
         }
     }
 
+    /**
+     * Return list of exposed graph in which a mapped transfer object type is exposed.
+     *
+     * @param eClass class (representing a mapped transfer object type)
+     * @return list of exposed graphs (empty list is returned is class is not a mapped transfer object type)
+     */
     public EList<EAnnotation> getExposedGraphsOfMappedTransferObjectType(final EClass eClass) {
         return isMappedTransferObjectType(eClass) ?
                 new BasicEList<>(eClass.getEAnnotations().stream()
@@ -673,6 +788,12 @@ public class AsmUtils {
                 ECollections.emptyEList();
     }
 
+    /**
+     * Get all mapped transfer object types of an access point.
+     *
+     * @param eClass class (representing an access point)
+     * @return list of all mapped transfer object types exposed by exposed graphs of the given access point
+     */
     public EList<EClass> getMappedTransferObjectTypesOfAccessPoint(final EClass eClass) {
         return isAccessPoint(eClass) ?
                 new BasicEList<>(getGraphListOfAccessPoint(eClass).stream()
@@ -681,6 +802,12 @@ public class AsmUtils {
                 ECollections.emptyEList();
     }
 
+    /**
+     * Get list of mapped transfer object types that are available in the given exposed graph.
+     *
+     * @param eAnnotation annotation (representing a graph)
+     * @return list of mapped transfer object types (empty list is returned if annotation is not a graph)
+     */
     public EList<EClass> getMappedTransferObjectTypesOfGraph(final EAnnotation eAnnotation) {
         return isGraph(eAnnotation) ?
                 new BasicEList<>(all(EClass.class)
@@ -690,12 +817,22 @@ public class AsmUtils {
                 ECollections.emptyEList();
     }
 
+    /**
+     * Get all stateless operations.
+     *
+     * @return list of operations
+     */
     public EList<EOperation> getAllStatelessOperations() {
         return new BasicEList<>(all(EOperation.class)
                 .filter(o -> isStateless(o))
                 .collect(Collectors.toList()));
     }
 
+    /**
+     * Get all stateful operations (including build-in operations).
+     *
+     * @return list of operations
+     */
     public EList<EClass> getAllMappedTransferObjectTypes() {
         return new BasicEList<>(all(EClass.class)
                 .filter(c -> isMappedTransferObjectType(c))
@@ -707,7 +844,7 @@ public class AsmUtils {
      * the given attribute name also.
      *
      * @param type The given EAttibute type.
-     * @return
+     * @return mapped attribute
      */
     public Optional<EAttribute> getMappedAttribute(EAttribute type) {
         Optional<String> mappedAttributeName = getExtensionAnnotationValue(type, "mappedAttribute", false);
@@ -734,7 +871,7 @@ public class AsmUtils {
      * the given reference name also.
      *
      * @param type The given EReference type.
-     * @return
+     * @return mapped reference
      */
     public Optional<EReference> getMappedReference(EReference type) {
         Optional<String> mappedReferenceName = getExtensionAnnotationValue(type, "mappedReference", false);
@@ -872,34 +1009,61 @@ public class AsmUtils {
         return eDataType instanceof EEnum;
     }
 
+    /**
+     * Get all access points.
+     *
+     * @return access points
+     */
     public EList<EClass> getAllAccessPoints() {
         return new BasicEList<>(all(EClass.class)
                 .filter(c -> isAccessPoint(c))
                 .collect(Collectors.toList()));
     }
 
+    /**
+     * Get all graphs.
+     *
+     * @return graphs
+     */
     public EList<EAnnotation> getAllGraphs() {
         return new BasicEList<>(all(EAnnotation.class)
                 .filter(a -> isGraph(a))
                 .collect(Collectors.toList()));
     }
 
+    /**
+     * Get all exposed services.
+     *
+     * @return exposed services
+     */
     public EList<EOperation> getAllExposedServices() {
         return new BasicEList<>(all(EOperation.class)
                 .filter(op -> isExposedService(op))
                 .collect(Collectors.toList()));
     }
 
-    void addExposedByAnnotationToTransferObjectType(final EClass mappedTransferObjectType, final String accessPointFqName) {
-        final boolean added = addExtensionAnnotation(mappedTransferObjectType, "exposedBy", accessPointFqName);
+    /**
+     * Add exposed by annotation to (both mapped an unmapped) transfer object types.
+     *
+     * @param transferObjectType transfer object type
+     * @param accessPointFqName  fully qualified name of the access point
+     */
+    void addExposedByAnnotationToTransferObjectType(final EClass transferObjectType, final String accessPointFqName) {
+        final boolean added = addExtensionAnnotation(transferObjectType, "exposedBy", accessPointFqName);
         if (added) {
-            mappedTransferObjectType.getEAllReferences().forEach(eReference -> addExposedByAnnotationToTransferObjectType(eReference.getEReferenceType(), accessPointFqName));
+            transferObjectType.getEAllReferences().forEach(eReference -> addExposedByAnnotationToTransferObjectType(eReference.getEReferenceType(), accessPointFqName));
 
-            mappedTransferObjectType.getEAllAttributes().forEach(eAttribute -> addExtensionAnnotation(eAttribute, "exposedBy", accessPointFqName));
-            mappedTransferObjectType.getEAllReferences().forEach(eReference-> addExtensionAnnotation(eReference, "exposedBy", accessPointFqName));
+            transferObjectType.getEAllAttributes().forEach(eAttribute -> addExtensionAnnotation(eAttribute, "exposedBy", accessPointFqName));
+            transferObjectType.getEAllReferences().forEach(eReference-> addExtensionAnnotation(eReference, "exposedBy", accessPointFqName));
         }
     }
 
+    /**
+     * Add exposed by and exposed graph annotations to mapped transfer object type.
+     * @param mappedTransferObjectType mapped transfer object type
+     * @param accessPointFqName        fully qualified name of the access point
+     * @param exposedGraphFqName       fully qualified name of the exposed graph
+     */
     void addExposedGraphAnnotationToTransferObjectType(final EClass mappedTransferObjectType, final String accessPointFqName, final String exposedGraphFqName) {
         if (log.isDebugEnabled()) {
             log.debug("    - mapped transfer object type: {}", getClassifierFQName(mappedTransferObjectType));
@@ -1014,6 +1178,9 @@ public class AsmUtils {
         }
     }
 
+    /**
+     * Decorate model elements with annotations required to process ASM model (ie generating OpenAPI model).
+     */
     public void enrichWithAnnotations() {
         getAllAccessPoints().forEach(accessPoint -> {
             final String accessPointFqName = getClassifierFQName(accessPoint);
@@ -1075,6 +1242,12 @@ public class AsmUtils {
         });
     }
 
+    /**
+     * Check if the given data type represents timestamp.
+     *
+     * @param eDataType data type (with instanceClassName = "java.util.Date")
+     * @return <code>true</code> if timestamp is represented by data type, <code>false</code> (default) if not (or data type is not temporal).
+     */
     static boolean isTimestampJavaUtilDate(final EDataType eDataType) {
         // TODO - check annotations of EDataType in ASM model, false by default
         return false;
@@ -1095,19 +1268,46 @@ public class AsmUtils {
                 .filter(e -> clazz.isAssignableFrom(e.getClass())).map(e -> (T) e);
     }
 
+    /**
+     * Get stream of source iterator.
+     *
+     * @param sourceIterator source iterator
+     * @param <T>            type of source iterator
+     * @return (serial) stream
+     */
     static <T> Stream<T> asStream(Iterator<T> sourceIterator) {
         return asStream(sourceIterator, false);
     }
 
+    /**
+     * Get stream of source iterator.
+     *
+     * @param sourceIterator source iterator
+     * @param parallel       flag controlling returned stream (serial or parallel)
+     * @param <T>            type of source iterator
+     * @return return serial (parallel = <code>false</code>) or parallel (parallel = <code>true</code>) stream
+     */
     static <T> Stream<T> asStream(Iterator<T> sourceIterator, boolean parallel) {
         Iterable<T> iterable = () -> sourceIterator;
         return StreamSupport.stream(iterable.spliterator(), parallel);
     }
 
+    /**
+     * Get all model elements.
+     *
+     * @param <T> generic type of model elements
+     * @return model elements
+     */
     <T> Stream<T> all() {
         return asStream((Iterator<T>) resourceSet.getAllContents(), false);
     }
 
+    /**
+     * Get model elements with specific type
+     * @param clazz class of model element types
+     * @param <T>   specific type
+     * @return all elements with clazz type
+     */
     <T> Stream<T> all(final Class<T> clazz) {
         return all().filter(e -> clazz.isAssignableFrom(e.getClass())).map(e -> (T) e);
     }
