@@ -1,10 +1,8 @@
 package hu.blackbelt.judo.meta.asm.runtime;
 
 import com.google.common.collect.Maps;
-import hu.blackbelt.epsilon.runtime.execution.EmfUtils;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.resource.ContentHandler;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -20,7 +18,6 @@ import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class AsmModelLoader {
@@ -34,37 +31,21 @@ public class AsmModelLoader {
     }
 
     public static ResourceSet createAsmResourceSet() throws Exception {
-        return createAsmResourceSet(null, null);
+        return createAsmResourceSet(null);
     }
 
-    public static ResourceSet createAsmResourceSet(URIHandler uriHandler, AsmPackageRegistration asmPackageRegistration) throws Exception {
+    public static ResourceSet createAsmResourceSet(URIHandler uriHandler) throws Exception {
         ResourceSet resourceSet = new ResourceSetImpl();
         if (uriHandler != null) {
             resourceSet.getURIConverter().getURIHandlers().add(0, uriHandler);
         }
         resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put(ResourceFactoryRegistryImpl.DEFAULT_EXTENSION, getFactory());
         registerAsmMetamodel(resourceSet);
-        if (asmPackageRegistration != null) {
-            registerAsmPackages(resourceSet, asmPackageRegistration);
-        }
         return resourceSet;
     }
 
-
-    public static ResourceSet createAsmResourceSet(URIHandler uriHandler) throws Exception {
-        return createAsmResourceSet(uriHandler, null);
-    }
-
-    public static void registerAsmPackages(ResourceSet resourceSet, AsmPackageRegistration asmPackageRegistration) throws Exception {
-        if (asmPackageRegistration == null) {
-            new LocalAsmPackageRegistration().loadAsmBaseAndTypes(resourceSet);
-        } else {
-            asmPackageRegistration.loadAsmBaseAndTypes(resourceSet);
-        }
-    }
-
     public static AsmModel loadAsmModel(ResourceSet resourceSet, URI uri, String name, String version) throws Exception {
-        return loadAsmModel(resourceSet, null, uri, name, version, null, null);
+        return loadAsmModel(resourceSet, uri, name, version, null, null);
     }
 
     public static void setupRelativeUriRoot(ResourceSet resourceSet, URI uri) {
@@ -106,7 +87,7 @@ public class AsmModelLoader {
 
     }
 
-    public static AsmModel loadAsmModel(ResourceSet resourceSet, AsmPackageRegistration asmPackageRegistration, URI uri, String name, String version, String checksum, String acceptedMetaVersionRange) throws Exception {
+    public static AsmModel loadAsmModel(ResourceSet resourceSet, URI uri, String name, String version, String checksum, String acceptedMetaVersionRange) throws Exception {
         Resource resource = resourceSet.createResource(uri);
         Map<Object, Object> loadOptions = new HashMap<>();
         //loadOptions.put(XMLResource.OPTION_RECORD_UNKNOWN_FEATURE, Boolean.TRUE);
@@ -134,15 +115,6 @@ public class AsmModelLoader {
         setupRelativeUriRoot(resourceSet, uri);
 
         return b.build();
-    }
-
-    public static class LocalAsmPackageRegistration implements AsmPackageRegistration {
-        public void loadAsmBaseAndTypes(ResourceSet resourceSet) throws Exception {
-            List<EPackage> basePackages = EmfUtils.register(resourceSet, URI
-                    .createURI("urn:base.ecore"), true);
-            List<EPackage> typePackages = EmfUtils.register(resourceSet, URI
-                    .createURI("urn:types.ecore"), true);
-        }
     }
 
     public static Map<Object, Object> getAsmDefaultSaveOptions() {

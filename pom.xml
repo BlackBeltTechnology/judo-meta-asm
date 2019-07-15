@@ -94,35 +94,6 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <id>attach-artifacts</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>attach-artifact</goal>
-                        </goals>
-                        <configuration>
-                            <artifacts>
-                                <artifact>
-                                    <file>model/base.ecore</file>
-                                    <type>ecore</type>
-                                    <classifier>base</classifier>
-                                </artifact>
-                                <artifact>
-                                    <file>model/types.ecore</file>
-                                    <type>ecore</type>
-                                    <classifier>types</classifier>
-                                </artifact>
-                            </artifacts>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <version>3.3.0</version>
@@ -147,10 +118,6 @@
                             javax.annotation;version="[1.0,2)",
                             *
                         </Import-Package>
-                        <Include-Resource>
-                            {maven-resources},
-                            meta/asm=model
-                        </Include-Resource>
                     </instructions>
                 </configuration>
             </plugin>
