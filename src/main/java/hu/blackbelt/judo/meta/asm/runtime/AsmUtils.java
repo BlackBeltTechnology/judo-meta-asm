@@ -605,6 +605,7 @@ public class AsmUtils {
     public EList<EOperation> getExposedServicesOfAccessPoint(final EClass eClass) {
         return isAccessPoint(eClass) ?
                 new BasicEList<>(all(EOperation.class)
+                        .filter(o -> !isBuiltInOperation(o))
                         .filter(o -> o.getEAnnotations().stream()
                                 .anyMatch(a -> EcoreUtil.equals(eClass, getResolvedExposedBy(a).orElse(null))))
                         .collect(Collectors.toList())) :
