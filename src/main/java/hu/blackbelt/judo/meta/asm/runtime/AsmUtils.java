@@ -848,7 +848,7 @@ public class AsmUtils {
      * @return mapped attribute
      */
     public Optional<EAttribute> getMappedAttribute(EAttribute type) {
-        Optional<String> mappedAttributeName = getExtensionAnnotationValue(type, "mappedAttribute", false);
+        Optional<String> mappedAttributeName = getExtensionAnnotationValue(type, "binding", false);
         Optional<EClass> mappedEntityType = getMappedEntityType(type.getEContainingClass());
         if (mappedAttributeName.isPresent()) {
             if (!mappedEntityType.isPresent()) {
@@ -875,7 +875,7 @@ public class AsmUtils {
      * @return mapped reference
      */
     public Optional<EReference> getMappedReference(EReference type) {
-        Optional<String> mappedReferenceName = getExtensionAnnotationValue(type, "mappedReference", false);
+        Optional<String> mappedReferenceName = getExtensionAnnotationValue(type, "binding", false);
         Optional<EClass> mappedEntityType = getMappedEntityType(type.getEContainingClass());
         if (mappedReferenceName.isPresent()) {
             if (!mappedEntityType.isPresent()) {

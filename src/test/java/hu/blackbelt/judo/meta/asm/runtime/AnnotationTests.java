@@ -63,44 +63,44 @@ public class AnnotationTests {
 
     @Test
     public void testGetExtensionAnnotationValue() {
-        final EClass orderInfo = (EClass) resourceSet.getResources().get(0).getEObject("//services/OrderInfo");
+        final EClass orderInfo = (EClass) resourceSet.getResources().get(0).getEObject("//service/OrderInfo");
         Optional<String> value = asmUtils.getExtensionAnnotationValue(orderInfo, "mappedEntityType", false);
 
         assertTrue(value.isPresent());
-        assertThat(value.get(), equalTo("northwind.entities.Order"));
+        assertThat(value.get(), equalTo("demo.entities.Order"));
 
     }
 
     @Test
     public void testPackageFQName() {
-        final EPackage ePackage = (EPackage) resourceSet.getResources().get(0).getEObject("//services");
+        final EPackage ePackage = (EPackage) resourceSet.getResources().get(0).getEObject("//service");
 
-        assertThat(asmUtils.getPackageFQName(ePackage), equalTo("northwind.services"));
+        assertThat(asmUtils.getPackageFQName(ePackage), equalTo("demo.service"));
     }
 
 
     @Test
     public void testClassFQName() {
-        final EClass orderInfo = (EClass) resourceSet.getResources().get(0).getEObject("//services/OrderInfo");
+        final EClass orderInfo = (EClass) resourceSet.getResources().get(0).getEObject("//service/OrderInfo");
 
-        assertThat(asmUtils.getClassifierFQName(orderInfo), equalTo("northwind.services.OrderInfo"));
+        assertThat(asmUtils.getClassifierFQName(orderInfo), equalTo("demo.service.OrderInfo"));
     }
 
 
     @Test
     public void testAttributeFQName() {
-        final EClass orderInfo = (EClass) resourceSet.getResources().get(0).getEObject("//services/OrderInfo");
+        final EClass orderInfo = (EClass) resourceSet.getResources().get(0).getEObject("//service/OrderInfo");
         final EAttribute orderDate = (EAttribute) orderInfo.getEStructuralFeature("orderDate");
 
-        assertThat(asmUtils.getAttributeFQName(orderDate), equalTo("northwind.services.OrderInfo#orderDate"));
+        assertThat(asmUtils.getAttributeFQName(orderDate), equalTo("demo.service.OrderInfo#orderDate"));
     }
 
 
 
     @Test
     public void testGetClassByFQName() {
-        final EClass orderInfo = (EClass) resourceSet.getResources().get(0).getEObject("//services/OrderInfo");
-        Optional<EClass> founded = asmUtils.getClassByFQName("northwind.services.OrderInfo");
+        final EClass orderInfo = (EClass) resourceSet.getResources().get(0).getEObject("//service/OrderInfo");
+        Optional<EClass> founded = asmUtils.getClassByFQName("demo.service.OrderInfo");
 
         assertTrue(founded.isPresent());
         assertThat(founded.get(), equalTo(orderInfo));
@@ -110,7 +110,7 @@ public class AnnotationTests {
     @Test
     public void testGetMappedEntity() {
         final EClass order = (EClass) resourceSet.getResources().get(0).getEObject("//entities/Order");
-        final EClass orderInfo = (EClass) resourceSet.getResources().get(0).getEObject("//services/OrderInfo");
+        final EClass orderInfo = (EClass) resourceSet.getResources().get(0).getEObject("//service/OrderInfo");
 
         Optional<EClass> mappedType = asmUtils.getMappedEntityType(orderInfo);
         assertTrue(mappedType.isPresent());
@@ -120,7 +120,7 @@ public class AnnotationTests {
     @Test
     public void testGetMappedAttribute() {
         final EClass order = (EClass) resourceSet.getResources().get(0).getEObject("//entities/Order");
-        final EClass orderInfo = (EClass) resourceSet.getResources().get(0).getEObject("//services/OrderInfo");
+        final EClass orderInfo = (EClass) resourceSet.getResources().get(0).getEObject("//service/OrderInfo");
 
         final EAttribute orderDate = (EAttribute) order.getEStructuralFeature("orderDate");
         final EAttribute orderInfoDate = (EAttribute) orderInfo.getEStructuralFeature("orderDate");
@@ -134,7 +134,7 @@ public class AnnotationTests {
     @Test
     public void testGetMappedReference() {
         final EClass order = (EClass) resourceSet.getResources().get(0).getEObject("//entities/Order");
-        final EClass orderInfo = (EClass) resourceSet.getResources().get(0).getEObject("//services/OrderInfo");
+        final EClass orderInfo = (EClass) resourceSet.getResources().get(0).getEObject("//service/OrderInfo");
 
         final EReference orderDetails = (EReference) order.getEStructuralFeature("orderDetails");
         final EReference orderInfoItems = (EReference) orderInfo.getEStructuralFeature("items");
