@@ -7,7 +7,7 @@
     <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata/graph">
       <details key="value" value="ordersAssignedToEmployee"/>
       <details key="root" value="demo.service.OrderInfoQuery"/>
-      <details key="selector" value="northwind::entities::Employee.orders"/>
+      <details key="selector" value="demo::entities::Employee.orders"/>
       <details key="selector.dialect" value="JQL"/>
       <details key="collection" value="true"/>
     </eAnnotations>
@@ -19,14 +19,14 @@
     <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata/graph">
       <details key="value" value="products"/>
       <details key="root" value="demo.service.ProductInfo"/>
-      <details key="selector" value="northwind::entities::Product"/>
+      <details key="selector" value="demo::entities::Product"/>
       <details key="selector.dialect" value="JQL"/>
       <details key="collection" value="true"/>
     </eAnnotations>
     <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata/graph">
       <details key="value" value="categories"/>
       <details key="root" value="demo.service.CategoryInfo"/>
-      <details key="selector" value="northwind::entities::Category"/>
+      <details key="selector" value="demo::entities::Category"/>
       <details key="selector.dialect" value="JQL"/>
       <details key="collection" value="true"/>
     </eAnnotations>
@@ -35,7 +35,7 @@
     <eClassifiers xsi:type="ecore:EClass" name="ʘStatic" abstract="true">
       <eStructuralFeatures xsi:type="ecore:EAttribute" name="totalNumberOfOrders" lowerBound="1" eType="//types/Long" volatile="true" unsettable="true" derived="true">
         <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata/expression">
-          <details key="getter" value="0 // COUNT(northwind::entities::Order)"/>
+          <details key="getter" value="0 // COUNT(demo::entities::Order)"/>
           <details key="getter.dialect" value="JQL"/>
         </eAnnotations>
         <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
@@ -45,19 +45,19 @@
       </eStructuralFeatures>
       <eStructuralFeatures xsi:type="ecore:EReference" name="ordersAssignedToEmployee" upperBound="-1" eType="//entities/Order" volatile="true" derived="true">
         <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata/expression">
-          <details key="getter" value="northwind::entities::Employee.orders"/>
+          <details key="getter" value="demo::entities::Employee.orders"/>
           <details key="getter.dialect" value="JQL"/>
         </eAnnotations>
       </eStructuralFeatures>
       <eStructuralFeatures xsi:type="ecore:EReference" name="allProducts" upperBound="-1" eType="//entities/Product" volatile="true" derived="true">
         <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata/expression">
-          <details key="getter" value="northwind::entities::Product"/>
+          <details key="getter" value="demo::entities::Product"/>
           <details key="getter.dialect" value="JQL"/>
         </eAnnotations>
       </eStructuralFeatures>
       <eStructuralFeatures xsi:type="ecore:EReference" name="allCategories" upperBound="-1" eType="//entities/Category" volatile="true" derived="true">
         <eAnnotations source="http://blackbelt.hu/judo/meta/ExtendedMetadata/expression">
-          <details key="getter" value="northwind::entities::Category"/>
+          <details key="getter" value="demo::entities::Category"/>
           <details key="getter.dialect" value="JQL"/>
         </eAnnotations>
       </eStructuralFeatures>
