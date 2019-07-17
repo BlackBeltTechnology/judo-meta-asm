@@ -31,7 +31,7 @@ public class AsmUtils {
 
     public static final String NAMESPACE_SEPARATOR = ".";
     public static final String FEATURE_SEPARATOR = "#";
-    public static final String OPERATION_SEPARATOR = ".";
+    public static final String OPERATION_SEPARATOR = "#";
 
     public static final String SEPARATOR = "ʘ";
 
