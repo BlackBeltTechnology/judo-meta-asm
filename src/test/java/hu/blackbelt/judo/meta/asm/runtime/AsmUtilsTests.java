@@ -84,7 +84,7 @@ public class AsmUtilsTests {
         Optional<EOperation> eOperation = asmUtils.all(EOperation.class).filter(op -> "getAllOrders".equals(op.getName())).findAny();
 
         Assert.assertTrue(eOperation.isPresent());
-        Assert.assertThat(asmUtils.getOperationFQName(eOperation.get()), is("demo.service.ʘUnboundServices.getAllOrders"));
+        Assert.assertThat(asmUtils.getOperationFQName(eOperation.get()), is("demo.service.ʘUnboundServices#getAllOrders"));
     }
 
     @Test
@@ -135,21 +135,7 @@ public class AsmUtilsTests {
         Assert.assertThat(asmUtils.getContainerClass(negtest_containerClass.get()), is(Optional.empty()));
     }
 
-    //TODO: check if getAnnotationUri should be tested
-    //@Test
-    public void testGetAnnotationUri() {
-        Optional<EModelElement> eModelElement;
-        //String annotationName
-        //boolean createIfNotExists---------------
-        //Optional<EAnnotation> eAnnotation = asmUtils.all(EAnnotation.class).filter(a -> a.).findAny();
-    }
 
-    //@Test
-    public void testGetExtensionAnnotationByName() {
-        //EModelElement, String annotName, bool createifnotexist
-        Optional<EModelElement> eModelElement;
-
-    }
 
 
 }
