@@ -10,7 +10,9 @@ import org.eclipse.emf.ecore.resource.URIHandler;
 import org.eclipse.emf.ecore.resource.impl.ExtensibleURIConverterImpl;
 import org.eclipse.emf.ecore.resource.impl.ResourceFactoryRegistryImpl;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.util.EcoreResourceImpl;
 import org.eclipse.emf.ecore.xmi.XMLResource;
+import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.URIHandlerImpl;
 
 import java.util.HashMap;
@@ -20,9 +22,8 @@ import java.util.Optional;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import org.eclipse.emf.ecore.EcorePackage;			
-import org.eclipse.emf.ecore.util.EcoreResourceFactoryImpl;
-import org.eclipse.emf.ecore.util.EcoreResourceImpl;			
+import org.eclipse.emf.ecore.EcorePackage;
+import org.eclipse.emf.ecore.xmi.impl.XMIResourceImpl;
 
 public class AsmModelResourceSupport {
 
@@ -192,7 +193,7 @@ public class AsmModelResourceSupport {
 	    return new EcoreResourceFactoryImpl() {
 	        @Override
 	        public Resource createResource(URI uri) {
-	            Resource result = new EcoreResourceImpl(uri) {
+	            Resource result = new XMIResourceImpl(uri) {
 	                @Override
 	                protected boolean useUUIDs() {
 	                    return true;

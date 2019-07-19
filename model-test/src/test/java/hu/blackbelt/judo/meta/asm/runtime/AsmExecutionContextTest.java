@@ -1,14 +1,11 @@
 package hu.blackbelt.judo.meta.asm.runtime;
 
+import hu.blackbelt.judo.meta.asm.support.AsmModelResourceSupport;
 import org.eclipse.emf.common.util.URI;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import hu.blackbelt.judo.meta.asm.support.AsmModelResourceSupport;
-
-import static  hu.blackbelt.judo.meta.asm.support.AsmModelResourceSupport.asmModelResourceSupportBuilder;
-
-class ExecutionContextTest {
+class AsmExecutionContextTest {
 
     @Test
     @DisplayName("Create Asm model with builder pattern")
@@ -17,7 +14,7 @@ class ExecutionContextTest {
 
         String createdSourceModelName = "urn:asm.judo-meta-asm";
 
-        AsmModelResourceSupport asmModelSupport = asmModelResourceSupportBuilder().build();
+        AsmModelResourceSupport asmModelSupport = AsmModelResourceSupport.asmModelResourceSupportBuilder().build();
         asmModelSupport.getResourceSet().createResource(
                 URI.createFileURI(createdSourceModelName));
 

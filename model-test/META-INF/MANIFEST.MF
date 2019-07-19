@@ -19,7 +19,8 @@ Require-Bundle: org.eclipse.core.runtime,
  org.junit.platform.runner,
  org.junit.platform.suite.api,
  org.hamcrest.core,
- hu.blackbelt.epsilon.runtime.execution
+ hu.blackbelt.epsilon.runtime.execution,
+ org.eclipse.emf.common
 Bundle-ActivationPolicy: lazy
 Automatic-Module-Name: hu.blackbelt.judo.meta.asm.model.test
 Import-Package: org.junit;version="4.12.0",

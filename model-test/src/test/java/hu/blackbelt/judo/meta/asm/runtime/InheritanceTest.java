@@ -9,8 +9,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +18,8 @@ import java.util.Collections;
 import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEAttributeBuilder;
 import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEClassBuilder;
 import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEPackageBuilder;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class InheritanceTest {
 
@@ -70,13 +71,13 @@ public class InheritanceTest {
                 for (final Resource.Diagnostic diagnostic : resource.getErrors()) {
                     sb.append(diagnostic.getMessage()).append("\n");
                 }
-                Assert.fail(sb.toString());
+                fail(sb.toString());
             }
         } finally {
             // inheritanceEcoreFile.delete();
         }
 
-        Assert.assertEquals(3, employeeClass.getEAllAttributes().size());
+        assertEquals(3, employeeClass.getEAllAttributes().size());
     }
 
     public File targetDir(){

@@ -1,6 +1,7 @@
 package hu.blackbelt.judo.meta.asm.runtime;
 
 import hu.blackbelt.epsilon.runtime.execution.impl.NioFilesystemnRelativePathURIHandlerImpl;
+import hu.blackbelt.judo.meta.asm.support.AsmModelResourceSupport;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -8,14 +9,14 @@ import org.eclipse.emf.ecore.resource.URIHandler;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.support.EcoreModelResourceSupport;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static hu.blackbelt.judo.meta.asm.runtime.AsmModel.LoadArguments.loadArgumentsBuilder;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
 import java.nio.file.FileSystems;
@@ -29,13 +30,13 @@ public class InheritanceFromLoadedModelTest {
     ResourceSet resourceSet;
     URIHandler uriHandler;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         resourceSet = new ResourceSetImpl();
         resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("*", new EcoreResourceFactoryImpl());
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         resourceSet = null;
     }
@@ -88,7 +89,7 @@ public class InheritanceFromLoadedModelTest {
         uriHandler = new NioFilesystemnRelativePathURIHandlerImpl("urn", FileSystems.getDefault(),
                 modelFile.getParentFile().getAbsolutePath());
 
-        resourceSet = EcoreModelResourceSupport.createEcoreResourceSet();
+        resourceSet = AsmModelResourceSupport.createAsmResourceSet();
 
         AsmModel.loadAsmModel(loadArgumentsBuilder()
                 .resourceSet(Optional.of(resourceSet))
@@ -130,6 +131,6 @@ public class InheritanceFromLoadedModelTest {
 
         employeeClass.getEAllAttributes().forEach(a -> log.debug(" - attribute: {}", a.getName()));
 
-        Assert.assertEquals(expectedAttributes, employeeClass.getEAllAttributes().size());
+        assertEquals(expectedAttributes, employeeClass.getEAllAttributes().size());
     }
 }

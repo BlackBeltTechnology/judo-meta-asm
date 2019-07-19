@@ -5,7 +5,6 @@ import com.google.common.collect.ImmutableMap;
 import hu.blackbelt.epsilon.runtime.execution.ExecutionContext;
 import hu.blackbelt.epsilon.runtime.execution.api.Log;
 import hu.blackbelt.epsilon.runtime.execution.impl.Slf4jLog;
-import hu.blackbelt.judo.meta.asm.runtime.AsmUtils;
 import hu.blackbelt.judo.meta.asm.support.AsmModelResourceSupport;
 
 import org.eclipse.emf.common.util.URI;
