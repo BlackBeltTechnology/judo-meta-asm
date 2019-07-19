@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <description>
+      To install these features, point Eclipse at this site.
+   </description>
+   <feature id="hu.blackbelt.judo.meta.asm.feature">
+      <category name="site"/>
+   </feature>
+   <category-def name="site" label="Judo Asm Model Update Site">
+      <description>
+         Judo Asm Model Update Site: contains all features in this build.
+      </description>
+   </category-def>
+</site>
