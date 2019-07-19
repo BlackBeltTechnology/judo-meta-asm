@@ -109,33 +109,42 @@ public class AsmUtilsTests {
 
     @Test
     public void testGetNestedClasses() {
-
+        //nested
         Optional<EClass> nestedClass = asmUtils.all(EClass.class).filter(c -> "OrderInfoʘitemsʘReference".equals(c.getName())).findAny();
         Assert.assertTrue(nestedClass.isPresent());
+        //container
         Optional<EClass> containerClass = asmUtils.all(EClass.class).filter(c -> "OrderInfoʘitems".equals(c.getName())).findAny();
         Assert.assertTrue(containerClass.isPresent());
+
+        Assert.assertTrue(asmUtils.getNestedClasses(containerClass.get()).contains(nestedClass.get()));
+
+        //negtest: trying to get indirectly nested classes
         Optional<EClass> negtest_containerClass = asmUtils.all(EClass.class).filter(c -> "OrderInfo".equals(c.getName())).findAny();
         Assert.assertTrue(negtest_containerClass.isPresent());
 
         Assert.assertFalse(asmUtils.getNestedClasses(negtest_containerClass.get()).contains(nestedClass.get()));
-        Assert.assertTrue(asmUtils.getNestedClasses(containerClass.get()).contains(nestedClass.get()));
     }
 
     @Test
     public void testGetContainerClass() {
+        //container
         Optional<EClass> containerClass = asmUtils.all(EClass.class).filter(c -> "OrderInfoʘitems".equals(c.getName())).findAny();
-        Optional<EClass> nestedClass = asmUtils.all(EClass.class).filter(c -> "OrderInfoʘitemsʘReference".equals(c.getName())).findAny();
-
         Assert.assertTrue(containerClass.isPresent());
-        Assert.assertTrue(nestedClass .isPresent());
+        //nested
+        Optional<EClass> nestedClass = asmUtils.all(EClass.class).filter(c -> "OrderInfoʘitemsʘReference".equals(c.getName())).findAny();
+        Assert.assertTrue(nestedClass.isPresent());
+
         Assert.assertThat(asmUtils.getContainerClass(nestedClass.get()).get(), is(containerClass.get()));
 
+        //negtest: trying to get indirectly containing classes
         Optional<EClass> negtest_containerClass = asmUtils.all(EClass.class).filter(c -> "OrderInfo".equals(c.getName())).findAny();
         Assert.assertTrue(negtest_containerClass.isPresent());
+
         Assert.assertThat(asmUtils.getContainerClass(negtest_containerClass.get()), is(Optional.empty()));
     }
 
-
+    //@Test
+    //public void
 
 
 }
