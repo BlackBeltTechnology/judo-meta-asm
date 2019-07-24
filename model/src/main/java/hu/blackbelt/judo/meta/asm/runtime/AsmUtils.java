@@ -387,7 +387,7 @@ public class AsmUtils {
     }
 
     /**
-     * Get the the Extension annotation's given element in map. If failNotFound true it log a warning, otherwise
+     * Get the the Extension annotation's given element in map if key of map entry is specified (as something other than "value"). If failNotFound true it log a warning, otherwise
      * if the extension annotation or the given name not found returns null.
      *
      * @param eModelElement  The model element which is used to determinate
@@ -1322,7 +1322,7 @@ public class AsmUtils {
      * @param <T>   specific type
      * @return all elements with clazz type
      */
-    <T> Stream<T> all(final Class<T> clazz) {
+    public <T> Stream<T> all(final Class<T> clazz) {
         return all().filter(e -> clazz.isAssignableFrom(e.getClass())).map(e -> (T) e);
     }
 
