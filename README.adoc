@@ -6,6 +6,10 @@ It acts as an eclipse plugin with features and sites, can be used standalone and
 
 == Modules:
 
+- targetdefinition - Eclipse target definition defines the P2 repsoitories for all of required MANFIEST feature. When the artifacts are compiled the 
+Judo based P2 respository URL and versions replaced with the maven defined one. When version definitions are changed first build updates target 
+definition version but the second build will use it. The reason of that tycho target resolution executed before version replace.
+
 - model - eclipse plugin. It contains the model and ecore generated java classes. 
           Builder and Helpers added with MWE2 workflow.
           
