@@ -11,8 +11,8 @@
     <artifactId>hu.blackbelt.judo.meta.asm.targetdefinition</artifactId>
     <packaging>eclipse-target-definition</packaging>
 
-    <name>Judo :: Asm :: Model :: Eclipse plugin</name>
-    <description>Judo Asm model eclipse plugin</description>
+    <name>Judo :: Asm :: Model :: Eclipse Tsrget Definition</name>
+    <description>Judo Asm model eclipse target definition</description>
     
     <build>
         <plugins>
