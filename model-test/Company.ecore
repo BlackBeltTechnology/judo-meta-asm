@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="company" nsURI="http:///com.example.company.ecore" nsPrefix="company">
-  <eClassifiers xsi:type="ecore:EClass" name="Employee">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmi:id="_umvDALXFEemBNvkQ4c4xug" name="company" nsURI="http:///com.example.company.ecore" nsPrefix="company">
+  <eClassifiers xsi:type="ecore:EClass" xmi:id="_umvDAbXFEemBNvkQ4c4xug" name="Employee">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_umvDArXFEemBNvkQ4c4xug" name="name">
+      <eType xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Company">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="name" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EString"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="department" upperBound="-1"
-        eType="#//Department" containment="true"/>
+  <eClassifiers xsi:type="ecore:EClass" xmi:id="_umvDBLXFEemBNvkQ4c4xug" name="Company">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_umvDBbXFEemBNvkQ4c4xug" name="name">
+      <eType xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EString"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_umvDB7XFEemBNvkQ4c4xug" name="department" upperBound="-1" eType="_umvDCbXFEemBNvkQ4c4xug" containment="true"/>
   </eClassifiers>
-  <eClassifiers xsi:type="ecore:EClass" name="Department">
-    <eStructuralFeatures xsi:type="ecore:EAttribute" name="number" eType="ecore:EDataType http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
-    <eStructuralFeatures xsi:type="ecore:EReference" name="employees" upperBound="-1"
-        eType="#//Employee" containment="true"/>
+  <eClassifiers xsi:type="ecore:EClass" xmi:id="_umvDCbXFEemBNvkQ4c4xug" name="Department">
+    <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_umvDCrXFEemBNvkQ4c4xug" name="number">
+      <eType xsi:type="ecore:EDataType" href="http://www.eclipse.org/emf/2002/Ecore#//EInt"/>
+    </eStructuralFeatures>
+    <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_umvDDLXFEemBNvkQ4c4xug" name="employees" upperBound="-1" eType="_umvDAbXFEemBNvkQ4c4xug" containment="true"/>
   </eClassifiers>
 </ecore:EPackage>

@@ -1,4 +1,4 @@
-package hu.blackbelt.judo.meta.asm.runtime;
+package hu.blackbelt.judo.eclipse.asm;
 
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;

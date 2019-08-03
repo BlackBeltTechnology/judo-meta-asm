@@ -21,7 +21,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 
@@ -83,14 +82,13 @@ public class AsmModelBundleTracker {
                             // Unpack model
                             try {
                                         AsmModel asmModel = AsmModel.loadAsmModel(
-                                        AsmModel.LoadArguments.loadArgumentsBuilder()
-                                                .uriHandler(Optional.of(new BundleURIHandler("urn", "", trackedBundle)))
-                                                .uri(URI.createURI(params.get("file")))
+                                        AsmModel.LoadArguments.asmLoadArgumentsBuilder()
+                                                .uriHandler(new BundleURIHandler(trackedBundle.getSymbolicName(), "", trackedBundle))
+                                                .uri(URI.createURI(trackedBundle.getSymbolicName() + ":" + params.get("file")))
                                                 .name(params.get(AsmModel.NAME))
-                                                .version(Optional.of(trackedBundle.getVersion().toString()))
-                                                .checksum(Optional.ofNullable(params.get(AsmModel.CHECKSUM)))
-                                                .acceptedMetaVersionRange(Optional.of(versionRange.toString()))
-                                                .build()
+                                                .version(trackedBundle.getVersion().toString())
+                                                .checksum(params.get(AsmModel.CHECKSUM))
+                                                .acceptedMetaVersionRange(versionRange.toString())
                                 );
 
                                 log.info("Registering Asm model: " + asmModel);

@@ -1,6 +1,5 @@
 package hu.blackbelt.judo.meta.asm.runtime;
 
-import hu.blackbelt.judo.meta.asm.runtime.AsmModel;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.junit.jupiter.api.DisplayName;
@@ -12,7 +11,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 
-import static hu.blackbelt.judo.meta.asm.runtime.AsmModel.LoadArguments.loadArgumentsBuilder;
+import static hu.blackbelt.judo.meta.asm.runtime.AsmModel.LoadArguments.asmLoadArgumentsBuilder;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AsmModelLoaderTest {
 
@@ -21,13 +23,28 @@ public class AsmModelLoaderTest {
     @Test
     @DisplayName("Load Asm Model")
     void loadAsmModel() throws IOException {
-        AsmModel asmModel = AsmModel.loadAsmModel(loadArgumentsBuilder()
+        AsmModel asmModel = AsmModel.loadAsmModel(asmLoadArgumentsBuilder()
                 .uri(URI.createFileURI(new File("src/test/model/test.asm").getAbsolutePath()))
-                .name("test")
-                .build());
+                .name("test"));
+
+        assertTrue(asmModel.isValid());
 
         for (Iterator<EObject> i = asmModel.getResourceSet().getResource(asmModel.getUri(), false).getAllContents(); i.hasNext(); ) {
             log.info(i.next().toString());
         }
     }
+
+    @Test
+    @DisplayName("Diagnose Asm Model")
+    void loadInvalidAsmModel() throws IOException {
+        AsmModel asmModel = AsmModel.loadAsmModel(asmLoadArgumentsBuilder()
+                .uri(URI.createFileURI(new File("src/test/model/invalid-asm.model").getAbsolutePath()))
+                .name("test"));
+
+        assertFalse(asmModel.isValid());
+        assertTrue(asmModel.getDiagnostics().size() == 1);
+        assertEquals("There may not be two features named 'orders'", asmModel.getDiagnostics().iterator().next().getMessage());
+
+    }
+
 }

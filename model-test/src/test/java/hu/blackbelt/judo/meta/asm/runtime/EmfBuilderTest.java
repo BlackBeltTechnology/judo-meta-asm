@@ -17,6 +17,9 @@ import java.io.IOException;
 import java.util.Collections;
 
 import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class EmfBuilderTest {
@@ -80,24 +83,27 @@ public class EmfBuilderTest {
                 .build();
         // @formatter:on
 
-        final ResourceSet resourceSet = new ResourceSetImpl();
-        resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("*", new EcoreResourceFactoryImpl());
-        final File companyEcoreFile = new File("Company.ecore");
-        try {
-            final Resource resource = resourceSet.createResource(URI.createFileURI(companyEcoreFile.getAbsolutePath()));
-            resource.getContents().add(ePackage);
-            resource.save(Collections.emptyMap());
+        AsmModel asmModel = AsmModel.buildAsmModel()
+                .uri(URI.createFileURI("Company.ecore"))
+                .name("company")
+                .build();
+        asmModel.getResource().getContents().add(ePackage);
 
-            if (!resource.getErrors().isEmpty()) {
-                final StringBuilder sb = new StringBuilder();
-                for (final Resource.Diagnostic diagnostic : resource.getErrors()) {
-                    sb.append(diagnostic.getMessage()).append("\n");
-                }
-                fail(sb.toString());
-            }
-        } finally {
-            // companyEcoreFile.delete();
-        }
+        asmModel.saveAsmModel();
+
+        assertTrue(asmModel.isValid());
+
+        final EPackage ePackageWrong = newEPackageBuilder()
+                .withNsPrefix("wrong")
+                .withNsURI("http:///com.example.company.ecore")
+                .build();
+
+        asmModel.getResource().getContents().add(ePackageWrong);
+
+        assertFalse(asmModel.isValid());
+        assertEquals(1, asmModel.getDiagnostics().size());
+        assertEquals("The name 'null' is not well formed", asmModel.getDiagnostics().iterator().next().getMessage());
+
     }
 
 }

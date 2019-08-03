@@ -1,0 +1,1830 @@
+<?xml version="1.0" encoding="ASCII"?>
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" xmi:id="_jOe98LTsEemDjZfY6rkBQw" name="demo" nsURI="http://blackbelt.hu/judo/northwind-psm/demo" nsPrefix="runtimenorthwind-psmDemo">
+  <eClassifiers xsi:type="ecore:EClass" xmi:id="_jM5CgLTsEemDjZfY6rkBQw" name="internalAP" abstract="true" interface="true">
+    <eAnnotations xmi:id="_jM3NUbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/accessPoint">
+      <details xmi:id="_jO3_gLTsEemDjZfY6rkBQw" key="value" value="true"/>
+    </eAnnotations>
+    <eAnnotations xmi:id="_jM8F0LTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/graph">
+      <details xmi:id="_jPS2QLTsEemDjZfY6rkBQw" key="value" value="ordersAssignedToEmployee"/>
+      <details xmi:id="_jPTdULTsEemDjZfY6rkBQw" key="root" value="demo.service.OrderInfoQuery"/>
+      <details xmi:id="_jPTdUbTsEemDjZfY6rkBQw" key="selector" value="northwind::entities::Employee.orders"/>
+      <details xmi:id="_jPTdUrTsEemDjZfY6rkBQw" key="selector.dialect" value="JQL"/>
+      <details xmi:id="_jPUEYLTsEemDjZfY6rkBQw" key="collection" value="true"/>
+    </eAnnotations>
+  </eClassifiers>
+  <eClassifiers xsi:type="ecore:EClass" xmi:id="_jM6QoLTsEemDjZfY6rkBQw" name="externalAP" abstract="true" interface="true">
+    <eAnnotations xmi:id="_jM30YLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/accessPoint">
+      <details xmi:id="_jPC-oLTsEemDjZfY6rkBQw" key="value" value="true"/>
+    </eAnnotations>
+    <eAnnotations xmi:id="_jM8F0bTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/graph">
+      <details xmi:id="_jPVSgLTsEemDjZfY6rkBQw" key="value" value="products"/>
+      <details xmi:id="_jPVSgbTsEemDjZfY6rkBQw" key="root" value="demo.service.ProductInfo"/>
+      <details xmi:id="_jPXuwLTsEemDjZfY6rkBQw" key="selector" value="northwind::entities::Product"/>
+      <details xmi:id="_jPXuwbTsEemDjZfY6rkBQw" key="selector.dialect" value="JQL"/>
+      <details xmi:id="_jPYV0LTsEemDjZfY6rkBQw" key="collection" value="true"/>
+    </eAnnotations>
+    <eAnnotations xmi:id="_jM8F0rTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/graph">
+      <details xmi:id="_jPYV0bTsEemDjZfY6rkBQw" key="value" value="categories"/>
+      <details xmi:id="_jPYV0rTsEemDjZfY6rkBQw" key="root" value="demo.service.CategoryInfo"/>
+      <details xmi:id="_jPbZILTsEemDjZfY6rkBQw" key="selector" value="northwind::entities::Category"/>
+      <details xmi:id="_jPbZIbTsEemDjZfY6rkBQw" key="selector.dialect" value="JQL"/>
+      <details xmi:id="_jPbZIrTsEemDjZfY6rkBQw" key="collection" value="true"/>
+    </eAnnotations>
+  </eClassifiers>
+  <eSubpackages xmi:id="_jOe99LTsEemDjZfY6rkBQw" name="entities" nsURI="http://blackbelt.hu/judo/northwind-psm/demo/entities" nsPrefix="runtimenorthwind-psmDemoEntities">
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jNam8LTsEemDjZfY6rkBQw" name="&#x298;Static" abstract="true">
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jNdqQLTsEemDjZfY6rkBQw" name="totalNumberOfOrders" lowerBound="1" eType="_jOwqwLTsEemDjZfY6rkBQw" volatile="true" unsettable="true" derived="true">
+        <eAnnotations xmi:id="_jNL9c7TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/expression">
+          <details xmi:id="_jPm_ULTsEemDjZfY6rkBQw" key="getter" value="0 // COUNT(northwind::entities::Order)"/>
+          <details xmi:id="_jPm_UbTsEemDjZfY6rkBQw" key="getter.dialect" value="JQL"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jNF20LTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jPo0gLTsEemDjZfY6rkBQw" key="precision" value="18"/>
+          <details xmi:id="_jPo0gbTsEemDjZfY6rkBQw" key="scale" value="0"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jNeRULTsEemDjZfY6rkBQw" name="ordersAssignedToEmployee" upperBound="-1" eType="_jNffc7TsEemDjZfY6rkBQw" volatile="true" derived="true">
+        <eAnnotations xmi:id="_jNL9drTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/expression">
+          <details xmi:id="_jPr30LTsEemDjZfY6rkBQw" key="getter" value="northwind::entities::Employee.orders"/>
+          <details xmi:id="_jPr30bTsEemDjZfY6rkBQw" key="getter.dialect" value="JQL"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jNeRUbTsEemDjZfY6rkBQw" name="allProducts" upperBound="-1" eType="_jNffcbTsEemDjZfY6rkBQw" volatile="true" derived="true">
+        <eAnnotations xmi:id="_jNL9d7TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/expression">
+          <details xmi:id="_jPtF8LTsEemDjZfY6rkBQw" key="getter" value="northwind::entities::Product"/>
+          <details xmi:id="_jPtF8bTsEemDjZfY6rkBQw" key="getter.dialect" value="JQL"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jNeRUrTsEemDjZfY6rkBQw" name="allCategories" upperBound="-1" eType="_jNffcLTsEemDjZfY6rkBQw" volatile="true" derived="true">
+        <eAnnotations xmi:id="_jNL9eLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/expression">
+          <details xmi:id="_jPu7ILTsEemDjZfY6rkBQw" key="getter" value="northwind::entities::Category"/>
+          <details xmi:id="_jPu7IbTsEemDjZfY6rkBQw" key="getter.dialect" value="JQL"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jNffc7TsEemDjZfY6rkBQw" name="Order">
+      <eAnnotations xmi:id="_jNe4Y7TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/entity">
+        <details xmi:id="_jPGpALTsEemDjZfY6rkBQw" key="value" value="true"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jSWKQrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+        <details xmi:id="_jSWKQ7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jNNLkLTsEemDjZfY6rkBQw" name="shipperName" eType="_jOwDsLTsEemDjZfY6rkBQw" volatile="true" unsettable="true" derived="true">
+        <eAnnotations xmi:id="_jNLWYLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/expression">
+          <details xmi:id="_jPcAMLTsEemDjZfY6rkBQw" key="getter" value="self.shipper.companyName"/>
+          <details xmi:id="_jPcAMbTsEemDjZfY6rkBQw" key="getter.dialect" value="JQL"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jNBlYLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jPfqkLTsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jNPAwLTsEemDjZfY6rkBQw" name="categories" upperBound="-1" eType="_jNffcLTsEemDjZfY6rkBQw" volatile="true" derived="true">
+        <eAnnotations xmi:id="_jNL9dLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/expression">
+          <details xmi:id="_jPpbkLTsEemDjZfY6rkBQw" key="getter" value="self.orderDetails.product.category"/>
+          <details xmi:id="_jPpbkbTsEemDjZfY6rkBQw" key="getter.dialect" value="JQL"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN0PkLTsEemDjZfY6rkBQw" name="shipName" eType="_jOwDsLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNiiwLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQCdIbTsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jNzoirTsEemDjZfY6rkBQw" name="freight" eType="_jOx44LTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNrssLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQVYELTsEemDjZfY6rkBQw" key="precision" value="15"/>
+          <details xmi:id="_jQVYEbTsEemDjZfY6rkBQw" key="scale" value="4"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jNzoh7TsEemDjZfY6rkBQw" name="orderDate" eType="_jO08MLTsEemDjZfY6rkBQw"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jNzoiLTsEemDjZfY6rkBQw" name="requiredDate" eType="_jO08MLTsEemDjZfY6rkBQw"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jNzoibTsEemDjZfY6rkBQw" name="shippedDate" eType="_jO08MLTsEemDjZfY6rkBQw"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jN2r17TsEemDjZfY6rkBQw" name="customer" eType="_jNffcrTsEemDjZfY6rkBQw" eOpposite="_jN2r1rTsEemDjZfY6rkBQw"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jN2r2LTsEemDjZfY6rkBQw" name="shipper" eType="_jNgGgbTsEemDjZfY6rkBQw" eOpposite="_jN2r3bTsEemDjZfY6rkBQw"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jN2r2bTsEemDjZfY6rkBQw" name="employee" eType="_jNgGg7TsEemDjZfY6rkBQw" eOpposite="_jN2r37TsEemDjZfY6rkBQw"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jN358bTsEemDjZfY6rkBQw" name="shipAddress" eType="_jNgGjLTsEemDjZfY6rkBQw" containment="true"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jN358rTsEemDjZfY6rkBQw" name="orderDetails" lowerBound="1" upperBound="-1" eType="_jNffdLTsEemDjZfY6rkBQw" containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jNffcbTsEemDjZfY6rkBQw" name="Product">
+      <eAnnotations xmi:id="_jNe4YbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/entity">
+        <details xmi:id="_jPV5kbTsEemDjZfY6rkBQw" key="value" value="true"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jSdfArTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+        <details xmi:id="_jSdfA7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jTcWdLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+        <details xmi:id="_jTcWdbTsEemDjZfY6rkBQw" key="value" value="demo.externalAP"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jNzBc7TsEemDjZfY6rkBQw" name="productName" lowerBound="1" eType="_jOwDsLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNhUorTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQB2EbTsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jNzogLTsEemDjZfY6rkBQw" name="quantityPerUnit" eType="_jOwqwbTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNqekLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQS70bTsEemDjZfY6rkBQw" key="precision" value="9"/>
+          <details xmi:id="_jQS70rTsEemDjZfY6rkBQw" key="scale" value="0"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jNzogbTsEemDjZfY6rkBQw" name="unitPrice" eType="_jOx44LTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNqekbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQTi4bTsEemDjZfY6rkBQw" key="precision" value="15"/>
+          <details xmi:id="_jQTi4rTsEemDjZfY6rkBQw" key="scale" value="4"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jNzogrTsEemDjZfY6rkBQw" name="unitsInStock" eType="_jOwqwbTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNrFoLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQUJ8bTsEemDjZfY6rkBQw" key="precision" value="9"/>
+          <details xmi:id="_jQUJ8rTsEemDjZfY6rkBQw" key="scale" value="0"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jNzog7TsEemDjZfY6rkBQw" name="unitsOnOrder" eType="_jOwqwbTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNrFobTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQUxALTsEemDjZfY6rkBQw" key="precision" value="9"/>
+          <details xmi:id="_jQUxAbTsEemDjZfY6rkBQw" key="scale" value="0"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jNzohLTsEemDjZfY6rkBQw" name="reorderLevel" eType="_jOwqwbTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNrForTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQUxA7TsEemDjZfY6rkBQw" key="precision" value="9"/>
+          <details xmi:id="_jQUxBLTsEemDjZfY6rkBQw" key="scale" value="0"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jNzohrTsEemDjZfY6rkBQw" name="weight" eType="_jOx44rTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNv-ILTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQYbYLTsEemDjZfY6rkBQw" key="precision" value="15"/>
+          <details xmi:id="_jQYbYbTsEemDjZfY6rkBQw" key="scale" value="4"/>
+          <details xmi:id="_jQYbYrTsEemDjZfY6rkBQw" key="measure" value="demo.measures.Mass"/>
+          <details xmi:id="_jQZCcLTsEemDjZfY6rkBQw" key="unit" value="kilogram"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jNzohbTsEemDjZfY6rkBQw" name="discounted" eType="_jOyf8LTsEemDjZfY6rkBQw"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jN2r0rTsEemDjZfY6rkBQw" name="category" eType="_jNffcLTsEemDjZfY6rkBQw" eOpposite="_jN2r0LTsEemDjZfY6rkBQw"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jN2r07TsEemDjZfY6rkBQw" name="supplier" eType="_jNgGgLTsEemDjZfY6rkBQw" eOpposite="_jN2r3LTsEemDjZfY6rkBQw"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jN2r1LTsEemDjZfY6rkBQw" name="manufacturers" upperBound="-1" eType="_jNffdbTsEemDjZfY6rkBQw" eOpposite="_jN2r27TsEemDjZfY6rkBQw"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jN2r1bTsEemDjZfY6rkBQw" name="store" eType="_jNgGj7TsEemDjZfY6rkBQw" eOpposite="_jN3S6bTsEemDjZfY6rkBQw"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jNffcLTsEemDjZfY6rkBQw" name="Category">
+      <eAnnotations xmi:id="_jNe4YLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/entity">
+        <details xmi:id="_jPY84LTsEemDjZfY6rkBQw" key="value" value="true"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jSf7QrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+        <details xmi:id="_jSf7Q7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jTeLpLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+        <details xmi:id="_jTeLpbTsEemDjZfY6rkBQw" key="value" value="demo.externalAP"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jNzBcLTsEemDjZfY6rkBQw" name="categoryName" lowerBound="1" eType="_jOwDsLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNhUoLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQAn8LTsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jNzBcbTsEemDjZfY6rkBQw" name="description" eType="_jOwDsrTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNhUobTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQBPAbTsEemDjZfY6rkBQw" key="maxLength" value="250"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jNzBcrTsEemDjZfY6rkBQw" name="picture" eType="_jO2KULTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNmNILTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQP4gbTsEemDjZfY6rkBQw" key="customType" value="demo.types.Binary"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jN2r0LTsEemDjZfY6rkBQw" name="products" upperBound="-1" eType="_jNffcbTsEemDjZfY6rkBQw" eOpposite="_jN2r0rTsEemDjZfY6rkBQw"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jN2r0bTsEemDjZfY6rkBQw" name="owner" eType="_jNgGg7TsEemDjZfY6rkBQw" eOpposite="_jN3S4bTsEemDjZfY6rkBQw"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jNffdLTsEemDjZfY6rkBQw" name="OrderDetail">
+      <eAnnotations xmi:id="_jNe4ZLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/entity">
+        <details xmi:id="_jPgRobTsEemDjZfY6rkBQw" key="value" value="true"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jSZ0orTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+        <details xmi:id="_jSZ0o7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jNNyoLTsEemDjZfY6rkBQw" name="productName" eType="_jOwDsLTsEemDjZfY6rkBQw" volatile="true" unsettable="true" derived="true">
+        <eAnnotations xmi:id="_jNL9cLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/expression">
+          <details xmi:id="_jPfqkbTsEemDjZfY6rkBQw" key="getter" value="self.product.productName"/>
+          <details xmi:id="_jPfqkrTsEemDjZfY6rkBQw" key="getter.dialect" value="JQL"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jNBlYbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jPiG0LTsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jNNyobTsEemDjZfY6rkBQw" name="categoryName" eType="_jOwDsLTsEemDjZfY6rkBQw" volatile="true" unsettable="true" derived="true">
+        <eAnnotations xmi:id="_jNL9cbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/expression">
+          <details xmi:id="_jPit4LTsEemDjZfY6rkBQw" key="getter" value="self.product.category.categoryName"/>
+          <details xmi:id="_jPit4bTsEemDjZfY6rkBQw" key="getter.dialect" value="JQL"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jNBlYrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jPj8ALTsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jNNyorTsEemDjZfY6rkBQw" name="price" eType="_jOx44LTsEemDjZfY6rkBQw" volatile="true" unsettable="true" derived="true">
+        <eAnnotations xmi:id="_jNL9crTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/expression">
+          <details xmi:id="_jPj8AbTsEemDjZfY6rkBQw" key="getter" value="self.quantity * self.unitPrice * (1 - self.discount)"/>
+          <details xmi:id="_jPkjELTsEemDjZfY6rkBQw" key="getter.dialect" value="JQL"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jNFPwLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jPmYQLTsEemDjZfY6rkBQw" key="precision" value="15"/>
+          <details xmi:id="_jPmYQbTsEemDjZfY6rkBQw" key="scale" value="4"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jNPAwbTsEemDjZfY6rkBQw" name="category" lowerBound="1" eType="_jNffcLTsEemDjZfY6rkBQw" volatile="true" derived="true">
+        <eAnnotations xmi:id="_jNL9dbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/expression">
+          <details xmi:id="_jPqCobTsEemDjZfY6rkBQw" key="getter" value="self.product.category"/>
+          <details xmi:id="_jPqpsLTsEemDjZfY6rkBQw" key="getter.dialect" value="JQL"/>
+          <details xmi:id="_jPqpsbTsEemDjZfY6rkBQw" key="setter" value="self.product.category"/>
+          <details xmi:id="_jPqpsrTsEemDjZfY6rkBQw" key="setter.dialect" value="JQL"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN0PkbTsEemDjZfY6rkBQw" name="unitPrice" lowerBound="1" eType="_jOx44LTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNrssbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQVYE7TsEemDjZfY6rkBQw" key="precision" value="15"/>
+          <details xmi:id="_jQVYFLTsEemDjZfY6rkBQw" key="scale" value="4"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN02oLTsEemDjZfY6rkBQw" name="quantity" lowerBound="1" eType="_jOwqwbTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNrssrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQV_IbTsEemDjZfY6rkBQw" key="precision" value="9"/>
+          <details xmi:id="_jQV_IrTsEemDjZfY6rkBQw" key="scale" value="0"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN02obTsEemDjZfY6rkBQw" name="discount" lowerBound="1" eType="_jOx44LTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNsTwLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQV_JLTsEemDjZfY6rkBQw" key="precision" value="15"/>
+          <details xmi:id="_jQV_JbTsEemDjZfY6rkBQw" key="scale" value="4"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jN2r2rTsEemDjZfY6rkBQw" name="product" lowerBound="1" eType="_jNffcbTsEemDjZfY6rkBQw"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jNffcrTsEemDjZfY6rkBQw" name="Customer">
+      <eAnnotations xmi:id="_jNe4YrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/entity">
+        <details xmi:id="_jPwJQLTsEemDjZfY6rkBQw" key="value" value="true"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jN2r1rTsEemDjZfY6rkBQw" name="orders" upperBound="-1" eType="_jNffc7TsEemDjZfY6rkBQw" eOpposite="_jN2r17TsEemDjZfY6rkBQw"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jN358LTsEemDjZfY6rkBQw" name="addresses" upperBound="-1" eType="_jNgGibTsEemDjZfY6rkBQw" containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jNffdbTsEemDjZfY6rkBQw" name="Company" eSuperTypes="_jNffcrTsEemDjZfY6rkBQw">
+      <eAnnotations xmi:id="_jNe4ZbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/entity">
+        <details xmi:id="_jPxXYLTsEemDjZfY6rkBQw" key="value" value="true"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN02orTsEemDjZfY6rkBQw" name="companyName" lowerBound="1" eType="_jOwDsLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNiiwbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQDEMLTsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN02o7TsEemDjZfY6rkBQw" name="contactName" eType="_jOwDsLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNjJ0LTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQDrQLTsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN02pLTsEemDjZfY6rkBQw" name="contactTitle" eType="_jOwDsLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNjJ0bTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQESULTsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN02pbTsEemDjZfY6rkBQw" name="phone" eType="_jOwDsbTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNjJ0rTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQFgcLTsEemDjZfY6rkBQw" key="maxLength" value="20"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN02prTsEemDjZfY6rkBQw" name="fax" eType="_jOwDsbTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNjJ07TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQGHgLTsEemDjZfY6rkBQw" key="maxLength" value="20"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jN2r27TsEemDjZfY6rkBQw" name="manufacturedProducts" upperBound="-1" eType="_jNffcbTsEemDjZfY6rkBQw" eOpposite="_jN2r1LTsEemDjZfY6rkBQw"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jNgGgLTsEemDjZfY6rkBQw" name="Supplier" eSuperTypes="_jNffdbTsEemDjZfY6rkBQw">
+      <eAnnotations xmi:id="_jNe4ZrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/entity">
+        <details xmi:id="_jPylgLTsEemDjZfY6rkBQw" key="value" value="true"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN02p7TsEemDjZfY6rkBQw" name="homePage" eType="_jOwDs7TsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNjJ1LTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQGukbTsEemDjZfY6rkBQw" key="maxLength" value="1024"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jN2r3LTsEemDjZfY6rkBQw" name="suppliedProducts" upperBound="-1" eType="_jNffcbTsEemDjZfY6rkBQw" eOpposite="_jN2r07TsEemDjZfY6rkBQw"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jNgGgbTsEemDjZfY6rkBQw" name="Shipper" eSuperTypes="_jNffdbTsEemDjZfY6rkBQw">
+      <eAnnotations xmi:id="_jNe4Z7TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/entity">
+        <details xmi:id="_jPzzoLTsEemDjZfY6rkBQw" key="value" value="true"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jN2r3bTsEemDjZfY6rkBQw" name="orders" upperBound="-1" eType="_jNffc7TsEemDjZfY6rkBQw" eOpposite="_jN2r2LTsEemDjZfY6rkBQw"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jN2r3rTsEemDjZfY6rkBQw" name="territory" eType="_jNgGhLTsEemDjZfY6rkBQw" eOpposite="_jN3S5LTsEemDjZfY6rkBQw"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jNgGgrTsEemDjZfY6rkBQw" name="InternationalOrder" eSuperTypes="_jNffc7TsEemDjZfY6rkBQw">
+      <eAnnotations xmi:id="_jNe4aLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/entity">
+        <details xmi:id="_jP0asLTsEemDjZfY6rkBQw" key="value" value="true"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN02qLTsEemDjZfY6rkBQw" name="customsDescription" lowerBound="1" eType="_jOwDsLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNjJ1bTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQHVobTsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN02qbTsEemDjZfY6rkBQw" name="exciseTax" lowerBound="1" eType="_jOx44LTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNs60LTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQWmMbTsEemDjZfY6rkBQw" key="precision" value="15"/>
+          <details xmi:id="_jQWmMrTsEemDjZfY6rkBQw" key="scale" value="4"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jNgGirTsEemDjZfY6rkBQw" name="Person">
+      <eAnnotations xmi:id="_jNe4cLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/entity">
+        <details xmi:id="_jP1BwbTsEemDjZfY6rkBQw" key="value" value="true"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN2EwrTsEemDjZfY6rkBQw" name="lastName" lowerBound="1" eType="_jOwDsLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNk_BLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQODUbTsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN2Ew7TsEemDjZfY6rkBQw" name="firstName" lowerBound="1" eType="_jOwDsLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNk_BbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQODU7TsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN2ExLTsEemDjZfY6rkBQw" name="title" eType="_jOvcobTsEemDjZfY6rkBQw"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jNgGg7TsEemDjZfY6rkBQw" name="Employee" eSuperTypes="_jNgGirTsEemDjZfY6rkBQw">
+      <eAnnotations xmi:id="_jNe4abTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/entity">
+        <details xmi:id="_jP1BwLTsEemDjZfY6rkBQw" key="value" value="true"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN02qrTsEemDjZfY6rkBQw" name="titleOfCourtesy" eType="_jOwDsLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNjw4LTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQH8sbTsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN1dsLTsEemDjZfY6rkBQw" name="homePhone" eType="_jOwDsbTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNjw4bTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQIjwLTsEemDjZfY6rkBQw" key="maxLength" value="20"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN1dsbTsEemDjZfY6rkBQw" name="extension" eType="_jOwDsLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNjw4rTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQJK0LTsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN1ds7TsEemDjZfY6rkBQw" name="notes" eType="_jOwDsrTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNkX8LTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQJx4LTsEemDjZfY6rkBQw" key="maxLength" value="250"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN1dtLTsEemDjZfY6rkBQw" name="photoPath" eType="_jOwDsLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNkX8bTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQKY8LTsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN1dsrTsEemDjZfY6rkBQw" name="photo" eType="_jO2KULTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNopYLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQRGobTsEemDjZfY6rkBQw" key="customType" value="demo.types.Binary"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN02q7TsEemDjZfY6rkBQw" name="birthDate" eType="_jO0VILTsEemDjZfY6rkBQw"/>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN02rLTsEemDjZfY6rkBQw" name="hireDate" eType="_jO0VILTsEemDjZfY6rkBQw"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jN3S4bTsEemDjZfY6rkBQw" name="category" eType="_jNffcLTsEemDjZfY6rkBQw" eOpposite="_jN2r0bTsEemDjZfY6rkBQw"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jN2r37TsEemDjZfY6rkBQw" name="orders" upperBound="-1" eType="_jNffc7TsEemDjZfY6rkBQw" eOpposite="_jN2r2bTsEemDjZfY6rkBQw"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jN2r4LTsEemDjZfY6rkBQw" name="reportsTo" eType="_jNgGg7TsEemDjZfY6rkBQw" eOpposite="_jN2r4bTsEemDjZfY6rkBQw"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jN2r4bTsEemDjZfY6rkBQw" name="employees" upperBound="-1" eType="_jNgGg7TsEemDjZfY6rkBQw" eOpposite="_jN2r4LTsEemDjZfY6rkBQw"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jN3S4LTsEemDjZfY6rkBQw" name="territory" eType="_jNgGhLTsEemDjZfY6rkBQw" eOpposite="_jN3S4rTsEemDjZfY6rkBQw"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jN3587TsEemDjZfY6rkBQw" name="address" eType="_jNgGibTsEemDjZfY6rkBQw" containment="true"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jNgGhLTsEemDjZfY6rkBQw" name="Territory">
+      <eAnnotations xmi:id="_jNe4arTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/entity">
+        <details xmi:id="_jP228LTsEemDjZfY6rkBQw" key="value" value="true"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN1dtbTsEemDjZfY6rkBQw" name="territoryDescription" lowerBound="1" eType="_jOwDsLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNkX8rTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQKY8rTsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jN3S5LTsEemDjZfY6rkBQw" name="shipper" eType="_jNgGgbTsEemDjZfY6rkBQw" eOpposite="_jN2r3rTsEemDjZfY6rkBQw"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jN3S4rTsEemDjZfY6rkBQw" name="employees" upperBound="-1" eType="_jNgGg7TsEemDjZfY6rkBQw" eOpposite="_jN3S4LTsEemDjZfY6rkBQw"/>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jN3S47TsEemDjZfY6rkBQw" name="region" eType="_jNgGhbTsEemDjZfY6rkBQw" eOpposite="_jN3S5bTsEemDjZfY6rkBQw"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jNgGhbTsEemDjZfY6rkBQw" name="Region">
+      <eAnnotations xmi:id="_jNe4a7TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/entity">
+        <details xmi:id="_jP3eALTsEemDjZfY6rkBQw" key="value" value="true"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN1dtrTsEemDjZfY6rkBQw" name="regionDescription" lowerBound="1" eType="_jOwDsLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNkX87TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQLAAbTsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jN3S5bTsEemDjZfY6rkBQw" name="territories" upperBound="-1" eType="_jNgGhLTsEemDjZfY6rkBQw" eOpposite="_jN3S47TsEemDjZfY6rkBQw"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jNgGhrTsEemDjZfY6rkBQw" name="OnlineOrder" eSuperTypes="_jNffc7TsEemDjZfY6rkBQw">
+      <eAnnotations xmi:id="_jNe4bLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/entity">
+        <details xmi:id="_jP4sILTsEemDjZfY6rkBQw" key="value" value="true"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN1dt7TsEemDjZfY6rkBQw" name="webshopUrl" lowerBound="1" eType="_jOwDs7TsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNkX9LTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQLAA7TsEemDjZfY6rkBQw" key="maxLength" value="1024"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jNgGh7TsEemDjZfY6rkBQw" name="OnlineInternationalOrder" eSuperTypes="_jNgGgrTsEemDjZfY6rkBQw _jNgGhrTsEemDjZfY6rkBQw">
+      <eAnnotations xmi:id="_jNe4bbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/entity">
+        <details xmi:id="_jP56QLTsEemDjZfY6rkBQw" key="value" value="true"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN1duLTsEemDjZfY6rkBQw" name="onlineTrackingNumber" eType="_jOwDsLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNkX9bTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQLnEbTsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jNgGiLTsEemDjZfY6rkBQw" name="City">
+      <eAnnotations xmi:id="_jNe4brTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/entity">
+        <details xmi:id="_jP6hULTsEemDjZfY6rkBQw" key="value" value="true"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN1dubTsEemDjZfY6rkBQw" name="name" eType="_jOwDsLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNk_ALTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQMOIbTsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jNgGibTsEemDjZfY6rkBQw" name="Address">
+      <eAnnotations xmi:id="_jNe4b7TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/entity">
+        <details xmi:id="_jP7IYLTsEemDjZfY6rkBQw" key="value" value="true"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN1durTsEemDjZfY6rkBQw" name="address" lowerBound="1" eType="_jOwDsLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNk_AbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQM1MbTsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN2EwLTsEemDjZfY6rkBQw" name="region" eType="_jOwDsLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNk_ArTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQM1M7TsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN2EwbTsEemDjZfY6rkBQw" name="postalCode" lowerBound="1" eType="_jOwDsLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNk_A7TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQNcQbTsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jN3S5rTsEemDjZfY6rkBQw" name="city" lowerBound="1" eType="_jNgGiLTsEemDjZfY6rkBQw"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jNgGi7TsEemDjZfY6rkBQw" name="Individual" eSuperTypes="_jNgGirTsEemDjZfY6rkBQw _jNffcrTsEemDjZfY6rkBQw">
+      <eAnnotations xmi:id="_jNe4cbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/entity">
+        <details xmi:id="_jP7vcLTsEemDjZfY6rkBQw" key="value" value="true"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN2ExbTsEemDjZfY6rkBQw" name="phone" eType="_jOwDsbTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jNlmELTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jQOqYbTsEemDjZfY6rkBQw" key="maxLength" value="20"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jNgGjLTsEemDjZfY6rkBQw" name="InternationalAddress" eSuperTypes="_jNgGibTsEemDjZfY6rkBQw">
+      <eAnnotations xmi:id="_jNe4crTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/entity">
+        <details xmi:id="_jP8WgLTsEemDjZfY6rkBQw" key="value" value="true"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jN2ExrTsEemDjZfY6rkBQw" name="country" eType="_jOvcoLTsEemDjZfY6rkBQw"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jNgGjbTsEemDjZfY6rkBQw" name="PaymentList">
+      <eAnnotations xmi:id="_jNe4c7TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/entity">
+        <details xmi:id="_jP9koLTsEemDjZfY6rkBQw" key="value" value="true"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jN3S57TsEemDjZfY6rkBQw" name="employees" lowerBound="1" upperBound="-1" eType="_jNgGg7TsEemDjZfY6rkBQw"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jNgGjrTsEemDjZfY6rkBQw" name="MailingList">
+      <eAnnotations xmi:id="_jNe4dLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/entity">
+        <details xmi:id="_jP-ywLTsEemDjZfY6rkBQw" key="value" value="true"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jN3S6LTsEemDjZfY6rkBQw" name="person" eType="_jNgGirTsEemDjZfY6rkBQw"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jNgGj7TsEemDjZfY6rkBQw" name="Store">
+      <eAnnotations xmi:id="_jNe4dbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/entity">
+        <details xmi:id="_jP_Z0LTsEemDjZfY6rkBQw" key="value" value="true"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jN3S6bTsEemDjZfY6rkBQw" name="products" upperBound="-1" eType="_jNffcbTsEemDjZfY6rkBQw" eOpposite="_jN2r1bTsEemDjZfY6rkBQw"/>
+    </eClassifiers>
+  </eSubpackages>
+  <eSubpackages xmi:id="_jOe99bTsEemDjZfY6rkBQw" name="service" nsURI="http://blackbelt.hu/judo/northwind-psm/demo/service" nsPrefix="runtimenorthwind-psmDemoService">
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jOF8YLTsEemDjZfY6rkBQw" name="&#x298;UnboundServices" abstract="true" interface="true">
+      <eOperations xmi:id="_jOF8YbTsEemDjZfY6rkBQw" name="getAllOrders" upperBound="-1" eType="_jOgMEbTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOBq8LTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jPFa4LTsEemDjZfY6rkBQw" key="value" value="false"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jM63sLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jPEz0LTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+      </eOperations>
+      <eOperations xmi:id="_jOF8Y7TsEemDjZfY6rkBQw" name="createOrder" lowerBound="1" eType="_jOflCrTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOBq8rTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jPPy8bTsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jM63sbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jPPy8LTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+        <eParameters xmi:id="_jN7kULTsEemDjZfY6rkBQw" name="input" lowerBound="1" eType="_jOflCrTsEemDjZfY6rkBQw">
+          <eAnnotations xmi:id="_jSQqsLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+            <details xmi:id="_jSQqsbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+          </eAnnotations>
+        </eParameters>
+      </eOperations>
+      <eOperations xmi:id="_jOF8ZLTsEemDjZfY6rkBQw" name="createInternationalOrder" lowerBound="1" eType="_jOflC7TsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOBq87TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQlPsbTsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+        <eParameters xmi:id="_jN8LYLTsEemDjZfY6rkBQw" name="input" lowerBound="1" eType="_jOflC7TsEemDjZfY6rkBQw"/>
+      </eOperations>
+      <eOperations xmi:id="_jOF8YrTsEemDjZfY6rkBQw" name="getAllInternationalOrders" upperBound="-1" eType="_jOgMErTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOBq8bTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQl2wbTsEemDjZfY6rkBQw" key="value" value="false"/>
+        </eAnnotations>
+      </eOperations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jOgMEbTsEemDjZfY6rkBQw" name="OrderInfoQuery">
+      <eAnnotations xmi:id="_jOflBLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/mappedEntityType">
+        <details xmi:id="_jPGB8LTsEemDjZfY6rkBQw" key="value" value="demo.entities.Order"/>
+        <details xmi:id="_jPLhgLTsEemDjZfY6rkBQw" key="entityIdPresence" value="REQUIRED"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jSNAULTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+        <details xmi:id="_jSNAUbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jSWKQLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+        <details xmi:id="_jSWKQbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jOu1lrTsEemDjZfY6rkBQw" name="items" upperBound="-1" eType="_jOgME7TsEemDjZfY6rkBQw" containment="true">
+        <eAnnotations xmi:id="_jOsZVbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jQ4xsbTsEemDjZfY6rkBQw" key="value" value="orderDetails"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSPcoLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSPcobTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jOu1l7TsEemDjZfY6rkBQw" name="categories" upperBound="-1" eType="_jOgMFrTsEemDjZfY6rkBQw" derived="true" containment="true">
+        <eAnnotations xmi:id="_jOsZVrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jQ5YwLTsEemDjZfY6rkBQw" key="value" value="categories"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSPcorTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSPco7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jOuOhrTsEemDjZfY6rkBQw" name="shipperName" eType="_jOwDsLTsEemDjZfY6rkBQw" derived="true">
+        <eAnnotations xmi:id="_jOp9FrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jRG0I7TsEemDjZfY6rkBQw" key="value" value="shipperName"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jOiBQbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jRHbMLTsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSPcnLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSPcnbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jOuOhbTsEemDjZfY6rkBQw" name="orderDate" lowerBound="1" eType="_jO08MLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOp9FbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jRNh1LTsEemDjZfY6rkBQw" key="value" value="orderDate"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSPcnrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSPcn7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jOflCrTsEemDjZfY6rkBQw" name="OrderInfo">
+      <eAnnotations xmi:id="_jOflALTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/mappedEntityType">
+        <details xmi:id="_jPRBELTsEemDjZfY6rkBQw" key="value" value="demo.entities.Order"/>
+        <details xmi:id="_jPRBEbTsEemDjZfY6rkBQw" key="entityIdPresence" value="OPTIONAL"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jSQqsrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+        <details xmi:id="_jSQqs7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jOu1kLTsEemDjZfY6rkBQw" name="items" upperBound="-1" eType="_jOflDLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOryQLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jQr9YrTsEemDjZfY6rkBQw" key="value" value="orderDetails"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSRR1LTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSRR1bTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jOu1kbTsEemDjZfY6rkBQw" name="shipper" eType="_jOgMELTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOsZULTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jQvAsLTsEemDjZfY6rkBQw" key="value" value="shipper"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSRR1rTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSRR17TsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jOtncbTsEemDjZfY6rkBQw" name="shipperName" eType="_jOwDsLTsEemDjZfY6rkBQw" derived="true">
+        <eAnnotations xmi:id="_jOpWAbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jRE-8LTsEemDjZfY6rkBQw" key="value" value="shipperName"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jOhaMLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jRFmAbTsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSRR0LTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSRR0bTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jOtncLTsEemDjZfY6rkBQw" name="orderDate" lowerBound="1" eType="_jO08MLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOpWALTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jRNh0LTsEemDjZfY6rkBQw" key="value" value="orderDate"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSRR0rTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSRR07TsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jOgMFLTsEemDjZfY6rkBQw" name="ProductInfo">
+      <eAnnotations xmi:id="_jOflB7TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/mappedEntityType">
+        <details xmi:id="_jPV5kLTsEemDjZfY6rkBQw" key="value" value="demo.entities.Product"/>
+        <details xmi:id="_jPXHsLTsEemDjZfY6rkBQw" key="entityIdPresence" value="OPTIONAL"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jSNnZrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+        <details xmi:id="_jSNnZ7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jShwcLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+        <details xmi:id="_jShwcbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jTcWcLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+        <details xmi:id="_jTcWcbTsEemDjZfY6rkBQw" key="value" value="demo.externalAP"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jTcWcrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+        <details xmi:id="_jTcWc7TsEemDjZfY6rkBQw" key="value" value="demo.externalAP/products"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jT_JALTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+        <details xmi:id="_jT_JAbTsEemDjZfY6rkBQw" key="value" value="demo.externalAP/categories"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jOu1nLTsEemDjZfY6rkBQw" name="category" lowerBound="1" eType="_jOgMFrTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOtAY7TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jRAtgLTsEemDjZfY6rkBQw" key="value" value="category"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSO1hLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSO1hbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jOuOjbTsEemDjZfY6rkBQw" name="productName" lowerBound="1" eType="_jOwDsLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOrLMLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jRICQbTsEemDjZfY6rkBQw" key="value" value="productName"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jOiBRLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jRICQ7TsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSO1gLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSO1gbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jOuOjrTsEemDjZfY6rkBQw" name="unitPrice" lowerBound="1" eType="_jOx44LTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOrLMbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jRMTs7TsEemDjZfY6rkBQw" key="value" value="unitPrice"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jOm5wLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jRM6wLTsEemDjZfY6rkBQw" key="precision" value="15"/>
+          <details xmi:id="_jRM6wbTsEemDjZfY6rkBQw" key="scale" value="4"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSO1grTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSO1g7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jOgMFrTsEemDjZfY6rkBQw" name="CategoryInfo">
+      <eAnnotations xmi:id="_jOflCbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/mappedEntityType">
+        <details xmi:id="_jPYV07TsEemDjZfY6rkBQw" key="value" value="demo.entities.Category"/>
+        <details xmi:id="_jPaLALTsEemDjZfY6rkBQw" key="entityIdPresence" value="OPTIONAL"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jSNnZLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+        <details xmi:id="_jSNnZbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jSf7QLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+        <details xmi:id="_jSf7QbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jTeLoLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+        <details xmi:id="_jTeLobTsEemDjZfY6rkBQw" key="value" value="demo.externalAP"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jTeLorTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+        <details xmi:id="_jTeLo7TsEemDjZfY6rkBQw" key="value" value="demo.externalAP/products"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jT8FsLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+        <details xmi:id="_jT8FsbTsEemDjZfY6rkBQw" key="value" value="demo.externalAP/categories"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jOu1nrTsEemDjZfY6rkBQw" name="products" upperBound="-1" eType="_jOgMFLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOtAZbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jREX4bTsEemDjZfY6rkBQw" key="value" value="products"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSO1iLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSO1ibTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jOuOkbTsEemDjZfY6rkBQw" name="categoryName" lowerBound="1" eType="_jOwDsLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOrLNLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jRJQYLTsEemDjZfY6rkBQw" key="value" value="categoryName"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jOioUbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jRJQYrTsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSO1hrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSO1h7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jOflC7TsEemDjZfY6rkBQw" name="InternationalOrderInfo">
+      <eAnnotations xmi:id="_jOflAbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/mappedEntityType">
+        <details xmi:id="_jQkooLTsEemDjZfY6rkBQw" key="value" value="demo.entities.InternationalOrder"/>
+        <details xmi:id="_jQkoobTsEemDjZfY6rkBQw" key="entityIdPresence" value="OPTIONAL"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jOu1krTsEemDjZfY6rkBQw" name="items" upperBound="-1" eType="_jOflDLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOsZUbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jQw147TsEemDjZfY6rkBQw" key="value" value="orderDetails"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jOu1k7TsEemDjZfY6rkBQw" name="shipper" eType="_jOgMELTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOsZUrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jQyEA7TsEemDjZfY6rkBQw" key="value" value="shipper"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jOtnc7TsEemDjZfY6rkBQw" name="shipperName" eType="_jOwDsLTsEemDjZfY6rkBQw" derived="true">
+        <eAnnotations xmi:id="_jOpWA7TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jRFmArTsEemDjZfY6rkBQw" key="value" value="shipperName"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jOhaMbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jRFmBLTsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jOtndLTsEemDjZfY6rkBQw" name="customsDescription" lowerBound="1" eType="_jOwDsLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOpWBLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jRGNELTsEemDjZfY6rkBQw" key="value" value="customsDescription"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jOhaMrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jRGNErTsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jOtndbTsEemDjZfY6rkBQw" name="exciseTax" lowerBound="1" eType="_jOx44LTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOpWBbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jRJQY7TsEemDjZfY6rkBQw" key="value" value="exciseTax"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jOlroLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jRJ3cLTsEemDjZfY6rkBQw" key="precision" value="15"/>
+          <details xmi:id="_jRJ3cbTsEemDjZfY6rkBQw" key="scale" value="4"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jOtncrTsEemDjZfY6rkBQw" name="orderDate" lowerBound="1" eType="_jO08MLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOpWArTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jRNh0rTsEemDjZfY6rkBQw" key="value" value="orderDate"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jOgMErTsEemDjZfY6rkBQw" name="InternationalOrderInfoQuery">
+      <eAnnotations xmi:id="_jOflBbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/mappedEntityType">
+        <details xmi:id="_jQmd0LTsEemDjZfY6rkBQw" key="value" value="demo.entities.InternationalOrder"/>
+        <details xmi:id="_jQmd0bTsEemDjZfY6rkBQw" key="entityIdPresence" value="REQUIRED"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jOu1mLTsEemDjZfY6rkBQw" name="items" upperBound="-1" eType="_jOgME7TsEemDjZfY6rkBQw" containment="true">
+        <eAnnotations xmi:id="_jOsZV7TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jQ6m4bTsEemDjZfY6rkBQw" key="value" value="orderDetails"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jOu1mbTsEemDjZfY6rkBQw" name="categories" upperBound="-1" eType="_jOgMFrTsEemDjZfY6rkBQw" derived="true" containment="true">
+        <eAnnotations xmi:id="_jOtAYLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jQ7N8LTsEemDjZfY6rkBQw" key="value" value="categories"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jOuOiLTsEemDjZfY6rkBQw" name="shipperName" eType="_jOwDsLTsEemDjZfY6rkBQw" derived="true">
+        <eAnnotations xmi:id="_jOqkILTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jRHbMbTsEemDjZfY6rkBQw" key="value" value="shipperName"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jOiBQrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jRHbM7TsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jOuOh7TsEemDjZfY6rkBQw" name="orderDate" lowerBound="1" eType="_jO08MLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOp9F7TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jROI4bTsEemDjZfY6rkBQw" key="value" value="orderDate"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jOGjcLTsEemDjZfY6rkBQw" name="OrderInfo&#x298;items" abstract="true" interface="true">
+      <eOperations xmi:id="_jOJmwLTsEemDjZfY6rkBQw" name="get" upperBound="-1" eType="_jOflDLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOIYoLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQphILTsEemDjZfY6rkBQw" key="value" value="false"/>
+        </eAnnotations>
+      </eOperations>
+      <eOperations xmi:id="_jOPtYLTsEemDjZfY6rkBQw" name="set">
+        <eAnnotations xmi:id="_jOOfQLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQqvQLTsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+        <eParameters xmi:id="_jQqvQbTsEemDjZfY6rkBQw" name="input" upperBound="-1" eType="_jOMqELTsEemDjZfY6rkBQw"/>
+      </eOperations>
+      <eOperations xmi:id="_jOWbELTsEemDjZfY6rkBQw" name="addAll">
+        <eAnnotations xmi:id="_jOVM8LTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQrWUbTsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+        <eParameters xmi:id="_jQrWUrTsEemDjZfY6rkBQw" name="input" lowerBound="1" upperBound="-1" eType="_jOMqELTsEemDjZfY6rkBQw"/>
+      </eOperations>
+      <eOperations xmi:id="_jOaFcLTsEemDjZfY6rkBQw" name="removeAll">
+        <eAnnotations xmi:id="_jOYQQLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQrWVLTsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+        <eParameters xmi:id="_jQr9YLTsEemDjZfY6rkBQw" name="input" lowerBound="1" upperBound="-1" eType="_jOMqELTsEemDjZfY6rkBQw"/>
+      </eOperations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jOGjcbTsEemDjZfY6rkBQw" name="OrderInfo&#x298;shipper" abstract="true" interface="true">
+      <eOperations xmi:id="_jOJmwbTsEemDjZfY6rkBQw" name="get" eType="_jOgMELTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOIYobTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQskcbTsEemDjZfY6rkBQw" key="value" value="false"/>
+        </eAnnotations>
+      </eOperations>
+      <eOperations xmi:id="_jOPtYbTsEemDjZfY6rkBQw" name="set">
+        <eAnnotations xmi:id="_jOOfQbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQuZoLTsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+        <eParameters xmi:id="_jQuZobTsEemDjZfY6rkBQw" name="input" eType="_jONRILTsEemDjZfY6rkBQw"/>
+      </eOperations>
+      <eOperations xmi:id="_jOTXwLTsEemDjZfY6rkBQw" name="unset">
+        <eAnnotations xmi:id="_jORikLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQuZo7TsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+      </eOperations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jOGjcrTsEemDjZfY6rkBQw" name="InternationalOrderInfo&#x298;items" abstract="true" interface="true">
+      <eOperations xmi:id="_jOJmwrTsEemDjZfY6rkBQw" name="get" upperBound="-1" eType="_jOflDLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOIYorTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQvAs7TsEemDjZfY6rkBQw" key="value" value="false"/>
+        </eAnnotations>
+      </eOperations>
+      <eOperations xmi:id="_jOPtYrTsEemDjZfY6rkBQw" name="set">
+        <eAnnotations xmi:id="_jOOfQrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQwO0LTsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+        <eParameters xmi:id="_jQwO0bTsEemDjZfY6rkBQw" name="input" upperBound="-1" eType="_jONRIbTsEemDjZfY6rkBQw"/>
+      </eOperations>
+      <eOperations xmi:id="_jOWbEbTsEemDjZfY6rkBQw" name="addAll">
+        <eAnnotations xmi:id="_jOVM8bTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQwO07TsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+        <eParameters xmi:id="_jQwO1LTsEemDjZfY6rkBQw" name="input" lowerBound="1" upperBound="-1" eType="_jONRIbTsEemDjZfY6rkBQw"/>
+      </eOperations>
+      <eOperations xmi:id="_jOaFcbTsEemDjZfY6rkBQw" name="removeAll">
+        <eAnnotations xmi:id="_jOY3ULTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQw14LTsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+        <eParameters xmi:id="_jQw14bTsEemDjZfY6rkBQw" name="input" lowerBound="1" upperBound="-1" eType="_jONRIbTsEemDjZfY6rkBQw"/>
+      </eOperations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jOGjc7TsEemDjZfY6rkBQw" name="InternationalOrderInfo&#x298;shipper" abstract="true" interface="true">
+      <eOperations xmi:id="_jOJmw7TsEemDjZfY6rkBQw" name="get" eType="_jOgMELTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOIYo7TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQxc8LTsEemDjZfY6rkBQw" key="value" value="false"/>
+        </eAnnotations>
+      </eOperations>
+      <eOperations xmi:id="_jOPtY7TsEemDjZfY6rkBQw" name="set">
+        <eAnnotations xmi:id="_jOOfQ7TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQxc9LTsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+        <eParameters xmi:id="_jQyEALTsEemDjZfY6rkBQw" name="input" eType="_jONRIrTsEemDjZfY6rkBQw"/>
+      </eOperations>
+      <eOperations xmi:id="_jOT-0LTsEemDjZfY6rkBQw" name="unset">
+        <eAnnotations xmi:id="_jORikbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQyEArTsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+      </eOperations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jOGjdLTsEemDjZfY6rkBQw" name="OrderItem&#x298;product" abstract="true" interface="true">
+      <eOperations xmi:id="_jOJmxLTsEemDjZfY6rkBQw" name="get" lowerBound="1" eType="_jOgMFLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOI_sLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQyrEbTsEemDjZfY6rkBQw" key="value" value="false"/>
+        </eAnnotations>
+      </eOperations>
+      <eOperations xmi:id="_jOPtZLTsEemDjZfY6rkBQw" name="set">
+        <eAnnotations xmi:id="_jOOfRLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQzSIbTsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+        <eParameters xmi:id="_jQzSIrTsEemDjZfY6rkBQw" name="input" lowerBound="1" eType="_jONRI7TsEemDjZfY6rkBQw"/>
+      </eOperations>
+      <eOperations xmi:id="_jOT-0bTsEemDjZfY6rkBQw" name="unset">
+        <eAnnotations xmi:id="_jORikrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQz5MLTsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+      </eOperations>
+      <eOperations xmi:id="_jOdv0LTsEemDjZfY6rkBQw" name="getRange" upperBound="-1" eType="_jOgMFLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOb6oLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQz5MbTsEemDjZfY6rkBQw" key="value" value="false"/>
+        </eAnnotations>
+      </eOperations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jOHKgLTsEemDjZfY6rkBQw" name="OrderItem&#x298;category" abstract="true" interface="true">
+      <eOperations xmi:id="_jOKN0LTsEemDjZfY6rkBQw" name="get" lowerBound="1" eType="_jOgMFrTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOI_sbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQ0gQbTsEemDjZfY6rkBQw" key="value" value="false"/>
+        </eAnnotations>
+      </eOperations>
+      <eOperations xmi:id="_jOQUcLTsEemDjZfY6rkBQw" name="set">
+        <eAnnotations xmi:id="_jOOfRbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQ1HULTsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+        <eParameters xmi:id="_jQ1HUbTsEemDjZfY6rkBQw" name="input" lowerBound="1" eType="_jONRJLTsEemDjZfY6rkBQw"/>
+      </eOperations>
+      <eOperations xmi:id="_jOT-0rTsEemDjZfY6rkBQw" name="unset">
+        <eAnnotations xmi:id="_jOSJoLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQ1HU7TsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+      </eOperations>
+      <eOperations xmi:id="_jOdv0bTsEemDjZfY6rkBQw" name="getRange" upperBound="-1" eType="_jOgMFrTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOb6obTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQ1uYLTsEemDjZfY6rkBQw" key="value" value="false"/>
+        </eAnnotations>
+      </eOperations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jOHKgbTsEemDjZfY6rkBQw" name="OrderInfoQuery&#x298;items" abstract="true" interface="true">
+      <eOperations xmi:id="_jOKN0bTsEemDjZfY6rkBQw" name="get" upperBound="-1" eType="_jOgME7TsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOI_srTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQ2VcbTsEemDjZfY6rkBQw" key="value" value="false"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSXYYLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSXYYbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSX_cLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jSX_cbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+        </eAnnotations>
+      </eOperations>
+      <eOperations xmi:id="_jOQUcbTsEemDjZfY6rkBQw" name="set">
+        <eAnnotations xmi:id="_jOPGULTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQ3jkLTsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jS480LTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jS480bTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jS480rTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jS4807TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+        </eAnnotations>
+        <eParameters xmi:id="_jQ3jkbTsEemDjZfY6rkBQw" name="input" upperBound="-1" eType="_jONRJbTsEemDjZfY6rkBQw">
+          <eAnnotations xmi:id="_jS481LTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+            <details xmi:id="_jS481bTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+          </eAnnotations>
+          <eAnnotations xmi:id="_jS481rTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+            <details xmi:id="_jS4817TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+          </eAnnotations>
+        </eParameters>
+      </eOperations>
+      <eOperations xmi:id="_jOXCILTsEemDjZfY6rkBQw" name="addAll">
+        <eAnnotations xmi:id="_jOVM8rTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQ4KobTsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jS6yALTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jS6yAbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jS6yArTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jS6yA7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+        </eAnnotations>
+        <eParameters xmi:id="_jQ4KorTsEemDjZfY6rkBQw" name="input" lowerBound="1" upperBound="-1" eType="_jONRJbTsEemDjZfY6rkBQw">
+          <eAnnotations xmi:id="_jS6yBLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+            <details xmi:id="_jS6yBbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+          </eAnnotations>
+          <eAnnotations xmi:id="_jS6yBrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+            <details xmi:id="_jS6yB7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+          </eAnnotations>
+        </eParameters>
+      </eOperations>
+      <eOperations xmi:id="_jOasgLTsEemDjZfY6rkBQw" name="removeAll">
+        <eAnnotations xmi:id="_jOY3UbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQ4KpLTsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jS8AILTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jS8AIbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jS8AIrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jS8AI7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+        </eAnnotations>
+        <eParameters xmi:id="_jQ4KpbTsEemDjZfY6rkBQw" name="input" lowerBound="1" upperBound="-1" eType="_jONRJbTsEemDjZfY6rkBQw">
+          <eAnnotations xmi:id="_jS8AJLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+            <details xmi:id="_jS8AJbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+          </eAnnotations>
+          <eAnnotations xmi:id="_jS8AJrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+            <details xmi:id="_jS8AJ7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+          </eAnnotations>
+        </eParameters>
+      </eOperations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jOHKgrTsEemDjZfY6rkBQw" name="OrderInfoQuery&#x298;categories" abstract="true" interface="true">
+      <eOperations xmi:id="_jOKN0rTsEemDjZfY6rkBQw" name="get" upperBound="-1" eType="_jOgMFrTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOI_s7TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQ4xtLTsEemDjZfY6rkBQw" key="value" value="false"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jS9OQLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jS9OQbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jS9OQrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jS9OQ7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+        </eAnnotations>
+      </eOperations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jOHKg7TsEemDjZfY6rkBQw" name="InternationalOrderInfoQuery&#x298;items" abstract="true" interface="true">
+      <eOperations xmi:id="_jOKN07TsEemDjZfY6rkBQw" name="get" upperBound="-1" eType="_jOgME7TsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOI_tLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQ5Yw7TsEemDjZfY6rkBQw" key="value" value="false"/>
+        </eAnnotations>
+      </eOperations>
+      <eOperations xmi:id="_jOQUcrTsEemDjZfY6rkBQw" name="set">
+        <eAnnotations xmi:id="_jOPGUbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQ5_0LTsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+        <eParameters xmi:id="_jQ5_0bTsEemDjZfY6rkBQw" name="input" upperBound="-1" eType="_jONRJrTsEemDjZfY6rkBQw"/>
+      </eOperations>
+      <eOperations xmi:id="_jOXCIbTsEemDjZfY6rkBQw" name="addAll">
+        <eAnnotations xmi:id="_jOV0ALTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQ5_07TsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+        <eParameters xmi:id="_jQ5_1LTsEemDjZfY6rkBQw" name="input" lowerBound="1" upperBound="-1" eType="_jONRJrTsEemDjZfY6rkBQw"/>
+      </eOperations>
+      <eOperations xmi:id="_jOasgbTsEemDjZfY6rkBQw" name="removeAll">
+        <eAnnotations xmi:id="_jOY3UrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQ5_1rTsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+        <eParameters xmi:id="_jQ5_17TsEemDjZfY6rkBQw" name="input" lowerBound="1" upperBound="-1" eType="_jONRJrTsEemDjZfY6rkBQw"/>
+      </eOperations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jOHKhLTsEemDjZfY6rkBQw" name="InternationalOrderInfoQuery&#x298;categories" abstract="true" interface="true">
+      <eOperations xmi:id="_jOKN1LTsEemDjZfY6rkBQw" name="get" upperBound="-1" eType="_jOgMFrTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOI_tbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQ6m5LTsEemDjZfY6rkBQw" key="value" value="false"/>
+        </eAnnotations>
+      </eOperations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jOHKhbTsEemDjZfY6rkBQw" name="OrderItemQuery&#x298;product" abstract="true" interface="true">
+      <eOperations xmi:id="_jOKN1bTsEemDjZfY6rkBQw" name="get" lowerBound="1" eType="_jOgMFbTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOI_trTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQ7N87TsEemDjZfY6rkBQw" key="value" value="false"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSbp0LTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSbp0bTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSbp0rTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jSbp07TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+        </eAnnotations>
+      </eOperations>
+      <eOperations xmi:id="_jOQUc7TsEemDjZfY6rkBQw" name="set">
+        <eAnnotations xmi:id="_jOPGUrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQ8cELTsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSxBALTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSxBAbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSxBArTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jSxBA7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+        </eAnnotations>
+        <eParameters xmi:id="_jQ8cEbTsEemDjZfY6rkBQw" name="input" lowerBound="1" eType="_jON4MLTsEemDjZfY6rkBQw">
+          <eAnnotations xmi:id="_jSxoELTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+            <details xmi:id="_jSxoEbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+          </eAnnotations>
+          <eAnnotations xmi:id="_jSxoErTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+            <details xmi:id="_jSxoE7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+          </eAnnotations>
+        </eParameters>
+      </eOperations>
+      <eOperations xmi:id="_jOT-07TsEemDjZfY6rkBQw" name="unset">
+        <eAnnotations xmi:id="_jOSJobTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQ8cE7TsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSy2MLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSy2MbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSy2MrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jSy2M7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+        </eAnnotations>
+      </eOperations>
+      <eOperations xmi:id="_jOdv0rTsEemDjZfY6rkBQw" name="getRange" upperBound="-1" eType="_jOgMFbTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOchsLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQ8cFLTsEemDjZfY6rkBQw" key="value" value="false"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSy2NLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSy2NbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSy2NrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jSy2N7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+        </eAnnotations>
+      </eOperations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jOHKhrTsEemDjZfY6rkBQw" name="OrderItemQuery&#x298;category" abstract="true" interface="true">
+      <eOperations xmi:id="_jOKN1rTsEemDjZfY6rkBQw" name="get" lowerBound="1" eType="_jOgMFrTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOI_t7TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQ9qMLTsEemDjZfY6rkBQw" key="value" value="false"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jS0EULTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jS0EUbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jS0EUrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jS0EU7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+        </eAnnotations>
+      </eOperations>
+      <eOperations xmi:id="_jOQUdLTsEemDjZfY6rkBQw" name="set">
+        <eAnnotations xmi:id="_jOPGU7TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQ-RQLTsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jS1ScLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jS1ScbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jS1ScrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jS1Sc7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+        </eAnnotations>
+        <eParameters xmi:id="_jQ-RQbTsEemDjZfY6rkBQw" name="input" lowerBound="1" eType="_jON4MbTsEemDjZfY6rkBQw">
+          <eAnnotations xmi:id="_jS15gLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+            <details xmi:id="_jS15gbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+          </eAnnotations>
+          <eAnnotations xmi:id="_jS15grTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+            <details xmi:id="_jS15g7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+          </eAnnotations>
+        </eParameters>
+      </eOperations>
+      <eOperations xmi:id="_jOUl4LTsEemDjZfY6rkBQw" name="unset">
+        <eAnnotations xmi:id="_jOSJorTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQ-RQ7TsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jS3HoLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jS3HobTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jS3HorTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jS3Ho7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+        </eAnnotations>
+      </eOperations>
+      <eOperations xmi:id="_jOeW4LTsEemDjZfY6rkBQw" name="getRange" upperBound="-1" eType="_jOgMFrTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOchsbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQ-RRLTsEemDjZfY6rkBQw" key="value" value="false"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jS3HpLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jS3HpbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jS3HprTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jS3Hp7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+        </eAnnotations>
+      </eOperations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jOHKh7TsEemDjZfY6rkBQw" name="ProductInfo&#x298;category" abstract="true" interface="true">
+      <eOperations xmi:id="_jOKN17TsEemDjZfY6rkBQw" name="get" lowerBound="1" eType="_jOgMFrTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOI_uLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQ-4VLTsEemDjZfY6rkBQw" key="value" value="false"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSi-kLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSi-kbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSi-krTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jSi-k7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jTc9gLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jTc9gbTsEemDjZfY6rkBQw" key="value" value="demo.externalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jTc9grTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jTc9g7TsEemDjZfY6rkBQw" key="value" value="demo.externalAP/products"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jUBlQLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jUBlQbTsEemDjZfY6rkBQw" key="value" value="demo.externalAP/categories"/>
+        </eAnnotations>
+      </eOperations>
+      <eOperations xmi:id="_jOQUdbTsEemDjZfY6rkBQw" name="set">
+        <eAnnotations xmi:id="_jOPGVLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jQ_fY7TsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSkzwLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSkzwbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSkzwrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jSkzw7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jTmHcLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jTmHcbTsEemDjZfY6rkBQw" key="value" value="demo.externalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jTmugLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jTmugbTsEemDjZfY6rkBQw" key="value" value="demo.externalAP/products"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jUEokLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jUEokbTsEemDjZfY6rkBQw" key="value" value="demo.externalAP/categories"/>
+        </eAnnotations>
+        <eParameters xmi:id="_jRAGcLTsEemDjZfY6rkBQw" name="input" lowerBound="1" eType="_jON4MrTsEemDjZfY6rkBQw">
+          <eAnnotations xmi:id="_jSla0LTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+            <details xmi:id="_jSla0bTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+          </eAnnotations>
+          <eAnnotations xmi:id="_jSla0rTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+            <details xmi:id="_jSla07TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+          </eAnnotations>
+          <eAnnotations xmi:id="_jTmugrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+            <details xmi:id="_jTmug7TsEemDjZfY6rkBQw" key="value" value="demo.externalAP"/>
+          </eAnnotations>
+          <eAnnotations xmi:id="_jTmuhLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+            <details xmi:id="_jTmuhbTsEemDjZfY6rkBQw" key="value" value="demo.externalAP/products"/>
+          </eAnnotations>
+          <eAnnotations xmi:id="_jUFPoLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+            <details xmi:id="_jUFPobTsEemDjZfY6rkBQw" key="value" value="demo.externalAP/categories"/>
+          </eAnnotations>
+        </eParameters>
+      </eOperations>
+      <eOperations xmi:id="_jOUl4bTsEemDjZfY6rkBQw" name="unset">
+        <eAnnotations xmi:id="_jOSJo7TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jRAGcrTsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSmo8LTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSmo8bTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSmo8rTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jSmo87TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jT4bULTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jT4bUbTsEemDjZfY6rkBQw" key="value" value="demo.externalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jT4bUrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jT4bU7TsEemDjZfY6rkBQw" key="value" value="demo.externalAP/products"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jUI6ALTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jUI6AbTsEemDjZfY6rkBQw" key="value" value="demo.externalAP/categories"/>
+        </eAnnotations>
+      </eOperations>
+      <eOperations xmi:id="_jOeW4bTsEemDjZfY6rkBQw" name="getRange" upperBound="-1" eType="_jOgMFrTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOchsrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jRAGc7TsEemDjZfY6rkBQw" key="value" value="false"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSnQALTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSnQAbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSnQArTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jSnQA7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jT5CYLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jT5CYbTsEemDjZfY6rkBQw" key="value" value="demo.externalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jT5CYrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jT5CY7TsEemDjZfY6rkBQw" key="value" value="demo.externalAP/products"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jUJhELTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jUJhEbTsEemDjZfY6rkBQw" key="value" value="demo.externalAP/categories"/>
+        </eAnnotations>
+      </eOperations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jOHKiLTsEemDjZfY6rkBQw" name="ProductInfoQuery&#x298;category" abstract="true" interface="true">
+      <eOperations xmi:id="_jOKN2LTsEemDjZfY6rkBQw" name="get" lowerBound="1" eType="_jOgMFrTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOI_ubTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jRAtg7TsEemDjZfY6rkBQw" key="value" value="false"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSetILTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSetIbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSetIrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jSetI7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+        </eAnnotations>
+      </eOperations>
+      <eOperations xmi:id="_jOQ7gLTsEemDjZfY6rkBQw" name="set">
+        <eAnnotations xmi:id="_jOPGVbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jRBUkrTsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSt9sLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSt9sbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSt9srTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jSt9s7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+        </eAnnotations>
+        <eParameters xmi:id="_jRBUk7TsEemDjZfY6rkBQw" name="input" lowerBound="1" eType="_jON4M7TsEemDjZfY6rkBQw">
+          <eAnnotations xmi:id="_jSt9tLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+            <details xmi:id="_jSt9tbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+          </eAnnotations>
+          <eAnnotations xmi:id="_jSukwLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+            <details xmi:id="_jSukwbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+          </eAnnotations>
+        </eParameters>
+      </eOperations>
+      <eOperations xmi:id="_jOUl4rTsEemDjZfY6rkBQw" name="unset">
+        <eAnnotations xmi:id="_jOSwsLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jRB7obTsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSvy4LTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSvy4bTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSvy4rTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jSvy47TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+        </eAnnotations>
+      </eOperations>
+      <eOperations xmi:id="_jOeW4rTsEemDjZfY6rkBQw" name="getRange" upperBound="-1" eType="_jOgMFrTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOchs7TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jRB7orTsEemDjZfY6rkBQw" key="value" value="false"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSvy5LTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSvy5bTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSvy5rTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jSvy57TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+        </eAnnotations>
+      </eOperations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jOHKibTsEemDjZfY6rkBQw" name="CategoryInfo&#x298;products" abstract="true" interface="true">
+      <eOperations xmi:id="_jOKN2bTsEemDjZfY6rkBQw" name="get" upperBound="-1" eType="_jOgMFLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOI_urTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jRCis7TsEemDjZfY6rkBQw" key="value" value="false"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jShJYLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jShJYbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jShJYrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jShJY7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jTeysLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jTeysbTsEemDjZfY6rkBQw" key="value" value="demo.externalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jTeysrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jTeys7TsEemDjZfY6rkBQw" key="value" value="demo.externalAP/products"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jT9T0LTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jT9T0bTsEemDjZfY6rkBQw" key="value" value="demo.externalAP/categories"/>
+        </eAnnotations>
+      </eOperations>
+      <eOperations xmi:id="_jOQ7gbTsEemDjZfY6rkBQw" name="set">
+        <eAnnotations xmi:id="_jOPGVrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jRDJwrTsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSoeILTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSoeIbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSpFMLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jSpFMbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jTgn4LTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jTgn4bTsEemDjZfY6rkBQw" key="value" value="demo.externalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jTgn4rTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jTgn47TsEemDjZfY6rkBQw" key="value" value="demo.externalAP/products"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jULWQLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jULWQbTsEemDjZfY6rkBQw" key="value" value="demo.externalAP/categories"/>
+        </eAnnotations>
+        <eParameters xmi:id="_jRDJw7TsEemDjZfY6rkBQw" name="input" upperBound="-1" eType="_jON4NLTsEemDjZfY6rkBQw">
+          <eAnnotations xmi:id="_jSpFMrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+            <details xmi:id="_jSpFM7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+          </eAnnotations>
+          <eAnnotations xmi:id="_jSpFNLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+            <details xmi:id="_jSpFNbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+          </eAnnotations>
+          <eAnnotations xmi:id="_jTgn5LTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+            <details xmi:id="_jTgn5bTsEemDjZfY6rkBQw" key="value" value="demo.externalAP"/>
+          </eAnnotations>
+          <eAnnotations xmi:id="_jTgn5rTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+            <details xmi:id="_jTgn57TsEemDjZfY6rkBQw" key="value" value="demo.externalAP/products"/>
+          </eAnnotations>
+          <eAnnotations xmi:id="_jUL9ULTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+            <details xmi:id="_jUL9UbTsEemDjZfY6rkBQw" key="value" value="demo.externalAP/categories"/>
+          </eAnnotations>
+        </eParameters>
+      </eOperations>
+      <eOperations xmi:id="_jOXpMLTsEemDjZfY6rkBQw" name="addAll">
+        <eAnnotations xmi:id="_jOV0AbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jRDw0LTsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSqTULTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSqTUbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSqTUrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jSqTU7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jTidELTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jTidEbTsEemDjZfY6rkBQw" key="value" value="demo.externalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jTidErTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jTidE7TsEemDjZfY6rkBQw" key="value" value="demo.externalAP/products"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jUPAoLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jUPAobTsEemDjZfY6rkBQw" key="value" value="demo.externalAP/categories"/>
+        </eAnnotations>
+        <eParameters xmi:id="_jRDw0bTsEemDjZfY6rkBQw" name="input" lowerBound="1" upperBound="-1" eType="_jON4NLTsEemDjZfY6rkBQw">
+          <eAnnotations xmi:id="_jSqTVLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+            <details xmi:id="_jSqTVbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+          </eAnnotations>
+          <eAnnotations xmi:id="_jSqTVrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+            <details xmi:id="_jSqTV7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+          </eAnnotations>
+          <eAnnotations xmi:id="_jTidFLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+            <details xmi:id="_jTidFbTsEemDjZfY6rkBQw" key="value" value="demo.externalAP"/>
+          </eAnnotations>
+          <eAnnotations xmi:id="_jTidFrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+            <details xmi:id="_jTidF7TsEemDjZfY6rkBQw" key="value" value="demo.externalAP/products"/>
+          </eAnnotations>
+          <eAnnotations xmi:id="_jUPnsLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+            <details xmi:id="_jUPnsbTsEemDjZfY6rkBQw" key="value" value="demo.externalAP/categories"/>
+          </eAnnotations>
+        </eParameters>
+      </eOperations>
+      <eOperations xmi:id="_jObTkLTsEemDjZfY6rkBQw" name="removeAll">
+        <eAnnotations xmi:id="_jOZeYLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jRDw07TsEemDjZfY6rkBQw" key="value" value="true"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSrhcLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSrhcbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSrhcrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jSrhc7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jTjrMLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jTjrMbTsEemDjZfY6rkBQw" key="value" value="demo.externalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jTjrMrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jTjrM7TsEemDjZfY6rkBQw" key="value" value="demo.externalAP/products"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jUQ10LTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jUQ10bTsEemDjZfY6rkBQw" key="value" value="demo.externalAP/categories"/>
+        </eAnnotations>
+        <eParameters xmi:id="_jRDw1LTsEemDjZfY6rkBQw" name="input" lowerBound="1" upperBound="-1" eType="_jON4NLTsEemDjZfY6rkBQw">
+          <eAnnotations xmi:id="_jSrhdLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+            <details xmi:id="_jSrhdbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+          </eAnnotations>
+          <eAnnotations xmi:id="_jSrhdrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+            <details xmi:id="_jSrhd7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+          </eAnnotations>
+          <eAnnotations xmi:id="_jTjrNLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+            <details xmi:id="_jTjrNbTsEemDjZfY6rkBQw" key="value" value="demo.externalAP"/>
+          </eAnnotations>
+          <eAnnotations xmi:id="_jTjrNrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+            <details xmi:id="_jTjrN7TsEemDjZfY6rkBQw" key="value" value="demo.externalAP/products"/>
+          </eAnnotations>
+          <eAnnotations xmi:id="_jURc4LTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+            <details xmi:id="_jURc4bTsEemDjZfY6rkBQw" key="value" value="demo.externalAP/categories"/>
+          </eAnnotations>
+        </eParameters>
+      </eOperations>
+      <eOperations xmi:id="_jOeW47TsEemDjZfY6rkBQw" name="getRange" upperBound="-1" eType="_jOgMFLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOchtLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/stateful">
+          <details xmi:id="_jRDw1rTsEemDjZfY6rkBQw" key="value" value="false"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSsvkLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSsvkbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSsvkrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jSsvk7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jTk5ULTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jTk5UbTsEemDjZfY6rkBQw" key="value" value="demo.externalAP"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jTk5UrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jTk5U7TsEemDjZfY6rkBQw" key="value" value="demo.externalAP/products"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jUTSELTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+          <details xmi:id="_jUTSEbTsEemDjZfY6rkBQw" key="value" value="demo.externalAP/categories"/>
+        </eAnnotations>
+      </eOperations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jOflDLTsEemDjZfY6rkBQw" name="OrderItem">
+      <eAnnotations xmi:id="_jOflArTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/mappedEntityType">
+        <details xmi:id="_jQphIbTsEemDjZfY6rkBQw" key="value" value="demo.entities.OrderDetail"/>
+        <details xmi:id="_jQphIrTsEemDjZfY6rkBQw" key="entityIdPresence" value="OPTIONAL"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jSQqtLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+        <details xmi:id="_jSQqtbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jOu1lLTsEemDjZfY6rkBQw" name="product" lowerBound="1" eType="_jOgMFLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOsZU7TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jQz5M7TsEemDjZfY6rkBQw" key="value" value="product"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSRRyLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSRRybTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jOu1lbTsEemDjZfY6rkBQw" name="category" lowerBound="1" eType="_jOgMFrTsEemDjZfY6rkBQw" derived="true">
+        <eAnnotations xmi:id="_jOsZVLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jQ1uYrTsEemDjZfY6rkBQw" key="value" value="category"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSRRyrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSRRy7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jOuOg7TsEemDjZfY6rkBQw" name="productName" lowerBound="1" eType="_jOwDsLTsEemDjZfY6rkBQw" derived="true">
+        <eAnnotations xmi:id="_jOp9E7TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jRGNE7TsEemDjZfY6rkBQw" key="value" value="productName"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jOhaM7TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jRGNFbTsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSRRwLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSRRwbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jOuOgLTsEemDjZfY6rkBQw" name="unitPrice" lowerBound="1" eType="_jOx44LTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOp9ELTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jRJ3crTsEemDjZfY6rkBQw" key="value" value="unitPrice"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jOlrobTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jRJ3dLTsEemDjZfY6rkBQw" key="precision" value="15"/>
+          <details xmi:id="_jRJ3dbTsEemDjZfY6rkBQw" key="scale" value="4"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSRRwrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSRRw7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jOuOgbTsEemDjZfY6rkBQw" name="quantity" lowerBound="1" eType="_jOwqwbTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOp9EbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jRKegLTsEemDjZfY6rkBQw" key="value" value="quantity"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jOlrorTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jRKegrTsEemDjZfY6rkBQw" key="precision" value="9"/>
+          <details xmi:id="_jRKeg7TsEemDjZfY6rkBQw" key="scale" value="0"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSRRxLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSRRxbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jOuOgrTsEemDjZfY6rkBQw" name="discount" lowerBound="1" eType="_jOx44LTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOp9ErTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jRKehLTsEemDjZfY6rkBQw" key="value" value="discount"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jOlro7TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jRLFkLTsEemDjZfY6rkBQw" key="precision" value="15"/>
+          <details xmi:id="_jRLFkbTsEemDjZfY6rkBQw" key="scale" value="4"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSRRxrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSRRx7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jOMqELTsEemDjZfY6rkBQw" name="OrderInfo&#x298;items&#x298;Reference">
+      <eAnnotations xmi:id="_jOK04LTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/mappedEntityType">
+        <details xmi:id="_jQqIMbTsEemDjZfY6rkBQw" key="value" value="demo.entities.OrderDetail"/>
+        <details xmi:id="_jQqIMrTsEemDjZfY6rkBQw" key="entityIdPresence" value="REQUIRED"/>
+      </eAnnotations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jOgMELTsEemDjZfY6rkBQw" name="ShipperInfo">
+      <eAnnotations xmi:id="_jOflA7TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/mappedEntityType">
+        <details xmi:id="_jQskcrTsEemDjZfY6rkBQw" key="value" value="demo.entities.Shipper"/>
+        <details xmi:id="_jQskc7TsEemDjZfY6rkBQw" key="entityIdPresence" value="OPTIONAL"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jSRRzLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+        <details xmi:id="_jSRRzbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jOuOhLTsEemDjZfY6rkBQw" name="companyName" eType="_jOwDsLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOp9FLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jRG0ILTsEemDjZfY6rkBQw" key="value" value="companyName"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jOiBQLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jRG0IrTsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSRRzrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSRRz7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jONRILTsEemDjZfY6rkBQw" name="OrderInfo&#x298;shipper&#x298;Reference">
+      <eAnnotations xmi:id="_jOK04bTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/mappedEntityType">
+        <details xmi:id="_jQtykbTsEemDjZfY6rkBQw" key="value" value="demo.entities.Shipper"/>
+        <details xmi:id="_jQtykrTsEemDjZfY6rkBQw" key="entityIdPresence" value="REQUIRED"/>
+      </eAnnotations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jONRIbTsEemDjZfY6rkBQw" name="InternationalOrderInfo&#x298;items&#x298;Reference">
+      <eAnnotations xmi:id="_jOK04rTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/mappedEntityType">
+        <details xmi:id="_jQvAtbTsEemDjZfY6rkBQw" key="value" value="demo.entities.OrderDetail"/>
+        <details xmi:id="_jQvnwLTsEemDjZfY6rkBQw" key="entityIdPresence" value="REQUIRED"/>
+      </eAnnotations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jONRIrTsEemDjZfY6rkBQw" name="InternationalOrderInfo&#x298;shipper&#x298;Reference">
+      <eAnnotations xmi:id="_jOLb8LTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/mappedEntityType">
+        <details xmi:id="_jQxc8rTsEemDjZfY6rkBQw" key="value" value="demo.entities.Shipper"/>
+        <details xmi:id="_jQxc87TsEemDjZfY6rkBQw" key="entityIdPresence" value="REQUIRED"/>
+      </eAnnotations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jONRI7TsEemDjZfY6rkBQw" name="OrderItem&#x298;product&#x298;Reference">
+      <eAnnotations xmi:id="_jOLb8bTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/mappedEntityType">
+        <details xmi:id="_jQyrE7TsEemDjZfY6rkBQw" key="value" value="demo.entities.Product"/>
+        <details xmi:id="_jQzSILTsEemDjZfY6rkBQw" key="entityIdPresence" value="REQUIRED"/>
+      </eAnnotations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jONRJLTsEemDjZfY6rkBQw" name="OrderItem&#x298;category&#x298;Reference">
+      <eAnnotations xmi:id="_jOLb8rTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/mappedEntityType">
+        <details xmi:id="_jQ0gQ7TsEemDjZfY6rkBQw" key="value" value="demo.entities.Category"/>
+        <details xmi:id="_jQ0gRLTsEemDjZfY6rkBQw" key="entityIdPresence" value="REQUIRED"/>
+      </eAnnotations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jOgME7TsEemDjZfY6rkBQw" name="OrderItemQuery">
+      <eAnnotations xmi:id="_jOflBrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/mappedEntityType">
+        <details xmi:id="_jQ2VcrTsEemDjZfY6rkBQw" key="value" value="demo.entities.OrderDetail"/>
+        <details xmi:id="_jQ2Vc7TsEemDjZfY6rkBQw" key="entityIdPresence" value="REQUIRED"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jSNnYLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+        <details xmi:id="_jSNnYbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jSZ0oLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+        <details xmi:id="_jSZ0obTsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jOu1mrTsEemDjZfY6rkBQw" name="product" lowerBound="1" eType="_jOgMFbTsEemDjZfY6rkBQw" containment="true">
+        <eAnnotations xmi:id="_jOtAYbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jQ9DIbTsEemDjZfY6rkBQw" key="value" value="product"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSPcmLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSPcmbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jOu1m7TsEemDjZfY6rkBQw" name="category" lowerBound="1" eType="_jOgMFrTsEemDjZfY6rkBQw" derived="true" containment="true">
+        <eAnnotations xmi:id="_jOtAYrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jQ-4UbTsEemDjZfY6rkBQw" key="value" value="category"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSPcmrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSPcm7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jOuOjLTsEemDjZfY6rkBQw" name="productName" lowerBound="1" eType="_jOwDsLTsEemDjZfY6rkBQw" derived="true">
+        <eAnnotations xmi:id="_jOqkJLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jRHbNLTsEemDjZfY6rkBQw" key="value" value="productName"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jOiBQ7TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jRICQLTsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSPckLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSPckbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jOuOibTsEemDjZfY6rkBQw" name="unitPrice" lowerBound="1" eType="_jOx44LTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOqkIbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jRLFkrTsEemDjZfY6rkBQw" key="value" value="unitPrice"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jOmSsLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jRLFlLTsEemDjZfY6rkBQw" key="precision" value="15"/>
+          <details xmi:id="_jRLsoLTsEemDjZfY6rkBQw" key="scale" value="4"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSPckrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSPck7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jOuOirTsEemDjZfY6rkBQw" name="quantity" lowerBound="1" eType="_jOwqwbTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOqkIrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jRLsobTsEemDjZfY6rkBQw" key="value" value="quantity"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jOmSsbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jRLso7TsEemDjZfY6rkBQw" key="precision" value="9"/>
+          <details xmi:id="_jRLspLTsEemDjZfY6rkBQw" key="scale" value="0"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSPclLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSPclbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jOuOi7TsEemDjZfY6rkBQw" name="discount" lowerBound="1" eType="_jOx44LTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOqkI7TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jRLspbTsEemDjZfY6rkBQw" key="value" value="discount"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jOmSsrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jRMTsbTsEemDjZfY6rkBQw" key="precision" value="15"/>
+          <details xmi:id="_jRMTsrTsEemDjZfY6rkBQw" key="scale" value="4"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSPclrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSPcl7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jONRJbTsEemDjZfY6rkBQw" name="OrderInfoQuery&#x298;items&#x298;Reference">
+      <eAnnotations xmi:id="_jOLb87TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/mappedEntityType">
+        <details xmi:id="_jQ28gbTsEemDjZfY6rkBQw" key="value" value="demo.entities.OrderDetail"/>
+        <details xmi:id="_jQ28grTsEemDjZfY6rkBQw" key="entityIdPresence" value="REQUIRED"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jS5j4LTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+        <details xmi:id="_jS5j4bTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jS5j4rTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+        <details xmi:id="_jS5j47TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+      </eAnnotations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jONRJrTsEemDjZfY6rkBQw" name="InternationalOrderInfoQuery&#x298;items&#x298;Reference">
+      <eAnnotations xmi:id="_jOLb9LTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/mappedEntityType">
+        <details xmi:id="_jQ5YxbTsEemDjZfY6rkBQw" key="value" value="demo.entities.OrderDetail"/>
+        <details xmi:id="_jQ5YxrTsEemDjZfY6rkBQw" key="entityIdPresence" value="REQUIRED"/>
+      </eAnnotations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jOgMFbTsEemDjZfY6rkBQw" name="ProductInfoQuery">
+      <eAnnotations xmi:id="_jOflCLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/mappedEntityType">
+        <details xmi:id="_jQ7N9LTsEemDjZfY6rkBQw" key="value" value="demo.entities.Product"/>
+        <details xmi:id="_jQ7N9bTsEemDjZfY6rkBQw" key="entityIdPresence" value="REQUIRED"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jSNnYrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+        <details xmi:id="_jSNnY7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jSdfALTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+        <details xmi:id="_jSdfAbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+      </eAnnotations>
+      <eStructuralFeatures xsi:type="ecore:EReference" xmi:id="_jOu1nbTsEemDjZfY6rkBQw" name="category" lowerBound="1" eType="_jOgMFrTsEemDjZfY6rkBQw" containment="true">
+        <eAnnotations xmi:id="_jOtAZLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jRCisLTsEemDjZfY6rkBQw" key="value" value="category"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSO1jrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSO1j7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jOuOj7TsEemDjZfY6rkBQw" name="productName" lowerBound="1" eType="_jOwDsLTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOrLMrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jRIpULTsEemDjZfY6rkBQw" key="value" value="productName"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jOioULTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jRIpUrTsEemDjZfY6rkBQw" key="maxLength" value="255"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSO1irTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSO1i7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+      <eStructuralFeatures xsi:type="ecore:EAttribute" xmi:id="_jOuOkLTsEemDjZfY6rkBQw" name="unitPrice" lowerBound="1" eType="_jOx44LTsEemDjZfY6rkBQw">
+        <eAnnotations xmi:id="_jOrLM7TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/binding">
+          <details xmi:id="_jRM6wrTsEemDjZfY6rkBQw" key="value" value="unitPrice"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jOm5wbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/constraints">
+          <details xmi:id="_jRM6xLTsEemDjZfY6rkBQw" key="precision" value="15"/>
+          <details xmi:id="_jRM6xbTsEemDjZfY6rkBQw" key="scale" value="4"/>
+        </eAnnotations>
+        <eAnnotations xmi:id="_jSO1jLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+          <details xmi:id="_jSO1jbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+        </eAnnotations>
+      </eStructuralFeatures>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jON4MLTsEemDjZfY6rkBQw" name="OrderItemQuery&#x298;product&#x298;Reference">
+      <eAnnotations xmi:id="_jOLb9bTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/mappedEntityType">
+        <details xmi:id="_jQ71AbTsEemDjZfY6rkBQw" key="value" value="demo.entities.Product"/>
+        <details xmi:id="_jQ71ArTsEemDjZfY6rkBQw" key="entityIdPresence" value="REQUIRED"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jSxoFLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+        <details xmi:id="_jSxoFbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jSxoFrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+        <details xmi:id="_jSxoF7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+      </eAnnotations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jON4MbTsEemDjZfY6rkBQw" name="OrderItemQuery&#x298;category&#x298;Reference">
+      <eAnnotations xmi:id="_jOMDALTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/mappedEntityType">
+        <details xmi:id="_jQ9qMrTsEemDjZfY6rkBQw" key="value" value="demo.entities.Category"/>
+        <details xmi:id="_jQ9qM7TsEemDjZfY6rkBQw" key="entityIdPresence" value="REQUIRED"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jS15hLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+        <details xmi:id="_jS15hbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jS15hrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+        <details xmi:id="_jS15h7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+      </eAnnotations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jON4MrTsEemDjZfY6rkBQw" name="ProductInfo&#x298;category&#x298;Reference">
+      <eAnnotations xmi:id="_jOMDAbTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/mappedEntityType">
+        <details xmi:id="_jQ_fYbTsEemDjZfY6rkBQw" key="value" value="demo.entities.Category"/>
+        <details xmi:id="_jQ_fYrTsEemDjZfY6rkBQw" key="entityIdPresence" value="REQUIRED"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jSla1LTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+        <details xmi:id="_jSla1bTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jSla1rTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+        <details xmi:id="_jSla17TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jTnVkLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+        <details xmi:id="_jTnVkbTsEemDjZfY6rkBQw" key="value" value="demo.externalAP"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jTnVkrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+        <details xmi:id="_jTnVk7TsEemDjZfY6rkBQw" key="value" value="demo.externalAP/products"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jUHE0LTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+        <details xmi:id="_jUHE0bTsEemDjZfY6rkBQw" key="value" value="demo.externalAP/categories"/>
+      </eAnnotations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jON4M7TsEemDjZfY6rkBQw" name="ProductInfoQuery&#x298;category&#x298;Reference">
+      <eAnnotations xmi:id="_jOMDArTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/mappedEntityType">
+        <details xmi:id="_jRBUkLTsEemDjZfY6rkBQw" key="value" value="demo.entities.Category"/>
+        <details xmi:id="_jRBUkbTsEemDjZfY6rkBQw" key="entityIdPresence" value="REQUIRED"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jSukwrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+        <details xmi:id="_jSukw7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jSukxLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+        <details xmi:id="_jSukxbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+      </eAnnotations>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EClass" xmi:id="_jON4NLTsEemDjZfY6rkBQw" name="CategoryInfo&#x298;products&#x298;Reference">
+      <eAnnotations xmi:id="_jOMDA7TsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/mappedEntityType">
+        <details xmi:id="_jRDJwLTsEemDjZfY6rkBQw" key="value" value="demo.entities.Product"/>
+        <details xmi:id="_jRDJwbTsEemDjZfY6rkBQw" key="entityIdPresence" value="REQUIRED"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jSpsQLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+        <details xmi:id="_jSpsQbTsEemDjZfY6rkBQw" key="value" value="demo.internalAP"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jSpsQrTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+        <details xmi:id="_jSpsQ7TsEemDjZfY6rkBQw" key="value" value="demo.internalAP/ordersAssignedToEmployee"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jThO8LTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy">
+        <details xmi:id="_jThO8bTsEemDjZfY6rkBQw" key="value" value="demo.externalAP"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jThO8rTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+        <details xmi:id="_jThO87TsEemDjZfY6rkBQw" key="value" value="demo.externalAP/products"/>
+      </eAnnotations>
+      <eAnnotations xmi:id="_jUNLcLTsEemDjZfY6rkBQw" source="http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedGraph">
+        <details xmi:id="_jUNLcbTsEemDjZfY6rkBQw" key="value" value="demo.externalAP/categories"/>
+      </eAnnotations>
+    </eClassifiers>
+  </eSubpackages>
+  <eSubpackages xmi:id="_jOe98rTsEemDjZfY6rkBQw" name="types" nsURI="http://blackbelt.hu/judo/northwind-psm/demo/types" nsPrefix="runtimenorthwind-psmDemoTypes">
+    <eClassifiers xsi:type="ecore:EDataType" xmi:id="_jOwDsLTsEemDjZfY6rkBQw" name="String" instanceClassName="java.lang.String"/>
+    <eClassifiers xsi:type="ecore:EDataType" xmi:id="_jOx44LTsEemDjZfY6rkBQw" name="Double" instanceClassName="java.lang.Double"/>
+    <eClassifiers xsi:type="ecore:EDataType" xmi:id="_jOwqwLTsEemDjZfY6rkBQw" name="Long" instanceClassName="java.lang.Long"/>
+    <eClassifiers xsi:type="ecore:EDataType" xmi:id="_jOwDsrTsEemDjZfY6rkBQw" name="Text" instanceClassName="java.lang.String"/>
+    <eClassifiers xsi:type="ecore:EDataType" xmi:id="_jOwDsbTsEemDjZfY6rkBQw" name="Phone" instanceClassName="java.lang.String"/>
+    <eClassifiers xsi:type="ecore:EDataType" xmi:id="_jOwDs7TsEemDjZfY6rkBQw" name="URL" instanceClassName="java.lang.String"/>
+    <eClassifiers xsi:type="ecore:EDataType" xmi:id="_jO2KULTsEemDjZfY6rkBQw" name="Binary" instanceClassName="java.lang.Object"/>
+    <eClassifiers xsi:type="ecore:EDataType" xmi:id="_jOwqwbTsEemDjZfY6rkBQw" name="Integer" instanceClassName="java.lang.Integer"/>
+    <eClassifiers xsi:type="ecore:EDataType" xmi:id="_jOyf8LTsEemDjZfY6rkBQw" name="Boolean" instanceClassName="java.lang.Boolean"/>
+    <eClassifiers xsi:type="ecore:EDataType" xmi:id="_jO08MLTsEemDjZfY6rkBQw" name="Timestamp" instanceClassName="java.time.ZonedDateTime"/>
+    <eClassifiers xsi:type="ecore:EDataType" xmi:id="_jO0VILTsEemDjZfY6rkBQw" name="Date" instanceClassName="java.time.LocalDate"/>
+    <eClassifiers xsi:type="ecore:EEnum" xmi:id="_jOvcobTsEemDjZfY6rkBQw" name="Titles">
+      <eLiterals xmi:id="_jQcs0LTsEemDjZfY6rkBQw" name="MS" literal="MS"/>
+      <eLiterals xmi:id="_jQcs0bTsEemDjZfY6rkBQw" name="MRS" value="1" literal="MRS"/>
+      <eLiterals xmi:id="_jQcs0rTsEemDjZfY6rkBQw" name="MR" value="2" literal="MR"/>
+      <eLiterals xmi:id="_jQcs07TsEemDjZfY6rkBQw" name="DR" value="3" literal="DR"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EEnum" xmi:id="_jOvcoLTsEemDjZfY6rkBQw" name="Countries">
+      <eLiterals xmi:id="_jQdT4LTsEemDjZfY6rkBQw" name="HU" literal="HU"/>
+      <eLiterals xmi:id="_jQdT4bTsEemDjZfY6rkBQw" name="AT" value="1" literal="AT"/>
+      <eLiterals xmi:id="_jQdT4rTsEemDjZfY6rkBQw" name="RO" value="2" literal="RO"/>
+      <eLiterals xmi:id="_jQd68LTsEemDjZfY6rkBQw" name="SK" value="3" literal="SK"/>
+    </eClassifiers>
+    <eClassifiers xsi:type="ecore:EDataType" xmi:id="_jOx44bTsEemDjZfY6rkBQw" name="Float" instanceClassName="java.lang.Float"/>
+    <eSubpackages xmi:id="_jOe987TsEemDjZfY6rkBQw" name="measured" nsURI="http://blackbelt.hu/judo/northwind-psm/demo/types/measured" nsPrefix="runtimenorthwind-psmDemoTypesMeasured">
+      <eClassifiers xsi:type="ecore:EDataType" xmi:id="_jOx44rTsEemDjZfY6rkBQw" name="MassStoredInKilograms" instanceClassName="java.lang.Double"/>
+      <eClassifiers xsi:type="ecore:EDataType" xmi:id="_jOwqwrTsEemDjZfY6rkBQw" name="TimeStoredInMonths" instanceClassName="java.lang.Integer"/>
+      <eClassifiers xsi:type="ecore:EDataType" xmi:id="_jOx447TsEemDjZfY6rkBQw" name="TimeStoredInSeconds" instanceClassName="java.lang.Double"/>
+      <eClassifiers xsi:type="ecore:EDataType" xmi:id="_jOx45LTsEemDjZfY6rkBQw" name="AreaStoredInSquareMetre" instanceClassName="java.lang.Double"/>
+      <eClassifiers xsi:type="ecore:EDataType" xmi:id="_jOx45bTsEemDjZfY6rkBQw" name="VolumeStoredInLitre" instanceClassName="java.lang.Double"/>
+      <eClassifiers xsi:type="ecore:EDataType" xmi:id="_jOx45rTsEemDjZfY6rkBQw" name="VelocityStoredInKmPerHour" instanceClassName="java.lang.Double"/>
+    </eSubpackages>
+  </eSubpackages>
+  <eSubpackages xmi:id="_jOe98bTsEemDjZfY6rkBQw" name="measures" nsURI="http://blackbelt.hu/judo/northwind-psm/demo/measures" nsPrefix="runtimenorthwind-psmDemoMeasures"/>
+</ecore:EPackage>

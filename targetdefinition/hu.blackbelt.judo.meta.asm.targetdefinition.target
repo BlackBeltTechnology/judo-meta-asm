@@ -11,6 +11,10 @@
 	    <unit id="org.eclipse.equinox.sdk.feature.group" version="3.17.0.v20190305-2225"/>
 	    <unit id="org.eclipse.e4.core.tools.feature.source.feature.group" version="4.11.0.v20190215-0401"/>
 	    <unit id="org.eclipse.sdk.feature.group" version="4.11.0.v20190307-0943"/>
+	    <unit id="org.eclipse.pde.feature.group" version="3.13.400.v20190307-0943"/>
+	    <unit id="org.eclipse.platform.ide" version="4.11.0.I20190307-0500"/>
+	    <unit id="org.eclipse.platform.sdk" version="4.11.0.I20190307-0500"/>
+	    <unit id="org.eclipse.platform.source.feature.group" version="4.11.0.v20190307-0500"/>
     </location>
 	  <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		  <unit id="org.eclipse.epsilon.core.dt.feature.feature.group" version="1.5.1.201809302027"/>
@@ -34,12 +38,12 @@
 		  <repository location="http://download.eclipse.org/epsilon/updates"/>
 	  </location>
 	  <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		  <unit id="hu.blackbelt.eclipse.emf.genmodel.generator.feature.feature.group" version="1.0.0.develop_00013"/>
-		  <repository location="https://nexus.blackbelt.cloud/repository/p2-judo/emf-genmodel-generator/1.0.0.develop_00013"/>
+		  <unit id="hu.blackbelt.eclipse.emf.genmodel.generator.feature.feature.group" version="1.0.0.develop_00016"/>
+		  <repository location="https://nexus.blackbelt.cloud/repository/p2-judo/emf-genmodel-generator/1.0.0.develop_00016"/>
 	  </location>
 	  <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		  <unit id="hu.blackbelt.judo.eclipse.emf.genmodel.generator.feature.feature.group" version="1.0.0.develop_00004"/>
-		  <repository location="https://nexus.blackbelt.cloud/repository/p2-judo/judo-genmodel-generator/1.0.0.develop_00004"/>
+		  <unit id="hu.blackbelt.judo.eclipse.emf.genmodel.generator.feature.feature.group" version="1.0.0-SNAPSHOT"/>
+		  <repository location="https://nexus.blackbelt.cloud/repository/p2-judo/judo-genmodel-generator/1.0.0-SNAPSHOT"/>
 	  </location>
 	  <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		  <unit id="hu.blackbelt.epsilon.runtime.feature.feature.group" version="1.2.0.develop_00004"/>

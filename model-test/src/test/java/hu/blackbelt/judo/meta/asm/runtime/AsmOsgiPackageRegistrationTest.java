@@ -3,12 +3,10 @@ package hu.blackbelt.judo.meta.asm.runtime;
 import hu.blackbelt.epsilon.runtime.execution.api.Log;
 import hu.blackbelt.epsilon.runtime.execution.impl.NioFilesystemnRelativePathURIHandlerImpl;
 import hu.blackbelt.epsilon.runtime.execution.impl.Slf4jLog;
-import hu.blackbelt.judo.meta.asm.support.AsmModelResourceSupport;
 
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.util.TreeIterator;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.URIHandler;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,11 +14,10 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static hu.blackbelt.judo.meta.asm.runtime.AsmModel.LoadArguments.loadArgumentsBuilder;
-
 import java.io.File;
 import java.nio.file.FileSystems;
-import java.util.Optional;
+
+import static hu.blackbelt.judo.meta.asm.runtime.AsmModel.LoadArguments.asmLoadArgumentsBuilder;
 
 public class AsmOsgiPackageRegistrationTest {
 
@@ -49,17 +46,13 @@ public class AsmOsgiPackageRegistrationTest {
 
     @Test
     public void testLoadToReourceSet() throws Exception {
-        ResourceSet resourceSet = AsmModelResourceSupport.createAsmResourceSet();
-
-        AsmModel.loadAsmModel(loadArgumentsBuilder()
-                .resourceSet(Optional.of(resourceSet))
-                .uriHandler(Optional.of(uriHandler))
+        AsmModel asmModel = AsmModel.loadAsmModel(asmLoadArgumentsBuilder()
+                .uriHandler(uriHandler)
                 .uri(URI.createURI("urn:asm.model"))
-                .name("test")
-                .build());
+                .name("test"));
 
         
-        TreeIterator<Notifier> iter = resourceSet.getAllContents();
+        TreeIterator<Notifier> iter = asmModel.getResourceSet().getAllContents();
         while (iter.hasNext()) {
             final Notifier obj = iter.next();
             log.debug(obj.toString());

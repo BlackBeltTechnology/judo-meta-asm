@@ -26,12 +26,20 @@
 
 	<developers>
 		<developer>
-			<id>johndoe</id>
-			<name>John Doe</name>
-			<email>johndoe@example.com</email>
-            <url>http://example.com/johndoe</url>
-			<organization>Example organization</organization>
-			<organizationUrl>http://example.com</organizationUrl>
+			<id>borcsokj</id>
+			<name>Börcsök József</name>
+			<email>jozsef.borcsok@blackbelt.hu</email>
+			<url>https://github.com/borcsokj</url>
+			<organization>BlackBelt Technology</organization>
+			<organizationUrl>http://www.blackbelt.hu</organizationUrl>
+		</developer>
+		<developer>
+			<id>robson</id>
+			<name>Róbert Csákány</name>
+			<email>robert.csakany@blackbelt.hu</email>
+			<url>https://github.com/robertcsakany</url>
+			<organization>BlackBelt Technology</organization>
+			<organizationUrl>http://www.blackbelt.hu</organizationUrl>
 		</developer>
 	</developers>
 
@@ -64,16 +72,17 @@
 		<tycho-version>1.4.0</tycho-version>
 		<eclipse-p2-base>http://download.eclipse.org/releases/2019-03</eclipse-p2-base>
 
-        <emf-genmodel-generator-version>1.0.0.develop_00013</emf-genmodel-generator-version>
-		<judo-genmodel-generator-version>1.0.0.develop_00004</judo-genmodel-generator-version>
+        <emf-genmodel-generator-version>1.0.0.develop_00016</emf-genmodel-generator-version>
+		<judo-genmodel-generator-version>1.0.0-SNAPSHOT</judo-genmodel-generator-version>
 
 		<!-- Xtend / Xcore -->
-		<emf-version>2.15.0</emf-version>
-		<emf-common-version>2.15.0</emf-common-version>
+		<emf-version>2.18.0</emf-version>
+		<emf-common-version>2.16.0</emf-common-version>
 		<core-resources-version>3.12.0</core-resources-version>
 		<eclipse-text-version>3.5.101</eclipse-text-version>
-		<emf-codegen-version>2.14.0</emf-codegen-version>
-		<emf-codegen-ecore-version>2.15.0</emf-codegen-ecore-version>
+		<emf-codegen-version>2.16.0</emf-codegen-version>
+		<emf-codegen-ecore-version>2.18.0</emf-codegen-ecore-version>
+		<emf-ecore-xmi-version>2.16.0</emf-ecore-xmi-version>
 		<xtext-version>2.17.0</xtext-version>
 		<ecore-xtext-version>1.2.0</ecore-xtext-version>
 		<ecore-xcore-version>1.3.1</ecore-xcore-version>
@@ -81,7 +90,8 @@
 		<emf-mwe2-launch-version>2.10.0</emf-mwe2-launch-version>
 		<emf-mwe-utils-version>1.4.0</emf-mwe-utils-version>
 		<xpand-version>2.0.0</xpand-version>
-
+        <emf-mapping-ecore2xml>2.11.0</emf-mapping-ecore2xml>
+		<epsilon-version>1.5.1</epsilon-version>
 	</properties>
 
 	<build>
@@ -98,13 +108,13 @@
 				<artifactId>target-platform-configuration</artifactId>
 				<version>${tycho-version}</version>
 				<configuration>
-                    <target>
-                        <artifact>
-                            <groupId>hu.blackbelt.judo.meta</groupId>
-                            <artifactId>hu.blackbelt.judo.meta.asm.targetdefinition</artifactId>
-                            <version>${project.version}</version>
-                        </artifact>
-                    </target>
+					<target>
+						<artifact>
+							<groupId>hu.blackbelt.judo.meta</groupId>
+							<artifactId>hu.blackbelt.judo.meta.asm.targetdefinition</artifactId>
+							<version>${project.version}</version>
+						</artifact>
+					</target>
 					<environments>
 						<environment>
 							<os>linux</os>
@@ -215,7 +225,7 @@
 						<dependency>
 							<groupId>org.eclipse.emf</groupId>
 							<artifactId>org.eclipse.emf.ecore.xmi</artifactId>
-							<version>${emf-version}</version>
+							<version>${emf-ecore-xmi-version}</version>
 						</dependency>
 						<dependency>
 							<groupId>org.eclipse.emf</groupId>
@@ -487,7 +497,7 @@
 			<dependency>
 				<groupId>hu.blackbelt.judo.meta</groupId>
 				<artifactId>hu.blackbelt.judo.meta.asm.model</artifactId>
-				<version>1.0.0-SNAPSHOT</version>
+				<version>${project.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -512,7 +522,7 @@
 		<dependency>
 			<groupId>org.eclipse.emf</groupId>
 			<artifactId>org.eclipse.emf.ecore.xmi</artifactId>
-			<version>${emf-version}</version>
+			<version>${emf-ecore-xmi-version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>
@@ -617,8 +627,18 @@
 			<version>${epsilon-runtime-eclipse-version}</version>
 		</dependency>
 
-	</dependencies>
+		<dependency>
+			<groupId>org.eclipse.epsilon</groupId>
+			<artifactId>epsilon-core</artifactId>
+			<version>${epsilon-version}</version>
+		</dependency>
 
+		<dependency>
+			<groupId>org.eclipse.epsilon</groupId>
+			<artifactId>epsilon-emf</artifactId>
+			<version>${epsilon-version}</version>
+		</dependency>
+	</dependencies>
 
 	<profiles>
         <profile>
