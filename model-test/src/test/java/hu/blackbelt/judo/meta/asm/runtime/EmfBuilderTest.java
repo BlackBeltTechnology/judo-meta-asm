@@ -10,22 +10,74 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 
+import static hu.blackbelt.judo.meta.asm.runtime.AsmModel.LoadArguments.asmLoadArgumentsBuilder;
 import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 public class EmfBuilderTest {
 
     @Test
-    public void buildsCompanyMetamodel() throws IOException {
+    @DisplayName("Build valid company metamodel")
+    public void buildValidCompanyMetamodel() throws IOException, AsmModel.AsmValidationException {
+
+        AsmModel asmModel = AsmModel.buildAsmModel()
+                .uri(URI.createFileURI("target/test-classes/Company.ecore"))
+                .name("company")
+                .build();
+        asmModel.addContent(createCopmanyPackage());
+
+        asmModel.saveAsmModel();
+
+        assertTrue(asmModel.isValid());
+    }
+
+    @Test
+    @DisplayName("Build valid company metamodel")
+    public void buildInvalidCompanyMetamodel() throws IOException, AsmModel.AsmValidationException {
+
+        AsmModel asmModel = AsmModel.buildAsmModel()
+                .uri(URI.createFileURI("target/test-classes/CompanyInvalid.ecore"))
+                .name("company")
+                .build();
+        asmModel.addContent(createCopmanyPackage());
+
+        assertTrue(asmModel.isValid());
+
+        final EPackage ePackageWrong = newEPackageBuilder()
+                .withNsPrefix("wrong")
+                .withNsURI("http:///com.example.company.ecore")
+                .build();
+
+        asmModel.addContent(ePackageWrong);
+
+        assertFalse(asmModel.isValid());
+        assertEquals(1, asmModel.getDiagnostics().size());
+        assertEquals("The name 'null' is not well formed", asmModel.getDiagnostics().iterator().next().getMessage());
+
+
+        // Test save invalid model thrown validation exception
+        AsmModel.AsmValidationException thrown = assertThrows(AsmModel.AsmValidationException.class,
+                () -> asmModel.saveAsmModel(), "Expected AsmValidationException, but not thrown");
+
+        // Test save invalid model disable validation
+        asmModel.saveAsmModel(
+                AsmModel.SaveArguments
+                        .asmSaveArgumentsBuilder().validateModel(false).build());
+
+    }
+
+    private EPackage createCopmanyPackage() {
         final EcorePackage ecore = EcorePackage.eINSTANCE;
         // @formatter:off
         final EClass employeeClass = newEClassBuilder()
@@ -82,28 +134,7 @@ public class EmfBuilderTest {
                 .withEClassifiers(departmentClass)
                 .build();
         // @formatter:on
-
-        AsmModel asmModel = AsmModel.buildAsmModel()
-                .uri(URI.createFileURI("Company.ecore"))
-                .name("company")
-                .build();
-        asmModel.getResource().getContents().add(ePackage);
-
-        asmModel.saveAsmModel();
-
-        assertTrue(asmModel.isValid());
-
-        final EPackage ePackageWrong = newEPackageBuilder()
-                .withNsPrefix("wrong")
-                .withNsURI("http:///com.example.company.ecore")
-                .build();
-
-        asmModel.getResource().getContents().add(ePackageWrong);
-
-        assertFalse(asmModel.isValid());
-        assertEquals(1, asmModel.getDiagnostics().size());
-        assertEquals("The name 'null' is not well formed", asmModel.getDiagnostics().iterator().next().getMessage());
-
+        return ePackage;
     }
 
 }

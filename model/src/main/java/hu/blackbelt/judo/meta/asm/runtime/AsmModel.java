@@ -126,12 +126,22 @@ public class AsmModel {
     }
 
     /**
+     * Add content to the given model's root.
+     * @return
+     */
+    public AsmModel addContent(EObject object) {
+        getResource().getContents().add(object);
+        return this;
+    }
+
+    /**
      * Load an model. {@link LoadArguments.LoadArgumentsBuilder} contains all parameter
      * @param loadArgumentsBuilder
      * @return
      * @throws IOException
+     * @throws AsmValidationException
      */
-    public static AsmModel loadAsmModel(LoadArguments.LoadArgumentsBuilder loadArgumentsBuilder) throws IOException {
+    public static AsmModel loadAsmModel(LoadArguments.LoadArgumentsBuilder loadArgumentsBuilder) throws IOException, AsmValidationException {
         return loadAsmModel(loadArgumentsBuilder.build());
     }
 
@@ -140,32 +150,75 @@ public class AsmModel {
      * @param loadArguments
      * @return
      * @throws IOException
+     * @throws AsmValidationException
      */
-    public static AsmModel loadAsmModel(LoadArguments loadArguments) throws IOException {
-        AsmModelResourceSupport asmModelResourceSupport = loadArguments.asmModelResourceSupport.orElseGet(() -> AsmModelResourceSupport.asmModelResourceSupportBuilder().resourceSet(loadArguments.resourceSet.orElse(null)).rootUri(loadArguments.rootUri).uriHandler(loadArguments.uriHandler).build());
-        AsmModelBuilder b = AsmModel.buildAsmModel();
-        b.name(loadArguments.name).version(loadArguments.version.orElse("1.0.0")).uri(loadArguments.uri).checksum(loadArguments.checksum.orElse("NON-DEFINED")).asmModelResourceSupport(asmModelResourceSupport).metaVersionRange(loadArguments.acceptedMetaVersionRange.orElse("[0,9999)"));
-        AsmModel asmModel = b.build();
-        Resource resource = asmModel.getResourceSet().createResource(loadArguments.uri);
-        resource.load(loadArguments.loadOptions.orElse(AsmModelResourceSupport.getAsmModelDefaultLoadOptions()));
+    public static AsmModel loadAsmModel(LoadArguments loadArguments) throws IOException, AsmValidationException {
+        AsmModelResourceSupport asmModelResourceSupport = loadArguments.asmModelResourceSupport
+                .orElseGet(() -> AsmModelResourceSupport.asmModelResourceSupportBuilder()
+                        .resourceSet(loadArguments.resourceSet.orElse(null))
+                        .rootUri(loadArguments.rootUri)
+                        .uriHandler(loadArguments.uriHandler)
+                        .build());
+
+        AsmModel asmModel = AsmModel.buildAsmModel()
+                .name(loadArguments.name)
+                .version(loadArguments.version.orElse("1.0.0"))
+                .uri(loadArguments.uri)
+                .checksum(loadArguments.checksum.orElse("NON-DEFINED"))
+                .asmModelResourceSupport(asmModelResourceSupport)
+                .metaVersionRange(loadArguments.acceptedMetaVersionRange.orElse("[0,9999)"))
+                .build();
+
         AsmModelResourceSupport.setupRelativeUriRoot(asmModel.getResourceSet(), loadArguments.uri);
+        Resource resource = asmModel.getResourceSet().createResource(loadArguments.uri);
+        Map loadOptions = loadArguments.loadOptions
+                .orElseGet(() -> AsmModelResourceSupport.getAsmModelDefaultLoadOptions());
+
+        try {
+            InputStream inputStream = loadArguments.inputStream.orElseGet(() -> loadArguments.file.map(f -> {
+                try {
+                    return new FileInputStream(f);
+                } catch (FileNotFoundException e) {
+                    throw new RuntimeException(e);
+                }
+            }).orElse(null));
+
+            if (inputStream != null) {
+                resource.load(inputStream, loadOptions);
+            } else {
+                resource.load(loadOptions);
+            }
+
+        } catch (RuntimeException e) {
+            if (e.getCause() instanceof IOException) {
+                throw (IOException) e.getCause();
+            } else {
+                throw e;
+            }
+        }
+
+        if (loadArguments.validateModel && !asmModel.isValid()) {
+            throw new AsmValidationException(asmModel);
+        }
         return asmModel;
     }
 
     /**
      * Save the model to the given URI.
      * @throws IOException
+     * @throws AsmValidationException
      */
-    public void saveAsmModel() throws IOException {
-        getResourceSet().getResource(getUri(), false).save(AsmModelResourceSupport.getAsmModelDefaultSaveOptions());
+    public void saveAsmModel() throws IOException, AsmValidationException {
+        saveAsmModel(SaveArguments.asmSaveArgumentsBuilder());
     }
 
     /**
      * Save the model as the given {@link SaveArguments.SaveArgumentsBuilder} defines
      * @param saveArgumentsBuilder
      * @throws IOException
+     * @throws AsmValidationException
      */
-    public void saveAsmModel(SaveArguments.SaveArgumentsBuilder saveArgumentsBuilder) throws IOException {
+    public void saveAsmModel(SaveArguments.SaveArgumentsBuilder saveArgumentsBuilder) throws IOException, AsmValidationException {
         saveAsmModel(saveArgumentsBuilder.build());
     }
 
@@ -173,17 +226,28 @@ public class AsmModel {
      * Save the model as the given {@link SaveArguments} defines
      * @param saveArguments
      * @throws IOException
+     * @throws AsmValidationException
      */
-    public void saveAsmModel(SaveArguments saveArguments) throws IOException {
+    public void saveAsmModel(SaveArguments saveArguments) throws IOException, AsmValidationException {
+        if (saveArguments.validateModel && !isValid()) {
+            throw new AsmValidationException(this);
+        }
+        Map saveOptions = saveArguments.saveOptions
+                .orElseGet(() -> AsmModelResourceSupport.getAsmModelDefaultSaveOptions());
         try {
-            OutputStream outputStream = saveArguments.outputStream.orElseGet(() -> saveArguments.file.map(f -> {
+            OutputStream outputStream = saveArguments.outputStream
+                    .orElseGet(() -> saveArguments.file.map(f -> {
                 try {
                     return new FileOutputStream(f);
                 } catch (FileNotFoundException e) {
                     throw new RuntimeException(e);
                 }
             }).orElse(null));
-            getResourceSet().getResource(getUri(), false).save(outputStream, saveArguments.saveOptions.orElseGet(() -> AsmModelResourceSupport.getAsmModelDefaultSaveOptions()));
+            if (outputStream != null) {
+                getResource().save(outputStream, saveOptions);
+            } else {
+                getResource().save(saveOptions);
+            }
         } catch (RuntimeException e) {
             if (e.getCause() instanceof IOException) {
                 throw (IOException) e.getCause();
@@ -245,8 +309,8 @@ public class AsmModel {
     public String asString() {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         try {
-            saveAsmModel(SaveArguments.asmSaveArgumentsBuilder().outputStream(byteArrayOutputStream).build());
-            getResourceSet().getResource(getUri(), false).save(byteArrayOutputStream, Collections.EMPTY_MAP);
+            // Do not call save on model to bypass the validation
+            getResource().save(byteArrayOutputStream, Collections.EMPTY_MAP);
         } catch (IOException e) {
         }
         return new String(byteArrayOutputStream.toByteArray(), Charset.defaultCharset());
@@ -258,6 +322,21 @@ public class AsmModel {
      */
     public String getDiagnosticsAsString() {
         return getDiagnostics().stream().map(d -> d.toString()).collect(Collectors.joining("\n"));
+    }
+
+    /**
+     * This exception is thrown when validateModel is true on load or save and the model is not conform with its
+     * defined metamodel.
+     */
+    public static class AsmValidationException extends Exception {
+        AsmModel asmModel;
+
+        public AsmValidationException(AsmModel asmModel) {
+            super("Invalid model\n" +
+                    asmModel.getDiagnosticsAsString() + "\n" + asmModel.asString()
+            );
+            this.asmModel = asmModel;
+        }
     }
 
     /**
@@ -275,6 +354,9 @@ public class AsmModel {
         Optional<String> checksum;
         Optional<String> acceptedMetaVersionRange;
         Optional<Map<Object, Object>> loadOptions;
+        boolean validateModel = true;
+        Optional<InputStream> inputStream;
+        Optional<File> file;
 
         @java.lang.SuppressWarnings("all")
         private static Optional<AsmModelResourceSupport> $default$asmModelResourceSupport() {
@@ -308,6 +390,16 @@ public class AsmModel {
 
         @java.lang.SuppressWarnings("all")
         private static Optional<String> $default$acceptedMetaVersionRange() {
+            return Optional.empty();
+        }
+
+        @java.lang.SuppressWarnings("all")
+        private static Optional<File> $default$file() {
+            return Optional.empty();
+        }
+
+        @java.lang.SuppressWarnings("all")
+        private static Optional<InputStream> $default$inputStream() {
             return Optional.empty();
         }
 
@@ -358,6 +450,18 @@ public class AsmModel {
             private boolean loadOptions$set;
             @java.lang.SuppressWarnings("all")
             private Optional<Map<Object, Object>> loadOptions;
+
+            private boolean validateModel = true;
+
+            @java.lang.SuppressWarnings("all")
+            private boolean file$set;
+            @java.lang.SuppressWarnings("all")
+            private Optional<File> file;
+
+            @java.lang.SuppressWarnings("all")
+            private boolean inputStream$set;
+            @java.lang.SuppressWarnings("all")
+            private Optional<InputStream> inputStream;
 
             @java.lang.SuppressWarnings("all")
             LoadArgumentsBuilder() {
@@ -466,6 +570,37 @@ public class AsmModel {
             }
 
             @java.lang.SuppressWarnings("all")
+            /**
+             * Defines that model validation required or not on load. Default: true
+             */
+            public LoadArgumentsBuilder validateModel(boolean validateModel) {
+                this.validateModel = validateModel;
+                return this;
+            }
+
+            @java.lang.SuppressWarnings("all")
+            /**
+             * Defines the file if it is not loaded from URI. If not defined, URI is used. If inputStream is defined
+             * it is used.
+             */
+            public LoadArgumentsBuilder file(final File file) {
+                this.file = Optional.of(file);
+                file$set = true;
+                return this;
+            }
+
+            @java.lang.SuppressWarnings("all")
+            /**
+             * Defines the file if it is not loaded from  File or URI. If not defined, File or URI is used.
+             */
+            public LoadArgumentsBuilder inputStream(final InputStream inputStream) {
+                this.inputStream = Optional.of(inputStream);
+                inputStream$set = true;
+                return this;
+            }
+
+
+            @java.lang.SuppressWarnings("all")
             public LoadArguments build() {
                 Optional<AsmModelResourceSupport> asmModelResourceSupport = this.asmModelResourceSupport;
                 if (!asmModelResourceSupport$set) asmModelResourceSupport = LoadArguments.$default$asmModelResourceSupport();
@@ -483,13 +618,32 @@ public class AsmModel {
                 if (!acceptedMetaVersionRange$set) acceptedMetaVersionRange = LoadArguments.$default$acceptedMetaVersionRange();
                 Optional<Map<Object, Object>> loadOptions = this.loadOptions;
                 if (!loadOptions$set) loadOptions = LoadArguments.$default$loadOptions();
-                return new LoadArguments(uri, name, asmModelResourceSupport, rootUri, uriHandler, resourceSet, version, checksum, acceptedMetaVersionRange, loadOptions);
+                Optional<File> file = this.file;
+                if (!file$set) file = LoadArguments.$default$file();
+                Optional<InputStream> inputStream = this.inputStream;
+                if (!inputStream$set) inputStream = LoadArguments.$default$inputStream();
+
+                return new LoadArguments(uri, name, asmModelResourceSupport, rootUri, uriHandler, resourceSet, version,
+                        checksum, acceptedMetaVersionRange, loadOptions, validateModel, file, inputStream);
             }
 
             @java.lang.Override
             @java.lang.SuppressWarnings("all")
             public java.lang.String toString() {
-                return "AsmModel.LoadArguments.LoadArgumentsBuilder(uri=" + this.uri + ", name=" + this.name + ", asmModelResourceSupport=" + this.asmModelResourceSupport + ", rootUri=" + this.rootUri + ", uriHandler=" + this.uriHandler + ", resourceSet=" + this.resourceSet + ", version=" + this.version + ", checksum=" + this.checksum + ", acceptedMetaVersionRange=" + this.acceptedMetaVersionRange + ", loadOptions=" + this.loadOptions + ")";
+                return "AsmModel.LoadArguments.LoadArgumentsBuilder(uri=" + this.uri
+                        + ", name=" + this.name
+                        + ", asmModelResourceSupport=" + this.asmModelResourceSupport
+                        + ", rootUri=" + this.rootUri
+                        + ", uriHandler=" + this.uriHandler
+                        + ", resourceSet=" + this.resourceSet
+                        + ", version=" + this.version
+                        + ", checksum=" + this.checksum
+                        + ", acceptedMetaVersionRange=" + this.acceptedMetaVersionRange
+                        + ", loadOptions=" + this.loadOptions
+                        + ", validateModel=" + this.validateModel
+                        + ", file=" + this.file
+                        + ", inputStream=" + this.inputStream
+                        + ")";
             }
         }
 
@@ -499,7 +653,19 @@ public class AsmModel {
         }
 
         @java.lang.SuppressWarnings("all")
-        private LoadArguments(final URI uri, final String name, final Optional<AsmModelResourceSupport> asmModelResourceSupport, final Optional<URI> rootUri, final Optional<URIHandler> uriHandler, final Optional<ResourceSet> resourceSet, final Optional<String> version, final Optional<String> checksum, final Optional<String> acceptedMetaVersionRange, final Optional<Map<Object, Object>> loadOptions) {
+        private LoadArguments(final URI uri,
+                              final String name,
+                              final Optional<AsmModelResourceSupport> asmModelResourceSupport,
+                              final Optional<URI> rootUri,
+                              final Optional<URIHandler> uriHandler,
+                              final Optional<ResourceSet> resourceSet,
+                              final Optional<String> version,
+                              final Optional<String> checksum,
+                              final Optional<String> acceptedMetaVersionRange,
+                              final Optional<Map<Object, Object>> loadOptions,
+                              final boolean validateModel,
+                              final Optional<File> file,
+                              final Optional<InputStream> inputStream) {
             this.uri = uri;
             this.name = name;
             this.asmModelResourceSupport = asmModelResourceSupport;
@@ -510,6 +676,9 @@ public class AsmModel {
             this.checksum = checksum;
             this.acceptedMetaVersionRange = acceptedMetaVersionRange;
             this.loadOptions = loadOptions;
+            this.validateModel = validateModel;
+            this.file = file;
+            this.inputStream = inputStream;
         }
     }
 
@@ -522,6 +691,7 @@ public class AsmModel {
         Optional<OutputStream> outputStream;
         Optional<File> file;
         Optional<Map<Object, Object>> saveOptions;
+        boolean validateModel = true;
 
         @java.lang.SuppressWarnings("all")
         private static Optional<OutputStream> $default$outputStream() {
@@ -557,6 +727,8 @@ public class AsmModel {
             @java.lang.SuppressWarnings("all")
             private Optional<Map<Object, Object>> saveOptions;
 
+            private boolean validateModel = true;
+
             @java.lang.SuppressWarnings("all")
             SaveArgumentsBuilder() {
             }
@@ -591,6 +763,14 @@ public class AsmModel {
                 return this;
             }
 
+            /**
+             * Defines that model validation required or not on save. Default: true
+             */
+            public SaveArgumentsBuilder validateModel(boolean validateModel) {
+                this.validateModel = validateModel;
+                return this;
+            }
+
             @java.lang.SuppressWarnings("all")
             public SaveArguments build() {
                 Optional<OutputStream> outputStream = this.outputStream;
@@ -599,7 +779,7 @@ public class AsmModel {
                 if (!file$set) file = SaveArguments.$default$file();
                 Optional<Map<Object, Object>> saveOptions = this.saveOptions;
                 if (!saveOptions$set) saveOptions = SaveArguments.$default$saveOptions();
-                return new SaveArguments(outputStream, file, saveOptions);
+                return new SaveArguments(outputStream, file, saveOptions, validateModel);
             }
 
             @java.lang.Override
@@ -615,10 +795,14 @@ public class AsmModel {
         }
 
         @java.lang.SuppressWarnings("all")
-        private SaveArguments(final Optional<OutputStream> outputStream, final Optional<File> file, final Optional<Map<Object, Object>> saveOptions) {
+        private SaveArguments(final Optional<OutputStream> outputStream,
+                              final Optional<File> file,
+                              final Optional<Map<Object, Object>> saveOptions,
+                              final boolean validateModel) {
             this.outputStream = outputStream;
             this.file = file;
             this.saveOptions = saveOptions;
+            this.validateModel = validateModel;
         }
     }
 
@@ -726,7 +910,12 @@ public class AsmModel {
         @java.lang.Override
         @java.lang.SuppressWarnings("all")
         public java.lang.String toString() {
-            return "AsmModel.AsmModelBuilder(name=" + this.name + ", version=" + this.version + ", uri=" + this.uri + ", checksum=" + this.checksum + ", metaVersionRange=" + this.metaVersionRange + ", asmModelResourceSupport=" + this.asmModelResourceSupport + ")";
+            return "AsmModel.AsmModelBuilder(name=" + this.name
+                    + ", version=" + this.version
+                    + ", uri=" + this.uri
+                    + ", checksum=" + this.checksum
+                    + ", metaVersionRange=" + this.metaVersionRange
+                    + ", asmModelResourceSupport=" + this.asmModelResourceSupport + ")";
         }
     }
 
@@ -757,19 +946,31 @@ public class AsmModel {
     }
 
     @java.lang.SuppressWarnings("all")
-    private AsmModel(final String name, final Optional<String> version, final URI uri, final Optional<String> checksum, final Optional<String> metaVersionRange, final Optional<AsmModelResourceSupport> asmModelResourceSupport) {
+    private AsmModel(final String name,
+                     final Optional<String> version,
+                     final URI uri,
+                     final Optional<String> checksum,
+                     final Optional<String> metaVersionRange,
+                     final Optional<AsmModelResourceSupport> asmModelResourceSupport) {
         this.name = name;
         this.version = version.orElse("1.0.0");
         this.uri = uri;
         this.checksum = checksum.orElse("notused");
         this.metaVersionRange = metaVersionRange.orElse("[1.0,2)");
-        this.asmModelResourceSupport = asmModelResourceSupport.orElse(AsmModelResourceSupport.asmModelResourceSupportBuilder().resourceSet(AsmModelResourceSupport.createAsmResourceSet()).build());
+        this.asmModelResourceSupport = asmModelResourceSupport
+                .orElseGet(() -> AsmModelResourceSupport.asmModelResourceSupportBuilder()
+                        .resourceSet(AsmModelResourceSupport.createAsmResourceSet()).build());
     }
 
     @java.lang.Override
     @java.lang.SuppressWarnings("all")
     public java.lang.String toString() {
-        return "AsmModel(name=" + this.getName() + ", version=" + this.getVersion() + ", uri=" + this.getUri() + ", checksum=" + this.getChecksum() + ", metaVersionRange=" + this.getMetaVersionRange() + ", asmModelResourceSupport=" + this.getAsmModelResourceSupport() + ")";
+        return "AsmModel(name=" + this.getName()
+                + ", version=" + this.getVersion()
+                + ", uri=" + this.getUri()
+                + ", checksum=" + this.getChecksum()
+                + ", metaVersionRange=" + this.getMetaVersionRange()
+                + ", asmModelResourceSupport=" + this.getAsmModelResourceSupport() + ")";
     }
 
     @java.lang.SuppressWarnings("all")
@@ -819,7 +1020,6 @@ public class AsmModel {
     public AsmModelResourceSupport getAsmModelResourceSupport() {
         return this.asmModelResourceSupport;
     }
-
 
     // TODO: Create ticket on Eclipse. The proble is that the DelegatingResourceLocator
     // creating a baseURL which ends with two trailing slash and the ResourceBundle cannot open the files.
