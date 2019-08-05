@@ -99,6 +99,8 @@ public class AsmModelBundleTracker {
 
                             } catch (IOException e) {
                                 log.error("Could not load Asm model: " + params.get(AsmModel.NAME) + " from bundle: " + trackedBundle.getBundleId());
+                            } catch (AsmModel.AsmValidationException e) {
+                                log.error("Could not load Asm model: " + params.get(AsmModel.NAME) + " from bundle: " + trackedBundle.getBundleId(), e);
                             }
                         }
                     }

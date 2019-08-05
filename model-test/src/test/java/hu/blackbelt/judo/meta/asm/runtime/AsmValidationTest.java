@@ -25,7 +25,6 @@ import static hu.blackbelt.judo.meta.asm.support.AsmModelResourceSupport.asmMode
 public class AsmValidationTest {
 
     private final String createdSourceModelName = "urn:Asm.model";
-    private Resource asmResource;
     private ExecutionContext executionContext;
     AsmModelResourceSupport asmModelSupport;
 
@@ -34,13 +33,13 @@ public class AsmValidationTest {
     @BeforeEach
     void setUp() {
 
-        asmModelSupport = asmModelResourceSupportBuilder().build();
-        asmResource = asmModelSupport.getResourceSet().createResource(
-                URI.createFileURI(createdSourceModelName));
+        asmModelSupport = asmModelResourceSupportBuilder()
+                .uri(URI.createFileURI(createdSourceModelName))
+                .build();
 
         Log log = new Slf4jLog();
 
-        asmUtils = new AsmUtils(asmResource.getResourceSet(), false);
+        asmUtils = new AsmUtils(asmModelSupport.getResourceSet(), false);
 
         // Execution context
         executionContext = executionContextBuilder()
@@ -51,16 +50,10 @@ public class AsmValidationTest {
                         wrappedEmfModelContextBuilder()
                                 .log(log)
                                 .name("ASM")
-                                .resource(asmResource)
+                                .resource(asmModelSupport.getResource())
                                 .build()))
                 .injectContexts(ImmutableMap.of("asmUtils", asmUtils))
                 .build();
-    }
-
-    @AfterEach
-    void tearDown() {
-        executionContext = null;
-        asmResource = null;
     }
 
     @Test

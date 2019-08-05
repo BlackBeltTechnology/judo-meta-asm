@@ -1,6 +1,7 @@
 package hu.blackbelt.judo.meta.asm.runtime;
 
 import hu.blackbelt.epsilon.runtime.execution.impl.NioFilesystemnRelativePathURIHandlerImpl;
+import hu.blackbelt.judo.meta.asm.support.AsmModelResourceSupport;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.resource.ResourceSet;
@@ -12,7 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static hu.blackbelt.judo.meta.asm.runtime.AsmModel.LoadArguments.asmLoadArgumentsBuilder;
+import static hu.blackbelt.judo.meta.asm.support.AsmModelResourceSupport.LoadArguments.asmLoadArgumentsBuilder;
+import static hu.blackbelt.judo.meta.asm.support.AsmModelResourceSupport.loadAsm;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.File;
@@ -28,19 +30,16 @@ public class InheritanceFromLoadedModelTest {
     @Test
     public void testInheritedAttributesInXMI() throws Exception {
         log.info("Testing XMI ...");
-        AsmModel asmModel = AsmModel.loadAsmModel(asmLoadArgumentsBuilder()
-                .uri(URI.createFileURI("src/test/model/inheritance.model"))
-                .name("test"));
+        AsmModelResourceSupport asmModel = loadAsm(asmLoadArgumentsBuilder()
+                .uri(URI.createFileURI("src/test/model/inheritance.model")));
         test(asmModel.getResourceSet(), 2 + 1);
     }
 
     @Test
     public void testInheritedAttributesInXML() throws Exception {
         log.info("Testing XML ...");
-        AsmModel asmModel = AsmModel.loadAsmModel(asmLoadArgumentsBuilder()
-                .uri(URI.createFileURI("src/test/model/asm.model"))
-                .name("test")
-                .build());
+        AsmModelResourceSupport asmModel = loadAsm(asmLoadArgumentsBuilder()
+                .uri(URI.createFileURI("src/test/model/asm.model")));
         test(asmModel.getResourceSet(),3 + 8);
     }
 
@@ -52,11 +51,9 @@ public class InheritanceFromLoadedModelTest {
         uriHandler = new NioFilesystemnRelativePathURIHandlerImpl("urn", FileSystems.getDefault(),
                 modelFile.getParentFile().getAbsolutePath());
 
-        AsmModel asmModel = AsmModel.loadAsmModel(asmLoadArgumentsBuilder()
+        AsmModelResourceSupport asmModel = loadAsm(asmLoadArgumentsBuilder()
                 .uriHandler(uriHandler)
-                .uri(URI.createURI("urn:inheritance.model"))
-                .name("test")
-                .build());
+                .uri(URI.createURI("urn:inheritance.model")));
 
         test(asmModel.getResourceSet(),2 + 1);
     }
@@ -69,10 +66,9 @@ public class InheritanceFromLoadedModelTest {
         uriHandler = new NioFilesystemnRelativePathURIHandlerImpl("urn", FileSystems.getDefault(),
                 modelFile.getParentFile().getAbsolutePath());
 
-        AsmModel asmModel = AsmModel.loadAsmModel(asmLoadArgumentsBuilder()
+        AsmModelResourceSupport asmModel = loadAsm(asmLoadArgumentsBuilder()
                 .uriHandler(uriHandler)
-                .uri(URI.createURI("urn:asm.model"))
-                .name("test"));
+                .uri(URI.createURI("urn:asm.model")));
 
         test(asmModel.getResourceSet(), 3 + 8);
     }
