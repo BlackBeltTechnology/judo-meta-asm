@@ -1,0 +1,5 @@
+import "asm.evl";
+
+pre {
+  var asmUtils = new Native("hu.blackbelt.judo.meta.asm.runtime.AsmUtils")(ASM.resource.resourceSet, false);
+}

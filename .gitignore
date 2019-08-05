@@ -54,5 +54,3 @@ local.properties
 **/.DS_Store
 wercker.env
 /**/.wercker
-**/GSModel.log*
-
