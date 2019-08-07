@@ -43,7 +43,7 @@ public class AsmUtils {
     private static final List<String> STRING_TYPES = Arrays.asList("java.lang.String");
     private static final List<String> BOOLEAN_TYPES = Arrays.asList("boolean", "java.lang.Boolean");
     private static final List<String> BYTE_ARRAY_TYPES = Arrays.asList("byte[]", "java.sql.Blob");
-    private static final List<String> TEXT_TYPTES = Arrays.asList("java.sql.Clob");
+    private static final List<String> TEXT_TYPES = Arrays.asList("java.sql.Clob");
 
     private static final Pattern EXPOSED_GRAPH_PATTERN = Pattern.compile("^(.*)/(.*)$");
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(AsmUtils.class);
@@ -969,7 +969,7 @@ public class AsmUtils {
      */
     public static boolean isText(final EDataType eDataType) {
         final String instanceClassName = eDataType.getInstanceClassName();
-        return instanceClassName != null && TEXT_TYPTES.contains(instanceClassName);
+        return instanceClassName != null && TEXT_TYPES.contains(instanceClassName);
     }
 
     /**
