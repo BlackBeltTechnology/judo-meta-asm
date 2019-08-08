@@ -898,7 +898,7 @@ public class AsmUtils {
                 if (mappedEntityType.get().getEStructuralFeature(mappedReferenceName.get()) instanceof EReference) {
                     return Optional.of((EReference) mappedEntityType.get().getEStructuralFeature(mappedReferenceName.get()));
                 } else {
-                    log.warn("The given mapped alias is not attribute type: " + getReferenceFQName(type));
+                    log.warn("The given mapped alias is not reference type: " + getReferenceFQName(type));
                     return empty();
                 }
             }
