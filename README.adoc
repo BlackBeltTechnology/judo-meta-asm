@@ -6,19 +6,28 @@ It acts as an eclipse plugin with features and sites, can be used standalone and
 
 == Modules:
 
-- targetdefinition - Eclipse target definition defines the P2 repsoitories for all of required MANFIEST feature. When the artifacts are compiled the 
-Judo based P2 respository URL and versions replaced with the maven defined one. When version definitions are changed first build updates target 
-definition version but the second build will use it. The reason of that tycho target resolution executed before version replace.
+- targetdefinition - Eclipse target definition defines the P2 repsoitories for all of required MANFIEST feature.
+The Judo update sites based on versions, so all versions have own update site. That causes that versions are coded in the URL.
+The target definition in tycho loaded as extension, which cause there is no way to replace versions before tycho is activated.
+For that reason a profile is created which can replace the versions with the dependency versions defined in parent.
+To run version update run
+`mvn clean install -P update-target-versions -f targetdefinition/pom.xml`
 
-- model - eclipse plugin. It contains the model and ecore generated java classes. 
-          Builder and Helpers added with MWE2 workflow.
-          
+- model - eclipse plugin. It contains the model and ecore generated java classes.
+Builder and Helpers added with MWE2 workflow.
+
 - osgi - OSGi bundle. It repackages model and add extra information / services to able to use for transformation pipeline
 in other platforms.
 
 - feature - Eclipse feature repository - to be able to use for eclipse installation
 
 - site - Eclipse Update Site - all built version compiled as an update site.
+The site definitions contains the required referenced repositoies which contains required plugins.
+The Judo update sites based on versions, so all versions have own update site. That causes that versions are coded in the URL.
+The category definition in tycho loaded as extension, which cause there is no way to replace versions before tycho is activated.
+For that reason a profile is created which can replace the versions with the dependency versions defined in parent.
+To run version update run
+`mvn clean install -P update-category-versions -f site/pom.xml`
 
 == Version policy
 
@@ -157,6 +166,7 @@ The credentials have to be defined in settings.xml
 To run code generation inside eclipse, run as MWE2 Workflow:
    hu.blackbelt.judo.meta.asm.model project src/workflow/generateModel.mwe2
 
+To work the XTend, XText, MWE and MWE2 features have to be installed.
 
 == Generate PGP keys
 
@@ -266,8 +276,6 @@ the section on installing the gpg-agent on how to do it on Gnu PGP documentation
     echo "$GPG_KEYS_SECRETKEYS" | base64 --decode | gpg --import --batch
     echo "$KEYS_OWNERTRUST" | base64 --decode | gpg --import-ownertrust
 
-
-
 == Release
 
 The release made by CI. Normally every commit make a version based on the name of the branch. If a version is
@@ -290,3 +298,7 @@ https://bugs.eclipse.org/bugs/show_bug.cgi?id=534587
 Tycho does not support lombok generation directly as mentioned in https://github.com/rzwitserloot/lombok/issues/285 .
 This will be fixed in later version. No lombok is not used in eclipse projects, all codes are generated.
 
+=== Problems with tycho
+
+Tycho 1.4.0 or below version does not handle repository references inside site definition, so all the referenced plugin sites have to be added manually.
+https://bugs.eclipse.org/bugs/show_bug.cgi?id=453708
