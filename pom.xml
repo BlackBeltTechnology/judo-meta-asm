@@ -695,18 +695,6 @@
 			<artifactId>hu.blackbelt.epsilon.runtime.execution</artifactId>
 			<version>${epsilon-runtime-eclipse-version}</version>
 		</dependency>
-
-		<dependency>
-			<groupId>org.eclipse.epsilon</groupId>
-			<artifactId>epsilon-core</artifactId>
-			<version>${epsilon-version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.eclipse.epsilon</groupId>
-			<artifactId>epsilon-emf</artifactId>
-			<version>${epsilon-version}</version>
-		</dependency>
 	</dependencies>
 
 	<profiles>
