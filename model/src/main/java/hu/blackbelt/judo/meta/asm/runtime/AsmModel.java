@@ -10,6 +10,7 @@ import org.eclipse.emf.ecore.resource.URIHandler;
 import hu.blackbelt.judo.meta.asm.support.AsmModelResourceSupport;
 
 import java.io.*;
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Map;
@@ -68,12 +69,14 @@ public class AsmModel {
     public static final String META_VERSION_RANGE = "meta-version-range";
     public static final String URI = "uri";
     public static final String RESOURCESET = "resourceset";
+    public static final String TAGS = "tags";
 
     private String name;
     private String version;
     private URI uri;
     private String checksum;
     private String metaVersionRange;
+    private Set<String> tags;
     private AsmModelResourceSupport asmModelResourceSupport;
 
     /**
@@ -87,6 +90,7 @@ public class AsmModel {
         ret.put(URI, uri);
         ret.put(CHECKSUM, checksum);
         ret.put(META_VERSION_RANGE, metaVersionRange);
+        ret.put(TAGS, tags);
         ret.put(RESOURCESET, asmModelResourceSupport.getResourceSet());
         return ret;
     }
@@ -335,6 +339,7 @@ public class AsmModel {
         String version;
         String checksum;
         String acceptedMetaVersionRange;
+        Set<String> tags;
         Map<Object, Object> loadOptions;
         boolean validateModel;
         InputStream inputStream;
@@ -358,6 +363,10 @@ public class AsmModel {
 
         private static String $default$acceptedMetaVersionRange() {
             return "[0,9999]";
+        }
+
+        private static Set<String> $default$tags() {
+            return Collections.emptySet();
         }
 
         private static File $default$file() {
@@ -400,6 +409,10 @@ public class AsmModel {
             return ofNullable(acceptedMetaVersionRange);
         }
 
+        Optional<Set<String>> getTags() {
+            return ofNullable(tags);
+        }
+
         Optional<Map<Object, Object>> getLoadOptions() {
             return ofNullable(loadOptions);
         }
@@ -437,7 +450,10 @@ public class AsmModel {
             
             private boolean acceptedMetaVersionRange$set;
             private String acceptedMetaVersionRange;
-            
+
+            private boolean tags$set;
+            private Set<String> tags;
+
             private boolean loadOptions$set;
             private Map<Object, Object> loadOptions;
 
@@ -529,7 +545,17 @@ public class AsmModel {
                 return this;
             }
 
-            
+            /**
+             * Defines the tags of the meta model. If its not defined empty set is used.
+             */
+            public LoadArgumentsBuilder tags(final Set<String> tags) {
+                requireNonNull(tags);
+                this.tags = tags;
+                tags$set = true;
+                return this;
+            }
+
+
             /**
              * Defines the load options for model. If not defined the
              * {@link AsmModelResourceSupport#getAsmModelDefaultLoadOptions()} us used.
@@ -585,6 +611,9 @@ public class AsmModel {
                 String acceptedMetaVersionRange = this.acceptedMetaVersionRange;
                 if (!acceptedMetaVersionRange$set)
                     acceptedMetaVersionRange = LoadArguments.$default$acceptedMetaVersionRange();
+                Set<String> tags = this.tags;
+                if (!tags$set)
+                    tags = LoadArguments.$default$tags();
                 Map<Object, Object> loadOptions = this.loadOptions;
                 if (!loadOptions$set) loadOptions = LoadArguments.$default$loadOptions();
                 File file = this.file;
@@ -593,7 +622,7 @@ public class AsmModel {
                 if (!inputStream$set) inputStream = LoadArguments.$default$inputStream();
 
                 return new LoadArguments(uri, name, uriHandler, resourceSet, version,
-                        checksum, acceptedMetaVersionRange, loadOptions, validateModel, file, inputStream);
+                        checksum, acceptedMetaVersionRange, tags, loadOptions, validateModel, file, inputStream);
             }
 
             @java.lang.Override
@@ -606,6 +635,7 @@ public class AsmModel {
                         + ", version=" + this.version
                         + ", checksum=" + this.checksum
                         + ", acceptedMetaVersionRange=" + this.acceptedMetaVersionRange
+                        + ", tags=" + this.tags
                         + ", loadOptions=" + this.loadOptions
                         + ", validateModel=" + this.validateModel
                         + ", file=" + this.file
@@ -627,6 +657,7 @@ public class AsmModel {
                               final String version,
                               final String checksum,
                               final String acceptedMetaVersionRange,
+                              final Set<String> tags,
                               final Map<Object, Object> loadOptions,
                               final boolean validateModel,
                               final File file,
@@ -638,6 +669,7 @@ public class AsmModel {
             this.version = version;
             this.checksum = checksum;
             this.acceptedMetaVersionRange = acceptedMetaVersionRange;
+            this.tags = tags;
             this.loadOptions = loadOptions;
             this.validateModel = validateModel;
             this.file = file;
@@ -846,6 +878,9 @@ public class AsmModel {
         private boolean metaVersionRange$set;
         private String metaVersionRange;
 
+        private boolean tags$set;
+        private Set<String> tags;
+
         private boolean asmModelResourceSupport$set;
         private AsmModelResourceSupport asmModelResourceSupport;
 
@@ -910,7 +945,17 @@ public class AsmModel {
             return this;
         }
 
-        
+        /**
+         * Defines the tags of the model.
+         */
+        public AsmModelBuilder tags(final Set<String> tags) {
+            requireNonNull(tags);
+            this.tags = tags;
+            this.tags$set = true;
+            return this;
+        }
+
+
         public AsmModelBuilder asmModelResourceSupport(final AsmModelResourceSupport asmModelResourceSupport) {
             requireNonNull(asmModelResourceSupport);
             this.asmModelResourceSupport = asmModelResourceSupport;
@@ -956,7 +1001,10 @@ public class AsmModel {
             String metaVersionRange = this.metaVersionRange;
             if (!metaVersionRange$set) metaVersionRange = LoadArguments.$default$acceptedMetaVersionRange();
 
-            return new AsmModel(name, version, uri, checksum, metaVersionRange, asmModelResourceSupport);
+            Set<String> tags = this.tags;
+            if (!tags$set) tags = LoadArguments.$default$tags();
+
+            return new AsmModel(name, version, uri, checksum, metaVersionRange, tags, asmModelResourceSupport);
         }
 
         @java.lang.Override
@@ -966,6 +1014,7 @@ public class AsmModel {
                     + ", uri=" + this.uri
                     + ", checksum=" + this.checksum
                     + ", metaVersionRange=" + this.metaVersionRange
+                    + ", tags=" + this.tags
                     + ", asmModelResourceSupport=" + this.asmModelResourceSupport + ")";
         }
     }
@@ -979,6 +1028,7 @@ public class AsmModel {
                      final URI uri,
                      final String checksum,
                      final String metaVersionRange,
+                     final Set<String> tags,
                      final AsmModelResourceSupport asmModelResourceSupport) {
 
         requireNonNull(name, "Name is mandatory");
@@ -990,6 +1040,7 @@ public class AsmModel {
         this.checksum = checksum;
         this.metaVersionRange = metaVersionRange;
         this.asmModelResourceSupport = asmModelResourceSupport;
+        this.tags = tags;
     }
 
     @java.lang.Override
@@ -999,6 +1050,7 @@ public class AsmModel {
                 + ", uri=" + this.getUri()
                 + ", checksum=" + this.getChecksum()
                 + ", metaVersionRange=" + this.getMetaVersionRange()
+                + ", tags=" + this.getTags()
                 + ", asmModelResourceSupport=" + this.asmModelResourceSupport + ")";
     }
 
@@ -1035,6 +1087,13 @@ public class AsmModel {
      */
     public String getMetaVersionRange() {
         return this.metaVersionRange;
+    }
+
+    /**
+     * Get the tags of meta model version.
+     */
+    public Set<String> getTags() {
+        return this.tags;
     }
 
 }
