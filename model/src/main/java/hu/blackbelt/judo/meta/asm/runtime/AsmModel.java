@@ -219,7 +219,9 @@ public class AsmModel {
                     .version(loadArguments.getVersion()
                             .orElse("1.0.0"))
                     .uri(loadArguments.getUri()
-                            .orElseThrow(() -> new IllegalArgumentException("URI is mandatory")))
+                            .orElseGet(() ->
+                                    org.eclipse.emf.common.util.URI.createURI(
+                                            loadArguments.getName().get() + "-asm.model")))
                     .checksum(loadArguments.getChecksum()
                             .orElse("NON-DEFINED"))
                     .asmModelResourceSupport(asmModelResourceSupport)
@@ -682,7 +684,9 @@ public class AsmModel {
             AsmModelResourceSupport.LoadArguments.LoadArgumentsBuilder argumentsBuilder =
                     AsmModelResourceSupport.LoadArguments.asmLoadArgumentsBuilder()
                             .uri(getUri()
-                                    .orElseThrow(() -> new IllegalArgumentException("rootURI or URI is mandatory")))
+                                    .orElseGet(() ->
+                                            org.eclipse.emf.common.util.URI.createURI(
+                                                    getName().get() + "-asm.model")))
                             .validateModel(isValidateModel());
 
             getUriHandler().ifPresent(argumentsBuilder::uriHandler);
@@ -979,12 +983,14 @@ public class AsmModel {
 
 
         public AsmModel build() {
+            org.eclipse.emf.common.util.URI uriPhysicalOrLogical = ofNullable(uri)
+                    .orElseGet(() -> org.eclipse.emf.common.util.URI.createURI(name + "-asm.model"));
 
             AsmModelResourceSupport asmModelResourceSupport = this.asmModelResourceSupport;
             if (!asmModelResourceSupport$set) {
                 AsmModelResourceSupport.AsmModelResourceSupportBuilder asmModelResourceSupportBuilder =
                         AsmModelResourceSupport.asmModelResourceSupportBuilder()
-                                .uri(uri);
+                                .uri(uriPhysicalOrLogical);
 
                 if (resourceSet$set) asmModelResourceSupportBuilder.resourceSet(resourceSet);
                 if (uriHandler$set) asmModelResourceSupportBuilder.uriHandler(uriHandler);
@@ -1004,7 +1010,7 @@ public class AsmModel {
             Set<String> tags = this.tags;
             if (!tags$set) tags = LoadArguments.$default$tags();
 
-            return new AsmModel(name, version, uri, checksum, metaVersionRange, tags, asmModelResourceSupport);
+            return new AsmModel(name, version, uriPhysicalOrLogical, checksum, metaVersionRange, tags, asmModelResourceSupport);
         }
 
         @java.lang.Override

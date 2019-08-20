@@ -248,6 +248,10 @@ public class AsmModelResourceSupport {
 	            if (fragment != null) {
 	                result = result.appendFragment(fragment);
 	            }
+
+				if (result == null) {
+					return uriPar;
+				}
 	            return normalize(result);
 	        }
 	    });
