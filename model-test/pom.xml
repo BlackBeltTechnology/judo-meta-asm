@@ -11,10 +11,9 @@
 		<relativePath>../</relativePath>
 	</parent>
 	<artifactId>hu.blackbelt.judo.meta.asm.model.test</artifactId>
-	<packaging>eclipse-test-plugin</packaging>
 
-	<name>Judo :: Asm :: Model :: Eclipse test plugin</name>
-	<description>Judo Asm Model eclipse test plugin</description>
+	<name>Judo :: Asm :: Model :: Test</name>
+	<description>Judo Asm Model Test</description>
 
 	<dependencies>
 		<dependency>
