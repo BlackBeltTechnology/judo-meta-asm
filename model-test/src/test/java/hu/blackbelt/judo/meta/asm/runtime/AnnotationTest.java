@@ -1,13 +1,11 @@
 package hu.blackbelt.judo.meta.asm.runtime;
 
-import com.google.common.collect.ImmutableList;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.util.builder.EAnnotationBuilder;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -245,7 +243,7 @@ public class AnnotationTest {
 
         Map<String, String> map = new HashMap<>();
         map.put("root", "demo.service.OrderInfoʘitems");
-        EAnnotation invalidRootAnnot  = newEAnnotationBuilder().withSource(asmUtils.getAnnotationUri("graph")).build();
+        EAnnotation invalidRootAnnot = newEAnnotationBuilder().withSource(asmUtils.getAnnotationUri("graph")).build();
         EClass negtestEntity = newEClassBuilder().withName("negtest").withEAnnotations(invalidRootAnnot).build();
         asmUtils.addExtensionAnnotationDetails(negtestEntity, "graph", map);
         assertThat(asmUtils.getResolvedRoot(invalidRootAnnot), equalTo(Optional.empty()));
@@ -365,7 +363,7 @@ public class AnnotationTest {
         Map<String, String> map2 = new HashMap<>();
         map2.put("value", "demo.entities.Order");
         asmUtils.addExtensionAnnotationDetails(containingEClass2, "mappedEntityType", map2);
-        assertThat(asmUtils.getMappedAttribute(attrWithBindingToInvalidEntity),equalTo(Optional.empty()));
+        assertThat(asmUtils.getMappedAttribute(attrWithBindingToInvalidEntity), equalTo(Optional.empty()));
     }
 
 
@@ -411,7 +409,7 @@ public class AnnotationTest {
         Map<String, String> map2 = new HashMap<>();
         map2.put("value", "demo.entities.Order");
         asmUtils.addExtensionAnnotationDetails(containingEClass2, "mappedEntityType", map2);
-        assertThat(asmUtils.getMappedReference(refWithBindingToInvalidEntity),equalTo(Optional.empty()));
+        assertThat(asmUtils.getMappedReference(refWithBindingToInvalidEntity), equalTo(Optional.empty()));
 
     }
 
@@ -454,7 +452,7 @@ public class AnnotationTest {
         noGraphWithValue.getDetails().put("value", "NEGTEST");
         assertThat(asmUtils.getResolvedExposedGraph(noGraphWithValue), equalTo(Optional.empty()));
 
-        //TODO negtest: resolvedExposedGraph is not a graph
+        //negtest: resolvedExposedGraph is not a graph
         //TODO: ask: isGraph() inside getResolvedExposedGraph() might be redundant, b/c isGraph() indirectly present in getExposedGraphByName()
         EAnnotation negtestGraphAnnot = newEAnnotationBuilder().withSource(asmUtils.getAnnotationUri("exposedGraph")).build();
         Map<String, String> map = new HashMap<>();
