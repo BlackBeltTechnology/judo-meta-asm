@@ -43,7 +43,7 @@ public class AsmUtils {
     private static final List<String> STRING_TYPES = Arrays.asList("java.lang.String");
     private static final List<String> BOOLEAN_TYPES = Arrays.asList("boolean", "java.lang.Boolean");
     private static final List<String> BYTE_ARRAY_TYPES = Arrays.asList("byte[]", "java.sql.Blob");
-    private static final List<String> TEXT_TYPTES = Arrays.asList("java.sql.Clob");
+    private static final List<String> TEXT_TYPES = Arrays.asList("java.sql.Clob");
 
     private static final Pattern EXPOSED_GRAPH_PATTERN = Pattern.compile("^(.*)/(.*)$");
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(AsmUtils.class);
@@ -493,6 +493,40 @@ public class AsmUtils {
      */
     public boolean isBound(final EOperation eOperation) {
         return isMappedTransferObjectType(eOperation.getEContainingClass()) || isBuiltInOperation(eOperation);
+    }
+
+    /**
+     * Get all operations of a built-in operation group that resolves to given access point.
+     *
+     * @param builtInOperationGroup built-in operation group
+     * @param accessPoint access point exposing mappedTransferObjectType's operations
+     * @return list of operations (empty list if invalid mappedTransferObjectType or accessPoint)
+     */
+    public EList<EOperation> getAllOperationsOfBuiltInOperationGroupExposedByAccessPoint(EClass builtInOperationGroup, EClass accessPoint) {
+        return (isBuiltInOperationGroup(builtInOperationGroup) && isAccessPoint(accessPoint)) ?
+                new BasicEList<>(builtInOperationGroup.getEAllOperations().stream()
+                        .filter(operation -> getExtensionAnnotationListByName(operation, "exposedBy").stream()
+                                .anyMatch(annotation -> getResolvedExposedBy(annotation).get().equals(accessPoint))
+                        ).collect(Collectors.toList())) :
+                ECollections.emptyEList();
+    }
+
+    /**
+     *  Get list of built-in operation groups containing exposedGraph annotation that resolves to access point
+     *
+     * @param accessPoint
+     * @return list of built-in operation groups (empty list is returned if not called on an access point)
+     */
+    public EList<EClass> getBuiltInOperationGroupsOfAccessPoint(EClass accessPoint) {
+        return isAccessPoint(accessPoint) ? new BasicEList<>(all(EClass.class).filter(
+                eClass -> isBuiltInOperationGroup(eClass) &&
+                        eClass.getEAllOperations().stream().anyMatch(
+                                operation -> getExtensionAnnotationListByName(operation,"exposedGraph").stream().anyMatch(
+                                        annotation -> getAccessPointOfGraph(getResolvedExposedGraph(annotation).get()).get().equals(accessPoint)
+                                )
+                        )
+                ).collect(Collectors.toList())) :
+                ECollections.emptyEList();
     }
 
     /**
@@ -971,7 +1005,7 @@ public class AsmUtils {
      */
     public static boolean isText(final EDataType eDataType) {
         final String instanceClassName = eDataType.getInstanceClassName();
-        return instanceClassName != null && TEXT_TYPTES.contains(instanceClassName);
+        return instanceClassName != null && TEXT_TYPES.contains(instanceClassName);
     }
 
     /**
