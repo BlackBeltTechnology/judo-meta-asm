@@ -29,7 +29,7 @@ public class AsmUtils {
     public static final String FEATURE_SEPARATOR = "#";
     public static final String OPERATION_SEPARATOR = "#";
 
-    public static final String SEPARATOR = "ʘ";
+    public static final String SEPARATOR = "__";
 
     private static final List<String> INTEGER_TYPES = Arrays.asList("byte", "short", "int", "long",
             "java.math.BigInteger", "java.lang.Byte", "java.lang.Short", "java.lang.Integer", "java.lang.Long");
