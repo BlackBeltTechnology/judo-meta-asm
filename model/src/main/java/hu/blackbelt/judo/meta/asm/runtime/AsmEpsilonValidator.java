@@ -27,11 +27,19 @@ public class AsmEpsilonValidator {
 	public static void validateAsm(Log log, AsmModel asmModel, URI scriptRoot,
 			Collection<String> expectedErrors, Collection<String> expectedWarnings)
 			throws ScriptExecutionException, URISyntaxException {
-		ExecutionContext executionContext = executionContextBuilder().log(log)
-				.resourceSet(asmModel.getResourceSet()).metaModels(emptyList())
-				.modelContexts(Arrays.asList(wrappedEmfModelContextBuilder().log(log).name("ASM")
-						.validateModel(false).resource(asmModel.getResource()).build()))
-				.injectContexts(singletonMap("asmUtils", new AsmUtils(asmModel.getResourceSet()))).build();
+		
+		ExecutionContext executionContext = executionContextBuilder()
+                .log(log)
+                .resourceSet(asmModel.getResourceSet())
+                .metaModels(emptyList())
+                .modelContexts(Arrays.asList(
+                        wrappedEmfModelContextBuilder()
+                                .log(log)
+                                .name("ASM")
+                                .resource(asmModel.getResource())
+                                .build()))
+                .injectContexts(singletonMap("asmUtils", new AsmUtils(asmModel.getResourceSet())))
+                .build();
 
 		try {
             // run the model / metadata loading
