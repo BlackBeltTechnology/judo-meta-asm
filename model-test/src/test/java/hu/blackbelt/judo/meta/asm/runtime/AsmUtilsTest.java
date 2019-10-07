@@ -25,16 +25,16 @@ public class AsmUtilsTest {
     @BeforeEach
     public void setUp() throws Exception {
         asmModel = loadAsmModel(asmLoadArgumentsBuilder()
-                .uri(URI.createFileURI(new File("src/test/model/asm.model").getAbsolutePath()))
+                .uri(URI.createFileURI(new File("target/test-classes/model/northwind-asm.model").getAbsolutePath()))
                 .name("test"));
         asmUtils = new AsmUtils(asmModel.getResourceSet());
     }
     @Test
     public void testGetPackageFQName() {
-        Optional<EPackage> ePackage = asmUtils.all(EPackage.class).filter(pkg -> "service".equals(pkg.getName())).findAny();
+        Optional<EPackage> ePackage = asmUtils.all(EPackage.class).filter(pkg -> "services".equals(pkg.getName())).findAny();
 
         assertTrue(ePackage.isPresent());
-        assertThat(asmUtils.getPackageFQName(ePackage.get()), is("demo.service"));
+        assertThat(asmUtils.getPackageFQName(ePackage.get()), is("demo.services"));
     }
 
     @Test
@@ -50,7 +50,7 @@ public class AsmUtilsTest {
         Optional<EAttribute> eAttribute = asmUtils.all(EAttribute.class).filter(attr -> "totalNumberOfOrders".equals(attr.getName())).findAny();
 
         assertTrue(eAttribute.isPresent());
-        assertThat(asmUtils.getAttributeFQName(eAttribute.get()), is("demo.entities.ʘStatic#totalNumberOfOrders"));
+        assertThat(asmUtils.getAttributeFQName(eAttribute.get()), is("demo.services.__Static#totalNumberOfOrders"));
     }
 
     @Test
@@ -66,7 +66,7 @@ public class AsmUtilsTest {
         Optional<EOperation> eOperation = asmUtils.all(EOperation.class).filter(op -> "getAllOrders".equals(op.getName())).findAny();
 
         assertTrue(eOperation.isPresent());
-        assertThat(asmUtils.getOperationFQName(eOperation.get()), is("demo.service.ʘUnboundServices#getAllOrders"));
+        assertThat(asmUtils.getOperationFQName(eOperation.get()), is("demo.services.__UnboundServices#getAllOrders"));
     }
 
     @Test
@@ -92,10 +92,10 @@ public class AsmUtilsTest {
     @Test
     public void testGetNestedClasses() {
         //nested
-        Optional<EClass> nestedClass = asmUtils.all(EClass.class).filter(c -> "OrderInfoʘitemsʘReference".equals(c.getName())).findAny();
+        Optional<EClass> nestedClass = asmUtils.all(EClass.class).filter(c -> "OrderInfo__items__Reference".equals(c.getName())).findAny();
         assertTrue(nestedClass.isPresent());
         //container
-        Optional<EClass> containerClass = asmUtils.all(EClass.class).filter(c -> "OrderInfoʘitems".equals(c.getName())).findAny();
+        Optional<EClass> containerClass = asmUtils.all(EClass.class).filter(c -> "OrderInfo__items".equals(c.getName())).findAny();
         assertTrue(containerClass.isPresent());
 
         assertTrue(asmUtils.getNestedClasses(containerClass.get()).contains(nestedClass.get()));
@@ -110,10 +110,10 @@ public class AsmUtilsTest {
     @Test
     public void testGetContainerClass() {
         //container
-        Optional<EClass> containerClass = asmUtils.all(EClass.class).filter(c -> "OrderInfoʘitems".equals(c.getName())).findAny();
+        Optional<EClass> containerClass = asmUtils.all(EClass.class).filter(c -> "OrderInfo__items".equals(c.getName())).findAny();
         assertTrue(containerClass.isPresent());
         //nested
-        Optional<EClass> nestedClass = asmUtils.all(EClass.class).filter(c -> "OrderInfoʘitemsʘReference".equals(c.getName())).findAny();
+        Optional<EClass> nestedClass = asmUtils.all(EClass.class).filter(c -> "OrderInfo__items__Reference".equals(c.getName())).findAny();
         assertTrue(nestedClass.isPresent());
 
         assertThat(asmUtils.getContainerClass(nestedClass.get()).get(), is(containerClass.get()));

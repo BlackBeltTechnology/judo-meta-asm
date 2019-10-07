@@ -39,7 +39,7 @@ public class InheritanceFromLoadedModelTest {
     public void testInheritedAttributesInXML() throws Exception {
         log.info("Testing XML ...");
         AsmModelResourceSupport asmModel = loadAsm(asmLoadArgumentsBuilder()
-                .uri(URI.createFileURI("src/test/model/asm.model")));
+                .uri(URI.createFileURI("target/test-classes/model/northwind-asm.model")));
         test(asmModel.getResourceSet(),3 + 8);
     }
 
@@ -61,14 +61,14 @@ public class InheritanceFromLoadedModelTest {
     @Test
     public void testInheritedAttributesInXMLWithNIOLoader() throws Exception {
         log.info("Testing XML (custom uri handler) ...");
-        final File modelFile = new File("src/test/model/asm.model");
+        final File modelFile = new File("target/test-classes/model/northwind-asm.model");
 
         uriHandler = new NioFilesystemnRelativePathURIHandlerImpl("urn", FileSystems.getDefault(),
                 modelFile.getParentFile().getAbsolutePath());
 
         AsmModelResourceSupport asmModel = loadAsm(asmLoadArgumentsBuilder()
                 .uriHandler(uriHandler)
-                .uri(URI.createURI("urn:asm.model")));
+                .uri(URI.createURI("urn:northwind-asm.model")));
 
         test(asmModel.getResourceSet(), 3 + 8);
     }
@@ -92,7 +92,7 @@ public class InheritanceFromLoadedModelTest {
     @Test
     public void testInheritedAttributesInXMLWithStandardLoader() {
         log.info("Testing XML (standard loader) ...");
-        final File modelFile = new File("src/test/model/asm.model");
+        final File modelFile = new File("target/test-classes/model/northwind-asm.model");
         URI fileURI  = URI.createFileURI(modelFile.getAbsolutePath());
 
         ResourceSet resourceSet = new ResourceSetImpl();

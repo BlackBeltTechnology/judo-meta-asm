@@ -25,7 +25,7 @@ public class AsmModelLoaderTest {
     @DisplayName("Load Asm Model")
     void loadAsmModel() throws IOException, AsmModel.AsmValidationException {
         AsmModel asmModel = AsmModel.loadAsmModel(asmLoadArgumentsBuilder()
-                .uri(URI.createFileURI(new File("src/test/model/test.asm").getAbsolutePath()))
+                .uri(URI.createFileURI(new File("target/test-classes/model/northwind-asm.model").getAbsolutePath()))
                 .name("test"));
 
         assertTrue(asmModel.isValid());
