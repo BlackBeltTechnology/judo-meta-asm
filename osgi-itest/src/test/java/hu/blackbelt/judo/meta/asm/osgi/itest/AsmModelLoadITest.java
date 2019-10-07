@@ -1,5 +1,7 @@
 package hu.blackbelt.judo.meta.asm.osgi.itest;
 
+import hu.blackbelt.epsilon.runtime.execution.impl.StringBuilderLogger;
+import hu.blackbelt.judo.meta.asm.runtime.AsmEpsilonValidator;
 import hu.blackbelt.judo.meta.asm.runtime.AsmModel;
 import hu.blackbelt.osgi.utils.osgi.api.BundleTrackerManager;
 import org.junit.Test;
@@ -17,6 +19,7 @@ import javax.inject.Inject;
 import java.io.*;
 
 import static hu.blackbelt.judo.meta.asm.osgi.itest.AsmKarafFeatureProvider.*;
+import static org.junit.Assert.assertFalse;
 import static org.ops4j.pax.exam.CoreOptions.*;
 import static org.ops4j.pax.exam.OptionUtils.combine;
 import static org.ops4j.pax.tinybundles.core.TinyBundles.bundle;
@@ -69,6 +72,16 @@ public class AsmModelLoadITest {
     }
 
     @Test
-    public void testModelLoaded() {
+    public void testModelValidation() {
+        StringBuilderLogger logger = new StringBuilderLogger(StringBuilderLogger.LogLevel.DEBUG);
+        try {
+            AsmEpsilonValidator.validateAsm(logger,
+                    asmModel,
+                    AsmEpsilonValidator.calculateAsmValidationScriptURI());
+
+        } catch (Exception e) {
+            log.log(LogService.LOG_ERROR, logger.getBuffer());
+            assertFalse(true);
+        }
     }
 }
