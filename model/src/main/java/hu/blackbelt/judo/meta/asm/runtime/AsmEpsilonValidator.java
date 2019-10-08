@@ -37,8 +37,9 @@ public class AsmEpsilonValidator {
                                 .log(log)
                                 .name("ASM")
                                 .resource(asmModel.getResource())
+                                .validateModel(false)
                                 .build()))
-                .injectContexts(singletonMap("asmUtils", new AsmUtils(asmModel.getResourceSet())))
+                .injectContexts(singletonMap("asmUtils", new AsmUtils(asmModel.getResourceSet(),false)))
                 .build();
 
 		try {
@@ -64,8 +65,8 @@ public class AsmEpsilonValidator {
 		if (asmRoot.toString().endsWith(".jar")) {
 			asmRoot = new URI("jar:" + asmRoot.toString() + "!/validations/");
 		} else if (asmRoot.toString().startsWith("jar:bundle:")) {
-            // bundle://37.0:0/validations/
-            // jar:bundle://37.0:0/!/validations/asm.evl
+			// bundle://37.0:0/validations/
+            // jar:bundle://37.0:0/!/validations/esm.evl
 			asmRoot = new URI(
 					asmRoot.toString().substring(4, asmRoot.toString().indexOf("!")) + "validations/");
 		} else {

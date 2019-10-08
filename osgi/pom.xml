@@ -35,7 +35,7 @@
                             org.eclipse.emf.ecore.runtime;version=${project.version},
                             org.eclipse.emf.ecore.support;version=${project.version}
                         </Export-Package>
-						<Include-Resource>{maven-resources},meta/asm=../model/model</Include-Resource>
+						<Include-Resource>{maven-resources},meta/asm=../model/model,validations=../model/src/main/epsilon/validations</Include-Resource>
 					</instructions>
 				</configuration>
 			</plugin>

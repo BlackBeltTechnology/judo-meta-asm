@@ -3,21 +3,19 @@ package hu.blackbelt.judo.meta.asm.runtime;
 import hu.blackbelt.epsilon.runtime.execution.api.Log;
 import hu.blackbelt.epsilon.runtime.execution.exceptions.EvlScriptExecutionException;
 import hu.blackbelt.epsilon.runtime.execution.impl.Slf4jLog;
-import hu.blackbelt.judo.meta.asm.support.AsmModelResourceSupport;
-
 import org.eclipse.emf.common.util.URI;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
+import com.google.common.collect.ImmutableList;
 
-import static hu.blackbelt.judo.meta.asm.support.AsmModelResourceSupport.asmModelResourceSupportBuilder;
+import java.util.Collection;
 
 public class AsmValidationTest {
 
-    private final String createdSourceModelName = "urn:Asm.model";
-    AsmModelResourceSupport asmModelSupport;
+    private final String createdSourceModelName = "urn:asm.judo-meta-asm";
 
     private AsmModel asmModel;
     
@@ -27,13 +25,8 @@ public class AsmValidationTest {
 
     @BeforeEach
     void setUp() {
-
-        asmModelSupport = asmModelResourceSupportBuilder()
-                .uri(URI.createFileURI(createdSourceModelName))
-                .build();
         
         asmModel = AsmModel.buildAsmModel()
-        		.asmModelResourceSupport(asmModelSupport)
                 .uri(URI.createURI(createdSourceModelName))
                 .name("test")
                 .build();
@@ -57,4 +50,9 @@ public class AsmValidationTest {
             throw ex;
         }
     }
+    
+    @Test
+    public void test() throws Exception {
+        runEpsilon(ImmutableList.of(), null);
+    } 
 }
