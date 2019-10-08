@@ -187,7 +187,7 @@ public class AnnotationTest {
 
     @Test
     public void testGetAccessPointsOfUnboundOperation() {
-        Optional<EClass> unboundServices = asmUtils.all(EClass.class).filter(c -> "ʘUnboundServices".equals(c.getName())).findAny();
+        Optional<EClass> unboundServices = asmUtils.all(EClass.class).filter(c -> "__UnboundServices".equals(c.getName())).findAny();
         assertTrue(unboundServices.isPresent());
         Optional<EOperation> getAllOrders = unboundServices.get().getEOperations().stream().filter(o -> "getAllOrders".equals(o.getName())).findAny();
         assertTrue(getAllOrders.isPresent());
@@ -197,7 +197,7 @@ public class AnnotationTest {
         assertThat(asmUtils.getAccessPointsOfUnboundOperation(getAllOrders.get()), hasItem(internalAP.get()));
 
         //negtest: not an unbound operation
-        Optional<EClass> orderinfo_shipper = asmUtils.all(EClass.class).filter(c -> "OrderInfoʘshipper".equals(c.getName())).findAny();
+        Optional<EClass> orderinfo_shipper = asmUtils.all(EClass.class).filter(c -> "OrderInfo__shipper".equals(c.getName())).findAny();
         assertTrue(orderinfo_shipper.isPresent());
         Optional<EOperation> getOper = orderinfo_shipper.get().getEOperations().stream().filter(o -> "get".equals(o.getName())).findAny();
         assertTrue(getOper.isPresent());
