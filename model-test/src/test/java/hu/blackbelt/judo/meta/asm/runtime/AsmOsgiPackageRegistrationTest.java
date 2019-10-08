@@ -30,7 +30,7 @@ public class AsmOsgiPackageRegistrationTest {
     @BeforeEach
     public void setUp() throws Exception {
         // Set our custom handler
-        final File modelFile = new File("src/test/model/asm.model");
+        final File modelFile = new File("target/test-classes/model/northwind-asm.model");
 
     	
         uriHandler = new NioFilesystemnRelativePathURIHandlerImpl("urn", FileSystems.getDefault(),
@@ -48,7 +48,7 @@ public class AsmOsgiPackageRegistrationTest {
     public void testLoadToReourceSet() throws Exception {
         AsmModel asmModel = AsmModel.loadAsmModel(asmLoadArgumentsBuilder()
                 .uriHandler(uriHandler)
-                .uri(URI.createURI("urn:asm.model"))
+                .uri(URI.createURI("urn:northwind-asm.model"))
                 .name("test"));
 
         

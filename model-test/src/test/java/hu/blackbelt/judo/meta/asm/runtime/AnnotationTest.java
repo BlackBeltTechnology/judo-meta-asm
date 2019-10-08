@@ -32,7 +32,7 @@ public class AnnotationTest {
     @BeforeEach
     public void setUp() throws Exception {
         asmModel = loadAsmModel(asmLoadArgumentsBuilder()
-                .uri(URI.createFileURI(new File("src/test/model/asm.model").getAbsolutePath()))
+                .uri(URI.createFileURI(new File("target/test-classes/model/northwind-asm.model").getAbsolutePath()))
                 .name("test"));
         asmUtils = new AsmUtils(asmModel.getResourceSet());
     }
@@ -119,33 +119,33 @@ public class AnnotationTest {
 
     @Test
     public void testPackageFQName() {
-        final EPackage ePackage = (EPackage) asmModel.getResource().getEObject("//service");
+        final EPackage ePackage = (EPackage) asmModel.getResource().getEObject("//services");
 
-        assertThat(asmUtils.getPackageFQName(ePackage), equalTo("demo.service"));
+        assertThat(asmUtils.getPackageFQName(ePackage), equalTo("demo.services"));
     }
 
 
     @Test
     public void testClassFQName() {
-        final EClass orderInfo = (EClass) asmModel.getResource().getEObject("//service/OrderInfo");
+        final EClass orderInfo = (EClass) asmModel.getResource().getEObject("//services/OrderInfo");
 
-        assertThat(asmUtils.getClassifierFQName(orderInfo), equalTo("demo.service.OrderInfo"));
+        assertThat(asmUtils.getClassifierFQName(orderInfo), equalTo("demo.services.OrderInfo"));
     }
 
 
     @Test
     public void testAttributeFQName() {
-        final EClass orderInfo = (EClass) asmModel.getResource().getEObject("//service/OrderInfo");
+        final EClass orderInfo = (EClass) asmModel.getResource().getEObject("//services/OrderInfo");
         final EAttribute orderDate = (EAttribute) orderInfo.getEStructuralFeature("orderDate");
 
-        assertThat(asmUtils.getAttributeFQName(orderDate), equalTo("demo.service.OrderInfo#orderDate"));
+        assertThat(asmUtils.getAttributeFQName(orderDate), equalTo("demo.services.OrderInfo#orderDate"));
     }
 
 
     @Test
     public void testGetClassByFQName() {
-        final EClass orderInfo = (EClass) asmModel.getResource().getEObject("//service/OrderInfo");
-        Optional<EClass> founded = asmUtils.getClassByFQName("demo.service.OrderInfo");
+        final EClass orderInfo = (EClass) asmModel.getResource().getEObject("//services/OrderInfo");
+        Optional<EClass> founded = asmUtils.getClassByFQName("demo.services.OrderInfo");
 
         assertTrue(founded.isPresent());
         assertThat(founded.get(), equalTo(orderInfo));
@@ -195,15 +195,6 @@ public class AnnotationTest {
         Optional<EClass> internalAP = asmUtils.all(EClass.class).filter(a -> "internalAP".equals(a.getName())).findAny();
         assertTrue(internalAP.isPresent());
         assertThat(asmUtils.getAccessPointsOfUnboundOperation(getAllOrders.get()), hasItem(internalAP.get()));
-
-        //negtest: not an unbound operation
-        Optional<EClass> orderinfo_shipper = asmUtils.all(EClass.class).filter(c -> "OrderInfo__shipper".equals(c.getName())).findAny();
-        assertTrue(orderinfo_shipper.isPresent());
-        Optional<EOperation> getOper = orderinfo_shipper.get().getEOperations().stream().filter(o -> "get".equals(o.getName())).findAny();
-        assertTrue(getOper.isPresent());
-        assertThat(asmUtils.getAccessPointsOfUnboundOperation(getOper.get()), CoreMatchers.is(ECollections.emptyEList()));
-
-
     }
 
     @Test
@@ -255,7 +246,7 @@ public class AnnotationTest {
     @Test
     public void testGetMappedEntity() {
         final EClass order = (EClass) asmModel.getResource().getEObject("//entities/Order");
-        final EClass orderInfo = (EClass) asmModel.getResource().getEObject("//service/OrderInfo");
+        final EClass orderInfo = (EClass) asmModel.getResource().getEObject("//services/OrderInfo");
 
         Optional<EClass> mappedType = asmUtils.getMappedEntityType(orderInfo);
         assertTrue(mappedType.isPresent());
@@ -265,7 +256,7 @@ public class AnnotationTest {
     @Test
     public void testGetMappedAttribute() {
         final EClass order = (EClass) asmModel.getResource().getEObject("//entities/Order");
-        final EClass orderInfo = (EClass) asmModel.getResource().getEObject("//service/OrderInfo");
+        final EClass orderInfo = (EClass) asmModel.getResource().getEObject("//services/OrderInfo");
 
         final EAttribute orderDate = (EAttribute) order.getEStructuralFeature("orderDate");
         final EAttribute orderInfoDate = (EAttribute) orderInfo.getEStructuralFeature("orderDate");
@@ -279,7 +270,7 @@ public class AnnotationTest {
     @Test
     public void testGetMappedReference() {
         final EClass order = (EClass) asmModel.getResource().getEObject("//entities/Order");
-        final EClass orderInfo = (EClass) asmModel.getResource().getEObject("//service/OrderInfo");
+        final EClass orderInfo = (EClass) asmModel.getResource().getEObject("//services/OrderInfo");
 
         final EReference orderDetails = (EReference) order.getEStructuralFeature("orderDetails");
         final EReference orderInfoItems = (EReference) orderInfo.getEStructuralFeature("items");
