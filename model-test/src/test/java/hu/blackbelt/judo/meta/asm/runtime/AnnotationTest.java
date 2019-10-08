@@ -195,15 +195,6 @@ public class AnnotationTest {
         Optional<EClass> internalAP = asmUtils.all(EClass.class).filter(a -> "internalAP".equals(a.getName())).findAny();
         assertTrue(internalAP.isPresent());
         assertThat(asmUtils.getAccessPointsOfUnboundOperation(getAllOrders.get()), hasItem(internalAP.get()));
-
-        //negtest: not an unbound operation
-        Optional<EClass> orderinfo_shipper = asmUtils.all(EClass.class).filter(c -> "OrderInfo__shipper".equals(c.getName())).findAny();
-        assertTrue(orderinfo_shipper.isPresent());
-        Optional<EOperation> getOper = orderinfo_shipper.get().getEOperations().stream().filter(o -> "get".equals(o.getName())).findAny();
-        assertTrue(getOper.isPresent());
-        assertThat(asmUtils.getAccessPointsOfUnboundOperation(getOper.get()), CoreMatchers.is(ECollections.emptyEList()));
-
-
     }
 
     @Test

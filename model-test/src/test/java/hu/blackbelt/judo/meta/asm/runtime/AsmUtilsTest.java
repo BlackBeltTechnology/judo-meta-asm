@@ -92,16 +92,16 @@ public class AsmUtilsTest {
     @Test
     public void testGetNestedClasses() {
         //nested
-        Optional<EClass> nestedClass = asmUtils.all(EClass.class).filter(c -> "OrderInfo__items__Reference".equals(c.getName())).findAny();
+        Optional<EClass> nestedClass = asmUtils.all(EClass.class).filter(c -> "OrderInfoQuery__items__Reference".equals(c.getName())).findAny();
         assertTrue(nestedClass.isPresent());
         //container
-        Optional<EClass> containerClass = asmUtils.all(EClass.class).filter(c -> "OrderInfo__items".equals(c.getName())).findAny();
+        Optional<EClass> containerClass = asmUtils.all(EClass.class).filter(c -> "OrderInfoQuery__items".equals(c.getName())).findAny();
         assertTrue(containerClass.isPresent());
 
         assertTrue(asmUtils.getNestedClasses(containerClass.get()).contains(nestedClass.get()));
 
         //negtest: trying to get indirectly nested classes
-        Optional<EClass> negtest_containerClass = asmUtils.all(EClass.class).filter(c -> "OrderInfo".equals(c.getName())).findAny();
+        Optional<EClass> negtest_containerClass = asmUtils.all(EClass.class).filter(c -> "OrderInfoQuery".equals(c.getName())).findAny();
         assertTrue(negtest_containerClass.isPresent());
 
         assertFalse(asmUtils.getNestedClasses(negtest_containerClass.get()).contains(nestedClass.get()));
@@ -110,16 +110,16 @@ public class AsmUtilsTest {
     @Test
     public void testGetContainerClass() {
         //container
-        Optional<EClass> containerClass = asmUtils.all(EClass.class).filter(c -> "OrderInfo__items".equals(c.getName())).findAny();
+        Optional<EClass> containerClass = asmUtils.all(EClass.class).filter(c -> "OrderInfoQuery__items".equals(c.getName())).findAny();
         assertTrue(containerClass.isPresent());
         //nested
-        Optional<EClass> nestedClass = asmUtils.all(EClass.class).filter(c -> "OrderInfo__items__Reference".equals(c.getName())).findAny();
+        Optional<EClass> nestedClass = asmUtils.all(EClass.class).filter(c -> "OrderInfoQuery__items__Reference".equals(c.getName())).findAny();
         assertTrue(nestedClass.isPresent());
 
         assertThat(asmUtils.getContainerClass(nestedClass.get()).get(), is(containerClass.get()));
 
         //negtest: trying to get indirectly containing classes
-        Optional<EClass> negtest_containerClass = asmUtils.all(EClass.class).filter(c -> "OrderInfo".equals(c.getName())).findAny();
+        Optional<EClass> negtest_containerClass = asmUtils.all(EClass.class).filter(c -> "OrderInfoQuery".equals(c.getName())).findAny();
         assertTrue(negtest_containerClass.isPresent());
 
         assertThat(asmUtils.getContainerClass(negtest_containerClass.get()), is(Optional.empty()));
