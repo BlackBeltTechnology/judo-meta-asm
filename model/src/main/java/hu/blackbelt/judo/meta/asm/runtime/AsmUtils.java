@@ -596,10 +596,10 @@ public class AsmUtils {
     }
 
     /**
-     * Get list of access points exposing an unbound operation.
+     * Get list of access points exposing an operation.
      *
-     * @param eOperation  unbound operation
-     * @return list of access points (empty list is returned if eOperation is not bound)
+     * @param eOperation  operation
+     * @return list of access points
      */
     public EList<EClass> getAccessPointsOfOperation(final EOperation eOperation) {
         return new BasicEList<>(eOperation.getEAnnotations().stream()
@@ -631,7 +631,7 @@ public class AsmUtils {
      * @return <code>true</code> is operation is exposed by an access point, <code>false</code> otherwise
      */
     public boolean isExposedService(final EOperation eOperation) {
-        return !getAccessPointsOfOperation(eOperation).isEmpty(); //TODO-check (..UnboundOperations -> ..Operations)
+        return !isBound(eOperation) && !getAccessPointsOfOperation(eOperation).isEmpty();
     }
 
     /**
