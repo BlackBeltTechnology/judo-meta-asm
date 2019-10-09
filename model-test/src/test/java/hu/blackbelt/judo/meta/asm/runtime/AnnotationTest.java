@@ -1,5 +1,6 @@
 package hu.blackbelt.judo.meta.asm.runtime;
 
+import com.google.common.collect.ImmutableMap;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
@@ -47,15 +48,14 @@ public class AnnotationTest {
         assertTrue(Boolean.valueOf(existing.get().getDetails().get(AsmUtils.EXTENDED_METADATA_DETAILS_VALUE_KEY)));
     }
 
-    //TODO
     @Test
     public void testGetExtensionAnnotationNotExistingButCreated() {
         Optional<EClass> order = asmUtils.all(EClass.class).filter(c -> "Order".equals(c.getName())).findAny();
         Optional<EAnnotation> notExistingButCreated = asmUtils.getExtensionAnnotationByName(order.get(), "toBeCreated", true);
 
         assertTrue(notExistingButCreated.isPresent());
-        //TODO: get what this is
-        //assertTrue(Boolean.valueOf(notExistingButCreated.get().getDetails().get(AsmUtils.EXTENDED_METADATA_DETAILS_VALUE_KEY)));
+
+        assertFalse(Boolean.parseBoolean(notExistingButCreated.get().getDetails().get(AsmUtils.EXTENDED_METADATA_DETAILS_VALUE_KEY)));
     }
 
     @Test
@@ -91,67 +91,31 @@ public class AnnotationTest {
         Optional<EClass> order = asmUtils.all(EClass.class).filter(c -> "Order".equals(c.getName())).findAny();
         assertTrue(order.isPresent());
 
-        Map<String, String> map = new HashMap<>();
-        map.put("key1", "value1");
-        map.put("key2", "value2");
-
-        asmUtils.addExtensionAnnotationDetails(order.get(), "NewAnnotation", map);
-
+        asmUtils.addExtensionAnnotationDetails(order.get(), "NewAnnotation", ImmutableMap.of("key1", "value1"));
         assertTrue(asmUtils.getExtensionAnnotationByName(order.get(), "NewAnnotation", false).get().getDetails().containsKey("key1"));
+
+        asmUtils.addExtensionAnnotationDetails(order.get(), "NewAnnotation", ImmutableMap.of("key2", "value2"));
         assertTrue(asmUtils.getExtensionAnnotationByName(order.get(), "NewAnnotation", false).get().getDetails().containsKey("key2"));
     }
 
     @Test
     public void testGetExtensionAnnotationValue() {
         Optional<EClass> orderInfo = asmUtils.all(EClass.class).filter(c -> "OrderInfo".equals(c.getName())).findAny();
-        Optional<String> value = asmUtils.getExtensionAnnotationValue(orderInfo.get(), "mappedEntityType", false);
+        Optional<String> mappedEntityTypeValue = asmUtils.getExtensionAnnotationValue(orderInfo.get(), "mappedEntityType", false);
 
-        assertTrue(value.isPresent());
-        assertThat(value.get(), equalTo("demo.entities.Order"));
+        assertTrue(mappedEntityTypeValue.isPresent());
+        assertThat(mappedEntityTypeValue.get(), equalTo("demo.entities.Order"));
+
+        //TODO: negtest?
     }
 
-    //TODO: ask
+
     //@Test
     public void testGetExtensionAnnotationCustomValue() {
-        Optional<EClass> orderInfo = asmUtils.all(EClass.class).filter(c -> "OrderInfo".equals(c.getName())).findAny();
+        //Optional<EClass> orderInfo = asmUtils.all(EClass.class).filter(c -> "OrderInfo".equals(c.getName())).findAny();
+        //TODO
 
     }
-
-    @Test
-    public void testPackageFQName() {
-        final EPackage ePackage = (EPackage) asmModel.getResource().getEObject("//services");
-
-        assertThat(asmUtils.getPackageFQName(ePackage), equalTo("demo.services"));
-    }
-
-
-    @Test
-    public void testClassFQName() {
-        final EClass orderInfo = (EClass) asmModel.getResource().getEObject("//services/OrderInfo");
-
-        assertThat(asmUtils.getClassifierFQName(orderInfo), equalTo("demo.services.OrderInfo"));
-    }
-
-
-    @Test
-    public void testAttributeFQName() {
-        final EClass orderInfo = (EClass) asmModel.getResource().getEObject("//services/OrderInfo");
-        final EAttribute orderDate = (EAttribute) orderInfo.getEStructuralFeature("orderDate");
-
-        assertThat(asmUtils.getAttributeFQName(orderDate), equalTo("demo.services.OrderInfo#orderDate"));
-    }
-
-
-    @Test
-    public void testGetClassByFQName() {
-        final EClass orderInfo = (EClass) asmModel.getResource().getEObject("//services/OrderInfo");
-        Optional<EClass> founded = asmUtils.getClassByFQName("demo.services.OrderInfo");
-
-        assertTrue(founded.isPresent());
-        assertThat(founded.get(), equalTo(orderInfo));
-    }
-
-    //--------------------------- BIG FAT LINE OF PROGRESSSSSION -----------------------
 
     @Test
     public void testGetResolvedExposedBy() {
@@ -186,7 +150,7 @@ public class AnnotationTest {
     }
 
     @Test
-    public void testGetAccessPointsOfUnboundOperation() {
+    public void testGetAccessPointsOfOperation() {
         Optional<EClass> unboundServices = asmUtils.all(EClass.class).filter(c -> "__UnboundServices".equals(c.getName())).findAny();
         assertTrue(unboundServices.isPresent());
         Optional<EOperation> getAllOrders = unboundServices.get().getEOperations().stream().filter(o -> "getAllOrders".equals(o.getName())).findAny();
@@ -194,7 +158,7 @@ public class AnnotationTest {
 
         Optional<EClass> internalAP = asmUtils.all(EClass.class).filter(a -> "internalAP".equals(a.getName())).findAny();
         assertTrue(internalAP.isPresent());
-        assertThat(asmUtils.getAccessPointsOfUnboundOperation(getAllOrders.get()), hasItem(internalAP.get()));
+        assertThat(asmUtils.getAccessPointsOfOperation(getAllOrders.get()), hasItem(internalAP.get()));
     }
 
     @Test

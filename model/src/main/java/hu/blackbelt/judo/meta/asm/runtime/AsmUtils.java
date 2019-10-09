@@ -364,7 +364,7 @@ public class AsmUtils {
     }
 
     /**
-     * Get the the Extension annotation's given element in map. If failNotFound true it log a warning, otherwise
+     * Get the the Extension annotation's given element in map. If failNotFound true it logs a warning, otherwise
      * if the extension annotation or the given name not found returns null.
      *
      * @param eModelElement  The model element which is used to determinate
@@ -496,40 +496,6 @@ public class AsmUtils {
     }
 
     /**
-     * Get all operations of a built-in operation group that resolves to given access point.
-     *
-     * @param builtInOperationGroup built-in operation group
-     * @param accessPoint access point exposing mappedTransferObjectType's operations
-     * @return list of operations (empty list if invalid mappedTransferObjectType or accessPoint)
-     */
-    public EList<EOperation> getAllOperationsOfBuiltInOperationGroupExposedByAccessPoint(EClass builtInOperationGroup, EClass accessPoint) {
-        return (isBuiltInOperationGroup(builtInOperationGroup) && isAccessPoint(accessPoint)) ?
-                new BasicEList<>(builtInOperationGroup.getEAllOperations().stream()
-                        .filter(operation -> getExtensionAnnotationListByName(operation, "exposedBy").stream()
-                                .anyMatch(annotation -> getResolvedExposedBy(annotation).get().equals(accessPoint))
-                        ).collect(Collectors.toList())) :
-                ECollections.emptyEList();
-    }
-
-    /**
-     *  Get list of built-in operation groups containing exposedGraph annotation that resolves to access point
-     *
-     * @param accessPoint
-     * @return list of built-in operation groups (empty list is returned if not called on an access point)
-     */
-    public EList<EClass> getBuiltInOperationGroupsOfAccessPoint(EClass accessPoint) {
-        return isAccessPoint(accessPoint) ? new BasicEList<>(all(EClass.class).filter(
-                eClass -> isBuiltInOperationGroup(eClass) &&
-                        eClass.getEAllOperations().stream().anyMatch(
-                                operation -> getExtensionAnnotationListByName(operation,"exposedGraph").stream().anyMatch(
-                                        annotation -> getAccessPointOfGraph(getResolvedExposedGraph(annotation).get()).get().equals(accessPoint)
-                                )
-                        )
-                ).collect(Collectors.toList())) :
-                ECollections.emptyEList();
-    }
-
-    /**
      * Check if an class is container of built-in operations.
      *
      * Containers are nested class of transfer object types.
@@ -635,16 +601,13 @@ public class AsmUtils {
      * @param eOperation  unbound operation
      * @return list of access points (empty list is returned if eOperation is not bound)
      */
-    public EList<EClass> getAccessPointsOfUnboundOperation(final EOperation eOperation) {
-        return isUnbound(eOperation) ?
-                new BasicEList<>(eOperation.getEAnnotations().stream()
-                        .map(a -> getResolvedExposedBy(a))
-                        .filter(exposedBy -> exposedBy.isPresent())
-                        .map(exposedBy -> exposedBy.get())
-                        .collect(Collectors.toList())) :
-                ECollections.emptyEList();
+    public EList<EClass> getAccessPointsOfOperation(final EOperation eOperation) {
+        return new BasicEList<>(eOperation.getEAnnotations().stream()
+                .map(a -> getResolvedExposedBy(a))
+                .filter(exposedBy -> exposedBy.isPresent())
+                .map(exposedBy -> exposedBy.get())
+                .collect(Collectors.toList()));
     }
-
     /**
      * Get list of exposed services (unbound operations) of an access point.
      *
@@ -654,7 +617,7 @@ public class AsmUtils {
     public EList<EOperation> getExposedServicesOfAccessPoint(final EClass eClass) {
         return isAccessPoint(eClass) ?
                 new BasicEList<>(all(EOperation.class)
-                        .filter(o -> !isBuiltInOperation(o))
+                        .filter(o -> !isBuiltInOperation(o) && !isBound(o))
                         .filter(o -> o.getEAnnotations().stream()
                                 .anyMatch(a -> EcoreUtil.equals(eClass, getResolvedExposedBy(a).orElse(null))))
                         .collect(Collectors.toList())) :
@@ -668,7 +631,7 @@ public class AsmUtils {
      * @return <code>true</code> is operation is exposed by an access point, <code>false</code> otherwise
      */
     public boolean isExposedService(final EOperation eOperation) {
-        return !getAccessPointsOfUnboundOperation(eOperation).isEmpty();
+        return !getAccessPointsOfOperation(eOperation).isEmpty(); //TODO-check (..UnboundOperations -> ..Operations)
     }
 
     /**
