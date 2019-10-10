@@ -17,8 +17,8 @@ import java.util.Optional;
 import static hu.blackbelt.judo.meta.asm.runtime.AsmModel.LoadArguments.asmLoadArgumentsBuilder;
 import static hu.blackbelt.judo.meta.asm.runtime.AsmModel.loadAsmModel;
 import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEAnnotationBuilder;
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEClassBuilder;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -51,19 +51,19 @@ public class AnnotationTest {
     @Test
     public void testGetExtensionAnnotationNotExistingButCreated () {
         Optional<EClass> order = asmUtils.all(EClass.class).filter(c -> "Order".equals(c.getName())).findAny();
-        Optional<EAnnotation> notExistingButCreated = asmUtils.getExtensionAnnotationByName(order.get(), "toBeCreated", true);
+        Optional<EAnnotation> originallyMissingButCreatedAnnotation = asmUtils.getExtensionAnnotationByName(order.get(), "toBeCreated", true);
 
-        assertTrue(notExistingButCreated.isPresent());
+        assertTrue(originallyMissingButCreatedAnnotation.isPresent());
 
-        assertFalse(Boolean.parseBoolean(notExistingButCreated.get().getDetails().get(AsmUtils.EXTENDED_METADATA_DETAILS_VALUE_KEY)));
+        assertFalse(Boolean.parseBoolean(originallyMissingButCreatedAnnotation.get().getDetails().get(AsmUtils.EXTENDED_METADATA_DETAILS_VALUE_KEY)));
     }
 
     @Test
     public void testGetExtensionAnnotationNotExisting () {
         Optional<EClass> order = asmUtils.all(EClass.class).filter(c -> "Order".equals(c.getName())).findAny();
-        Optional<EAnnotation> notExistingNotCreated = asmUtils.getExtensionAnnotationByName(order.get(), "notToBeCreated", false);
+        Optional<EAnnotation> missingAndNotCreatedAnnotation = asmUtils.getExtensionAnnotationByName(order.get(), "notToBeCreated", false);
 
-        assertFalse(notExistingNotCreated.isPresent());
+        assertFalse(missingAndNotCreatedAnnotation.isPresent());
     }
 
     @Test
@@ -160,7 +160,7 @@ public class AnnotationTest {
 
         Optional<EClass> internalAP = asmUtils.all(EClass.class).filter(a -> "internalAP".equals(a.getName())).findAny();
         assertTrue(internalAP.isPresent());
-        assertThat(asmUtils.getAccessPointsOfOperation(getAllOrders.get()), hasItem(internalAP.get()));
+        assertThat(asmUtils.getAccessPointsOfOperation(getAllOrders.get()), hasItems(internalAP.get()));
     }
 
     @Test
@@ -216,39 +216,51 @@ public class AnnotationTest {
 
     @Test
     public void testGetMappedEntity () {
-        final EClass order = (EClass) asmModel.getResource().getEObject("//entities/Order");
-        final EClass orderInfo = (EClass) asmModel.getResource().getEObject("//services/OrderInfo");
+        Optional<EClass> order = asmUtils.all(EClass.class).filter(c -> "Order".equals(c.getName())).findAny();
+        Optional<EClass> orderInfo = asmUtils.all(EClass.class).filter(c -> "OrderInfo".equals(c.getName())).findAny();
+        assertTrue(order.isPresent());
+        assertTrue(orderInfo.isPresent());
 
-        Optional<EClass> mappedType = asmUtils.getMappedEntityType(orderInfo);
+        Optional<EClass> mappedType = asmUtils.getMappedEntityType(orderInfo.get());
         assertTrue(mappedType.isPresent());
-        assertThat(mappedType.get(), equalTo(order));
+        assertThat(mappedType.get(), equalTo(order.get()));
+
+        final EAnnotation mappedEntityTypeAnnotationWithMissingKey = newEAnnotationBuilder().withSource("http://blackbelt.hu/judo/meta/ExtendedMetadata/mappedEntityType").build();
+        final EClass classWithInvalidMappedEntityTypeAnnotation = newEClassBuilder().withName("ClassWithInvalidMappedEntityTypeAnnotation").withEAnnotations(mappedEntityTypeAnnotationWithMissingKey).build();
+        assertFalse(asmUtils.getMappedEntityType(classWithInvalidMappedEntityTypeAnnotation).isPresent());
     }
 
     @Test
     public void testGetMappedAttribute () {
-        final EClass order = (EClass) asmModel.getResource().getEObject("//entities/Order");
-        final EClass orderInfo = (EClass) asmModel.getResource().getEObject("//services/OrderInfo");
+        Optional<EClass> order = asmUtils.all(EClass.class).filter(c -> "Order".equals(c.getName())).findAny();
+        Optional<EClass> orderInfo = asmUtils.all(EClass.class).filter(c -> "OrderInfo".equals(c.getName())).findAny();
+        assertTrue(order.isPresent());
+        assertTrue(orderInfo.isPresent());
 
-        final EAttribute orderDate = (EAttribute) order.getEStructuralFeature("orderDate");
-        final EAttribute orderInfoDate = (EAttribute) orderInfo.getEStructuralFeature("orderDate");
+        Optional<EAttribute> orderDate = order.get().getEAllAttributes().stream().filter(attribute -> "orderDate".equals(attribute.getName())).findAny();
+        Optional<EAttribute> orderInfoDate = orderInfo.get().getEAllAttributes().stream().filter(attribute -> "orderDate".equals(attribute.getName())).findAny();
+        assertTrue(orderDate.isPresent());
+        assertTrue(orderInfoDate.isPresent());
 
-        Optional<EAttribute> mappedAttribute = asmUtils.getMappedAttribute(orderInfoDate);
+        Optional<EAttribute> mappedAttribute = asmUtils.getMappedAttribute(orderInfoDate.get());
         assertTrue(mappedAttribute.isPresent());
-        assertThat(mappedAttribute.get(), equalTo(orderDate));
+        assertThat(mappedAttribute.get(), equalTo(orderDate.get()));
     }
 
 
     @Test
     public void testGetMappedReference () {
-        final EClass order = (EClass) asmModel.getResource().getEObject("//entities/Order");
-        final EClass orderInfo = (EClass) asmModel.getResource().getEObject("//services/OrderInfo");
+        Optional<EClass> order = asmUtils.all(EClass.class).filter(c -> "Order".equals(c.getName())).findAny();
+        Optional<EClass> orderInfo = asmUtils.all(EClass.class).filter(c -> "OrderInfo".equals(c.getName())).findAny();
+        assertTrue(order.isPresent());
+        assertTrue(orderInfo.isPresent());
 
-        final EReference orderDetails = (EReference) order.getEStructuralFeature("orderDetails");
-        final EReference orderInfoItems = (EReference) orderInfo.getEStructuralFeature("items");
+        Optional<EReference> orderDetails = order.get().getEAllReferences().stream().filter(reference -> "orderDetails".equals(reference.getName())).findAny();
+        Optional<EReference> orderInfoItems = orderInfo.get().getEAllReferences().stream().filter(reference -> "items".equals(reference.getName())).findAny();
 
-        Optional<EReference> mappedReference = asmUtils.getMappedReference(orderInfoItems);
+        Optional<EReference> mappedReference = asmUtils.getMappedReference(orderInfoItems.get());
         assertTrue(mappedReference.isPresent());
-        assertThat(mappedReference.get(), equalTo(orderDetails));
+        assertThat(mappedReference.get(), equalTo(orderDetails.get()));
     }
 
     @Test
