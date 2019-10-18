@@ -7,6 +7,7 @@ import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -121,5 +122,37 @@ public class AsmUtilsTest {
         assertTrue(classWithoutContainer.isPresent());
 
         assertFalse(asmUtils.getContainerClass(classWithoutContainer.get()).isPresent());
+    }
+    
+    @Test
+    public void testEnrichMethod()
+    {
+    	Optional<EClass> orderClass = asmUtils.all(EClass.class).filter(c -> "Order".equals(c.getName())).findAny();
+    	assertTrue(orderClass.isPresent());
+    	
+    	asmUtils.createMappedTransferObjectTypeByEntityType(orderClass.get());
+    	
+    	assertTrue(asmUtils.getExtensionAnnotationByName(orderClass.get(), "mappedEntityType", false).isPresent());
+    	
+    	for(EStructuralFeature eStructuralFeature : orderClass.get().getEAllStructuralFeatures())
+    	{
+    		assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
+    	}
+    }
+    
+    @Test
+    public void testEnrichMethodAlreadyPresent()
+    {
+    	Optional<EClass> orderClass = asmUtils.all(EClass.class).filter(c -> "OrderInfoQuery".equals(c.getName())).findAny();
+    	assertTrue(orderClass.isPresent());
+    	
+    	asmUtils.createMappedTransferObjectTypeByEntityType(orderClass.get());
+    	
+    	assertTrue(asmUtils.getExtensionAnnotationByName(orderClass.get(), "mappedEntityType", false).isPresent());
+    	
+    	for(EStructuralFeature eStructuralFeature : orderClass.get().getEAllStructuralFeatures())
+    	{
+    		assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
+    	}
     }
 }

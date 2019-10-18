@@ -17,6 +17,7 @@ import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EParameter;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.slf4j.Logger;
@@ -1481,5 +1482,31 @@ public class AsmUtils {
      */
     static Stream<EAnnotation> getExtensionAnnotationsAsStreamByName (final EModelElement eModelElement, final String annotationName) {
         return eModelElement.getEAnnotations().stream().filter(a -> getAnnotationUri(annotationName).equals(a.getSource()));
+    }
+    
+    void createMappedTransferObjectTypeByEntityType(EClass eClass)
+    {
+    	if(isEntityType(eClass) && !isMappedTransferObjectType(eClass))
+    	{
+    		addExtensionAnnotation(eClass, "mappedEntityType", getPackageFQName(eClass.getEPackage()));
+    		
+    		for(EStructuralFeature eStructuralFeature : eClass.getEAllStructuralFeatures())
+    		{
+    			addExtensionAnnotation(eStructuralFeature, "binding", eStructuralFeature.getName());
+    		}
+    	}
+    	
+    	for(EClass superType : eClass.getEAllSuperTypes())
+    	{
+    		if(isEntityType(superType) && !isMappedTransferObjectType(superType))
+        	{
+        		addExtensionAnnotation(superType, "mappedEntityType", getPackageFQName(eClass.getEPackage()));
+        		
+        		for(EStructuralFeature eStructuralFeature : eClass.getEAllStructuralFeatures())
+        		{
+        			addExtensionAnnotation(eStructuralFeature, "binding", eStructuralFeature.getName());
+        		}
+        	}
+    	}
     }
 }
