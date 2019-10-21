@@ -137,6 +137,11 @@ public class AsmUtilsTest {
     	for(EStructuralFeature eStructuralFeature : orderClass.get().getEAllStructuralFeatures())
     	{
     		assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
+    		
+    		if(eStructuralFeature instanceof EReference)
+    		{
+    			assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature.getEContainingClass(), "mappedEntityType", false).isPresent());
+    		}
     	}
     }
     
@@ -164,6 +169,11 @@ public class AsmUtilsTest {
     	for(EStructuralFeature eStructuralFeature : orderClass.get().getEAllStructuralFeatures())
     	{
     		assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
+    		
+    		if(eStructuralFeature instanceof EReference)
+    		{
+    			assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature.getEContainingClass(), "mappedEntityType", false).isPresent());
+    		}
     	}
     }
     
@@ -180,6 +190,11 @@ public class AsmUtilsTest {
     	for(EStructuralFeature eStructuralFeature : employeeClass.get().getEAllStructuralFeatures())
     	{
     		assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
+    		
+    		if(eStructuralFeature instanceof EReference)
+    		{
+    			assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature.getEContainingClass(), "mappedEntityType", false).isPresent());
+    		}
     	}
     	
     	Optional<EClass> personClass = asmUtils.all(EClass.class).filter(c -> "Person".equals(c.getName())).findAny();
@@ -190,6 +205,11 @@ public class AsmUtilsTest {
     	for(EStructuralFeature eStructuralFeature : personClass.get().getEAllStructuralFeatures())
     	{
     		assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
+    		
+    		if(eStructuralFeature instanceof EReference)
+    		{
+    			assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature.getEContainingClass(), "mappedEntityType", false).isPresent());
+    		}
     	}
     }
     
@@ -206,6 +226,11 @@ public class AsmUtilsTest {
     	for(EStructuralFeature eStructuralFeature : shipperClass.get().getEAllStructuralFeatures())
     	{
     		assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
+    		
+    		if(eStructuralFeature instanceof EReference)
+    		{
+    			assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature.getEContainingClass(), "mappedEntityType", false).isPresent());
+    		}
     	}
     	
     	Optional<EClass> companyClass = asmUtils.all(EClass.class).filter(c -> "Company".equals(c.getName())).findAny();
@@ -216,6 +241,12 @@ public class AsmUtilsTest {
     	for(EStructuralFeature eStructuralFeature : companyClass.get().getEAllStructuralFeatures())
     	{
     		assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
+    		
+    		if(eStructuralFeature instanceof EReference)
+    		{
+    			assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature.getEContainingClass(), "mappedEntityType", false).isPresent());
+    		}
+    	
     	}
     	
     	Optional<EClass> customerClass = asmUtils.all(EClass.class).filter(c -> "Customer".equals(c.getName())).findAny();
@@ -226,6 +257,12 @@ public class AsmUtilsTest {
     	for(EStructuralFeature eStructuralFeature : customerClass.get().getEAllStructuralFeatures())
     	{
     		assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
+    		
+    		if(eStructuralFeature instanceof EReference)
+    		{
+    			assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature.getEContainingClass(), "mappedEntityType", false).isPresent());
+    		}
+    	
     	}
     }
 }
