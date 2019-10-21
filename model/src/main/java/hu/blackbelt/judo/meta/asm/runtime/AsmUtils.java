@@ -1,6 +1,7 @@
 package hu.blackbelt.judo.meta.asm.runtime;
 
 import org.eclipse.emf.common.notify.Notifier;
+import org.eclipse.emf.common.util.AbstractEList;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
@@ -1485,14 +1486,27 @@ public class AsmUtils {
         return eModelElement.getEAnnotations().stream().filter(a -> getAnnotationUri(annotationName).equals(a.getSource()));
     }
     
-    void createMappedTransferObjectTypeByEntityType(EClass eClass)
+    /**
+     * Makes the model MappedTransferObjectType by adding the necessary annotations to the model and its references and super types if the model is an entity type, and not a transfer object already
+     *
+     * @param EClass EClass
+     */
+    
+    public void createMappedTransferObjectTypeByEntityType(EClass eClass)
     {
     	createMappedTransferObjectTypeByEntityType(eClass,null);
     }
     
-    void createMappedTransferObjectTypeByEntityType(EClass eClass, List<EClass> doneList)
+    /**
+     * Makes the model MappedTransferObjectType by adding the necessary annotations to the model and its references and super types if the model is an entity type, and not a transfer object already
+     *
+     * @param EClass EClass
+     * @param EList<EClass> contains the already processed EClasses
+     */
+    
+    public void createMappedTransferObjectTypeByEntityType(EClass eClass, EList<EClass> doneList)
     {
-    	if(doneList == null) doneList = new ArrayList<EClass>();
+    	if(doneList == null) doneList = new UniqueEList<EClass>();
     	
     	if(isEntityType(eClass) && !isMappedTransferObjectType(eClass) && !doneList.contains(eClass))
     	{
