@@ -1,6 +1,7 @@
 package hu.blackbelt.judo.meta.asm.runtime;
 
 import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.EAnnotation;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
@@ -8,14 +9,33 @@ import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.ETypedElement;
+import org.eclipse.emf.ecore.EcorePackage;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
+
 import java.io.File;
+import java.io.IOException;
+import java.util.AbstractMap;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 
 import static hu.blackbelt.judo.meta.asm.runtime.AsmModel.LoadArguments.asmLoadArgumentsBuilder;
 import static hu.blackbelt.judo.meta.asm.runtime.AsmModel.loadAsmModel;
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEAttributeBuilder;
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEClassBuilder;
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEPackageBuilder;
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEAnnotationBuilder;
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEReferenceBuilder;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -127,142 +147,320 @@ public class AsmUtilsTest {
     @Test
     public void testMappedTransferObjectTypeByEntityTypeMethod()
     {
-    	Optional<EClass> orderClass = asmUtils.all(EClass.class).filter(c -> "Order".equals(c.getName())).findAny();
-    	assertTrue(orderClass.isPresent());
+    	final EcorePackage ecore = EcorePackage.eINSTANCE;
     	
-    	asmUtils.createMappedTransferObjectTypeByEntityType(orderClass.get());
+    	EAnnotation eAnnotation = newEAnnotationBuilder()
+        		.withSource("http://blackbelt.hu/judo/meta/ExtendedMetadata/entity")
+        		.build();
     	
-    	assertTrue(asmUtils.getExtensionAnnotationByName(orderClass.get(), "mappedEntityType", false).isPresent());
+    	eAnnotation.getDetails().put("value", "true");
     	
-    	for(EStructuralFeature eStructuralFeature : orderClass.get().getEAllStructuralFeatures())
+    	final EClass personClass = newEClassBuilder()
+                .withName("Person")
+                .withEAnnotations(eAnnotation)
+                .withEStructuralFeatures(
+                        ImmutableList.of(newEAttributeBuilder()
+                                        .withName("firstName")
+                                        .withEType(ecore.getEString())
+                                        .build(),
+                                newEAttributeBuilder()
+                                        .withName("lastName")
+                                        .withEType(ecore.getEString())
+                                        .build()))
+                .build();
+    	
+    	final EPackage ePackage = newEPackageBuilder()
+                .withName("test")
+                .withNsPrefix("test")
+                .withNsURI("http://com.example.test.ecore")
+                .withEClassifiers(personClass)
+                .build();
+    	
+    	final ResourceSet resourceSet = new ResourceSetImpl();
+        resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("*", new EcoreResourceFactoryImpl());
+        final File testEcoreFile = new File(targetDir(), "test.ecore");
+        
+        final Resource resource = resourceSet.createResource(URI.createFileURI(testEcoreFile.getAbsolutePath()));
+        resource.getContents().add(ePackage);
+        try {
+			resource.save(Collections.emptyMap());
+		} catch (IOException e) {
+			
+		}
+        
+        AsmUtils asmUtilsy = new AsmUtils(resourceSet);
+        
+        Optional<EClass> personClassy = asmUtilsy.all(EClass.class).filter(c -> "Person".equals(c.getName())).findAny();
+    	assertTrue(personClassy.isPresent());
+    	
+    	asmUtilsy.createMappedTransferObjectTypeByEntityType(personClassy.get());
+    	
+    	assertTrue(asmUtilsy.getExtensionAnnotationByName(personClassy.get(), "mappedEntityType", false).isPresent());
+    	
+    	for(EStructuralFeature eStructuralFeature : personClassy.get().getEAllStructuralFeatures())
     	{
-    		assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
-    		
-    		if(eStructuralFeature instanceof EReference)
-    		{
-    			assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature.getEContainingClass(), "mappedEntityType", false).isPresent());
-    		}
+    		assertTrue(asmUtilsy.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
     	}
     }
     
-    @Test
-    public void testMappedTransferObjectTypeByEntityTypeMethodNonEntity()
-    {
-    	Optional<EClass> iAPClass = asmUtils.all(EClass.class).filter(c -> "internalAP".equals(c.getName())).findAny();
-    	assertTrue(iAPClass.isPresent());
-    	
-    	asmUtils.createMappedTransferObjectTypeByEntityType(iAPClass.get());
-    	
-    	assertTrue(!asmUtils.getExtensionAnnotationByName(iAPClass.get(), "mappedEntityType", false).isPresent());
-    }
-    
+	@Test
+	public void testMappedTransferObjectTypeByEntityTypeMethodNonEntity() {
+		final EcorePackage ecore = EcorePackage.eINSTANCE;
+
+		final EClass personClass = newEClassBuilder().withName("Person")
+				.withEStructuralFeatures(ImmutableList.of(
+						newEAttributeBuilder().withName("firstName").withEType(ecore.getEString()).build(),
+						newEAttributeBuilder().withName("lastName").withEType(ecore.getEString()).build()))
+				.build();
+
+		final EPackage ePackage = newEPackageBuilder().withName("test").withNsPrefix("test")
+				.withNsURI("http://com.example.test.ecore").withEClassifiers(personClass).build();
+
+		final ResourceSet resourceSet = new ResourceSetImpl();
+		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("*", new EcoreResourceFactoryImpl());
+		final File testEcoreFile = new File(targetDir(), "test2.ecore");
+
+		final Resource resource = resourceSet.createResource(URI.createFileURI(testEcoreFile.getAbsolutePath()));
+		resource.getContents().add(ePackage);
+		try {
+			resource.save(Collections.emptyMap());
+		} catch (IOException e) {
+
+		}
+
+		AsmUtils asmUtilsy = new AsmUtils(resourceSet);
+
+		Optional<EClass> personClassy = asmUtilsy.all(EClass.class).filter(c -> "Person".equals(c.getName())).findAny();
+		assertTrue(personClassy.isPresent());
+
+		asmUtilsy.createMappedTransferObjectTypeByEntityType(personClassy.get());
+
+		assertFalse(asmUtilsy.getExtensionAnnotationByName(personClassy.get(), "mappedEntityType", false).isPresent());
+	}
+
     @Test
     public void testMappedTransferObjectTypeByEntityTypeMethodAlreadyPresent()
     {
-    	Optional<EClass> orderClass = asmUtils.all(EClass.class).filter(c -> "OrderInfoQuery".equals(c.getName())).findAny();
-    	assertTrue(orderClass.isPresent());
+    	final EcorePackage ecore = EcorePackage.eINSTANCE;
     	
-    	asmUtils.createMappedTransferObjectTypeByEntityType(orderClass.get());
+    	EAnnotation eAnnotation = newEAnnotationBuilder()
+        		.withSource("http://blackbelt.hu/judo/meta/ExtendedMetadata/entity")
+        		.build();
     	
-    	assertTrue(asmUtils.getExtensionAnnotationByName(orderClass.get(), "mappedEntityType", false).isPresent());
-    	
-    	for(EStructuralFeature eStructuralFeature : orderClass.get().getEAllStructuralFeatures())
-    	{
-    		assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
-    		
-    		if(eStructuralFeature instanceof EReference)
-    		{
-    			assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature.getEContainingClass(), "mappedEntityType", false).isPresent());
-    		}
-    	}
+    	eAnnotation.getDetails().put("value", "true");
+		
+		EAnnotation eAnnotation2 = newEAnnotationBuilder()
+        		.withSource("http://blackbelt.hu/judo/meta/ExtendedMetadata/mappedEntityType")
+        		.build();
+		
+		eAnnotation2.getDetails().put("value", "demo.entities.Person");
+		eAnnotation2.getDetails().put("entityIdPresence", "OPTIONAL");
+		
+		EAnnotation bindingAnnotation1 = newEAnnotationBuilder()
+				.withSource("http://blackbelt.hu/judo/meta/ExtendedMetadata/binding")
+				.build();
+		
+		bindingAnnotation1.getDetails().put("value", "firstName");
+		
+		EAnnotation bindingAnnotation2 = newEAnnotationBuilder()
+				.withSource("http://blackbelt.hu/judo/meta/ExtendedMetadata/binding")
+				.build();
+		
+		bindingAnnotation2.getDetails().put("value", "lastName");
+
+		final EClass personClass = newEClassBuilder().withName("Person")
+				.withEAnnotations(ImmutableList.of(eAnnotation,eAnnotation2))
+				.withEStructuralFeatures(ImmutableList.of(
+						newEAttributeBuilder().withName("firstName").withEAnnotations(bindingAnnotation1).withEType(ecore.getEString()).build(),
+						newEAttributeBuilder().withName("lastName").withEAnnotations(bindingAnnotation2).withEType(ecore.getEString()).build()))
+				.build();
+
+		final EPackage ePackage = newEPackageBuilder().withName("test").withNsPrefix("test")
+				.withNsURI("http://com.example.test.ecore").withEClassifiers(personClass).build();
+
+		final ResourceSet resourceSet = new ResourceSetImpl();
+		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("*", new EcoreResourceFactoryImpl());
+		final File testEcoreFile = new File(targetDir(), "test3.ecore");
+
+		final Resource resource = resourceSet.createResource(URI.createFileURI(testEcoreFile.getAbsolutePath()));
+		resource.getContents().add(ePackage);
+		try {
+			resource.save(Collections.emptyMap());
+		} catch (IOException e) {
+
+		}
+
+		AsmUtils asmUtilsy = new AsmUtils(resourceSet);
+
+		Optional<EClass> personClassy = asmUtilsy.all(EClass.class).filter(c -> "Person".equals(c.getName())).findAny();
+		assertTrue(personClassy.isPresent());
+
+		asmUtilsy.createMappedTransferObjectTypeByEntityType(personClassy.get());
+
+		assertTrue(asmUtilsy.getExtensionAnnotationByName(personClassy.get(), "mappedEntityType", false).isPresent());
     }
     
-    @Test
-    public void testMappedTransferObjectTypeByEntityTypeMethodSuperType()
-    {
-    	Optional<EClass> employeeClass = asmUtils.all(EClass.class).filter(c -> "Employee".equals(c.getName())).findAny();
-    	assertTrue(employeeClass.isPresent());
-    	
-    	asmUtils.createMappedTransferObjectTypeByEntityType(employeeClass.get());
-    	
-    	assertTrue(asmUtils.getExtensionAnnotationByName(employeeClass.get(), "mappedEntityType", false).isPresent());
-    	
-    	for(EStructuralFeature eStructuralFeature : employeeClass.get().getEAllStructuralFeatures())
+	@Test
+	public void testMappedTransferObjectTypeByEntityTypeMethodSuperType() {
+		final EcorePackage ecore = EcorePackage.eINSTANCE;
+
+		EAnnotation eAnnotation = newEAnnotationBuilder()
+				.withSource("http://blackbelt.hu/judo/meta/ExtendedMetadata/entity").build();
+		
+		EAnnotation eAnnotation2 = newEAnnotationBuilder()
+				.withSource("http://blackbelt.hu/judo/meta/ExtendedMetadata/entity").build();
+
+		eAnnotation.getDetails().put("value", "true");
+		eAnnotation2.getDetails().put("value", "true");
+		
+		final EClass customerClass = newEClassBuilder().withName("Customer")
+				.withEAnnotations(ImmutableList.of(eAnnotation))
+				.withEStructuralFeatures(ImmutableList.of(
+						newEAttributeBuilder().withName("address").withEType(ecore.getEString()).build()))
+				.build();
+		
+		final EClass companyClass = newEClassBuilder().withName("Company")
+				.withEAnnotations(ImmutableList.of(eAnnotation2))
+				.withESuperTypes(customerClass)
+				.withEStructuralFeatures(ImmutableList.of(
+						newEAttributeBuilder().withName("companyName").withEType(ecore.getEString()).build()))
+				.build();
+
+		final EPackage ePackage = newEPackageBuilder().withName("test").withNsPrefix("test")
+				.withNsURI("http://com.example.test.ecore")
+				.withEClassifiers(customerClass)
+				.withEClassifiers(companyClass)
+				.build();
+
+		final ResourceSet resourceSet = new ResourceSetImpl();
+		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("*", new EcoreResourceFactoryImpl());
+		final File testEcoreFile = new File(targetDir(), "test4.ecore");
+
+		final Resource resource = resourceSet.createResource(URI.createFileURI(testEcoreFile.getAbsolutePath()));
+		resource.getContents().add(ePackage);
+		try {
+			resource.save(Collections.emptyMap());
+		} catch (IOException e) {
+
+		}
+
+		AsmUtils asmUtilsy = new AsmUtils(resourceSet);
+
+		Optional<EClass> companyClassy = asmUtilsy.all(EClass.class).filter(c -> "Company".equals(c.getName())).findAny();
+		assertTrue(companyClassy.isPresent());
+
+		asmUtilsy.createMappedTransferObjectTypeByEntityType(companyClassy.get());
+
+		assertTrue(asmUtilsy.getExtensionAnnotationByName(companyClassy.get(), "mappedEntityType", false).isPresent());
+		
+		for(EStructuralFeature eStructuralFeature : companyClassy.get().getEAllStructuralFeatures())
     	{
-    		assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
-    		
-    		if(eStructuralFeature instanceof EReference)
-    		{
-    			assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature.getEContainingClass(), "mappedEntityType", false).isPresent());
-    		}
+    		assertTrue(asmUtilsy.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
     	}
-    	
-    	Optional<EClass> personClass = asmUtils.all(EClass.class).filter(c -> "Person".equals(c.getName())).findAny();
-    	assertTrue(personClass.isPresent());
-    	
-        assertTrue(asmUtils.getExtensionAnnotationByName(personClass.get(), "mappedEntityType", false).isPresent());
-    	
-    	for(EStructuralFeature eStructuralFeature : personClass.get().getEAllStructuralFeatures())
+		
+		/////
+		
+		Optional<EClass> customerClassy = asmUtilsy.all(EClass.class).filter(c -> "Customer".equals(c.getName())).findAny();
+		assertTrue(customerClassy.isPresent());
+
+		assertTrue(asmUtilsy.getExtensionAnnotationByName(customerClassy.get(), "mappedEntityType", false).isPresent());
+		
+		for(EStructuralFeature eStructuralFeature : customerClassy.get().getEAllStructuralFeatures())
     	{
-    		assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
-    		
-    		if(eStructuralFeature instanceof EReference)
-    		{
-    			assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature.getEContainingClass(), "mappedEntityType", false).isPresent());
-    		}
+    		assertTrue(asmUtilsy.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
     	}
-    }
-    
-    @Test
-    public void testMappedTransferObjectTypeByEntityTypeMethodSuperTypes()
-    {
-    	Optional<EClass> shipperClass = asmUtils.all(EClass.class).filter(c -> "Shipper".equals(c.getName())).findAny();
-    	assertTrue(shipperClass.isPresent());
-    	
-    	asmUtils.createMappedTransferObjectTypeByEntityType(shipperClass.get());
-    	
-    	assertTrue(asmUtils.getExtensionAnnotationByName(shipperClass.get(), "mappedEntityType", false).isPresent());
-    	
-    	for(EStructuralFeature eStructuralFeature : shipperClass.get().getEAllStructuralFeatures())
+		
+		//////
+		
+		/*Optional<EClass> orderClassy = asmUtilsy.all(EClass.class).filter(c -> "Order".equals(c.getName())).findAny();
+		assertTrue(orderClassy.isPresent());
+
+		assertTrue(asmUtilsy.getExtensionAnnotationByName(orderClassy.get(), "mappedEntityType", false).isPresent());
+		
+		for(EStructuralFeature eStructuralFeature : orderClassy.get().getEAllStructuralFeatures())
     	{
-    		assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
-    		
-    		if(eStructuralFeature instanceof EReference)
-    		{
-    			assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature.getEContainingClass(), "mappedEntityType", false).isPresent());
-    		}
-    	}
-    	
-    	Optional<EClass> companyClass = asmUtils.all(EClass.class).filter(c -> "Company".equals(c.getName())).findAny();
-    	assertTrue(companyClass.isPresent());
-    	
-        assertTrue(asmUtils.getExtensionAnnotationByName(companyClass.get(), "mappedEntityType", false).isPresent());
-    	
-    	for(EStructuralFeature eStructuralFeature : companyClass.get().getEAllStructuralFeatures())
+    		assertTrue(asmUtilsy.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
+    	}*/
+	}
+	
+	@Test
+	public void testMappedTransferObjectTypeByEntityTypeMethodReferenceType() {
+		final EcorePackage ecore = EcorePackage.eINSTANCE;
+
+		EAnnotation eAnnotation = newEAnnotationBuilder()
+				.withSource("http://blackbelt.hu/judo/meta/ExtendedMetadata/entity").build();
+		
+		EAnnotation eAnnotation2 = newEAnnotationBuilder()
+				.withSource("http://blackbelt.hu/judo/meta/ExtendedMetadata/entity").build();
+
+		eAnnotation.getDetails().put("value", "true");
+		eAnnotation2.getDetails().put("value", "true");
+
+		final EClass orderClass = newEClassBuilder().withName("Order")
+				.withEAnnotations(ImmutableList.of(eAnnotation))
+				.withEStructuralFeatures(ImmutableList.of(
+						newEAttributeBuilder().withName("shipName").withEType(ecore.getEString()).build()))
+				.build();
+		
+		final EClass customerClass = newEClassBuilder().withName("Customer")
+				.withEAnnotations(ImmutableList.of(eAnnotation2))
+				.withEStructuralFeatures(ImmutableList.of(
+						newEReferenceBuilder().withName("orders")
+						.withEType(orderClass)
+						.withUpperBound(ETypedElement.UNBOUNDED_MULTIPLICITY)
+						.withContainment(true)
+						.build()))
+				.build();
+
+		final EPackage ePackage = newEPackageBuilder().withName("test5").withNsPrefix("test5")
+				.withNsURI("http://com.example.test.ecore")
+				.withEClassifiers(orderClass)
+				.withEClassifiers(customerClass)
+				.build();
+
+		final ResourceSet resourceSet = new ResourceSetImpl();
+		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("*", new EcoreResourceFactoryImpl());
+		final File testEcoreFile = new File(targetDir(), "test5.ecore");
+
+		final Resource resource = resourceSet.createResource(URI.createFileURI(testEcoreFile.getAbsolutePath()));
+		resource.getContents().add(ePackage);
+		try {
+			resource.save(Collections.emptyMap());
+		} catch (IOException e) {
+
+		}
+
+		AsmUtils asmUtilsy = new AsmUtils(resourceSet);
+		
+		Optional<EClass> customerClassy = asmUtilsy.all(EClass.class).filter(c -> "Customer".equals(c.getName())).findAny();
+		assertTrue(customerClassy.isPresent());
+		
+		asmUtilsy.createMappedTransferObjectTypeByEntityType(customerClassy.get());
+
+		assertTrue(asmUtilsy.getExtensionAnnotationByName(customerClassy.get(), "mappedEntityType", false).isPresent());
+		
+		for(EStructuralFeature eStructuralFeature : customerClassy.get().getEAllStructuralFeatures())
     	{
-    		assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
-    		
-    		if(eStructuralFeature instanceof EReference)
-    		{
-    			assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature.getEContainingClass(), "mappedEntityType", false).isPresent());
-    		}
-    	
+    		assertTrue(asmUtilsy.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
     	}
-    	
-    	Optional<EClass> customerClass = asmUtils.all(EClass.class).filter(c -> "Customer".equals(c.getName())).findAny();
-    	assertTrue(customerClass.isPresent());
-    	
-        assertTrue(asmUtils.getExtensionAnnotationByName(customerClass.get(), "mappedEntityType", false).isPresent());
-    	
-    	for(EStructuralFeature eStructuralFeature : customerClass.get().getEAllStructuralFeatures())
+		
+		Optional<EClass> orderClassy = asmUtilsy.all(EClass.class).filter(c -> "Order".equals(c.getName())).findAny();
+		assertTrue(orderClassy.isPresent());
+
+		assertTrue(asmUtilsy.getExtensionAnnotationByName(orderClassy.get(), "mappedEntityType", false).isPresent());
+		
+		for(EStructuralFeature eStructuralFeature : orderClassy.get().getEAllStructuralFeatures())
     	{
-    		assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
-    		
-    		if(eStructuralFeature instanceof EReference)
-    		{
-    			assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature.getEContainingClass(), "mappedEntityType", false).isPresent());
-    		}
-    	
+    		assertTrue(asmUtilsy.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
     	}
+	}
+
+    public File targetDir(){
+        String relPath = getClass().getProtectionDomain().getCodeSource().getLocation().getFile();
+        File targetDir = new File(relPath);
+        if(!targetDir.exists()) {
+            targetDir.mkdir();
+        }
+        return targetDir;
     }
 }
