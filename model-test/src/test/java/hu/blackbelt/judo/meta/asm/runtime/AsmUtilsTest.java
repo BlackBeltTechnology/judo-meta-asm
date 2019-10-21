@@ -188,18 +188,15 @@ public class AsmUtilsTest {
 			
 		}
         
-        AsmUtils asmUtilsy = new AsmUtils(resourceSet);
-        
-        Optional<EClass> personClassy = asmUtilsy.all(EClass.class).filter(c -> "Person".equals(c.getName())).findAny();
-    	assertTrue(personClassy.isPresent());
+        AsmUtils asmUtils = new AsmUtils(resourceSet);
     	
-    	asmUtilsy.createMappedTransferObjectTypeByEntityType(personClassy.get());
+    	asmUtils.createMappedTransferObjectTypeByEntityType(personClass);
     	
-    	assertTrue(asmUtilsy.getExtensionAnnotationByName(personClassy.get(), "mappedEntityType", false).isPresent());
+    	assertTrue(asmUtils.getExtensionAnnotationByName(personClass, "mappedEntityType", false).isPresent());
     	
-    	for(EStructuralFeature eStructuralFeature : personClassy.get().getEAllStructuralFeatures())
+    	for(EStructuralFeature eStructuralFeature : personClass.getEAllStructuralFeatures())
     	{
-    		assertTrue(asmUtilsy.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
+    		assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
     	}
     }
     
@@ -228,14 +225,11 @@ public class AsmUtilsTest {
 
 		}
 
-		AsmUtils asmUtilsy = new AsmUtils(resourceSet);
+		AsmUtils asmUtils = new AsmUtils(resourceSet);
 
-		Optional<EClass> personClassy = asmUtilsy.all(EClass.class).filter(c -> "Person".equals(c.getName())).findAny();
-		assertTrue(personClassy.isPresent());
+		asmUtils.createMappedTransferObjectTypeByEntityType(personClass);
 
-		asmUtilsy.createMappedTransferObjectTypeByEntityType(personClassy.get());
-
-		assertFalse(asmUtilsy.getExtensionAnnotationByName(personClassy.get(), "mappedEntityType", false).isPresent());
+		assertFalse(asmUtils.getExtensionAnnotationByName(personClass, "mappedEntityType", false).isPresent());
 	}
 
     @Test
@@ -290,18 +284,15 @@ public class AsmUtilsTest {
 
 		}
 
-		AsmUtils asmUtilsy = new AsmUtils(resourceSet);
+		AsmUtils asmUtils = new AsmUtils(resourceSet);
 
-		Optional<EClass> personClassy = asmUtilsy.all(EClass.class).filter(c -> "Person".equals(c.getName())).findAny();
-		assertTrue(personClassy.isPresent());
+		asmUtils.createMappedTransferObjectTypeByEntityType(personClass);
 
-		asmUtilsy.createMappedTransferObjectTypeByEntityType(personClassy.get());
-
-		assertTrue(asmUtilsy.getExtensionAnnotationByName(personClassy.get(), "mappedEntityType", false).isPresent());
+		assertTrue(asmUtils.getExtensionAnnotationByName(personClass, "mappedEntityType", false).isPresent());
     }
     
 	@Test
-	public void testMappedTransferObjectTypeByEntityTypeMethodSuperType() {
+	public void testMappedTransferObjectTypeByEntityTypeMethodInheritance() {
 		final EcorePackage ecore = EcorePackage.eINSTANCE;
 
 		EAnnotation eAnnotation = newEAnnotationBuilder()
@@ -344,43 +335,25 @@ public class AsmUtilsTest {
 
 		}
 
-		AsmUtils asmUtilsy = new AsmUtils(resourceSet);
+		AsmUtils asmUtils = new AsmUtils(resourceSet);
 
-		Optional<EClass> companyClassy = asmUtilsy.all(EClass.class).filter(c -> "Company".equals(c.getName())).findAny();
-		assertTrue(companyClassy.isPresent());
+		asmUtils.createMappedTransferObjectTypeByEntityType(companyClass);
 
-		asmUtilsy.createMappedTransferObjectTypeByEntityType(companyClassy.get());
-
-		assertTrue(asmUtilsy.getExtensionAnnotationByName(companyClassy.get(), "mappedEntityType", false).isPresent());
+		assertTrue(asmUtils.getExtensionAnnotationByName(companyClass, "mappedEntityType", false).isPresent());
 		
-		for(EStructuralFeature eStructuralFeature : companyClassy.get().getEAllStructuralFeatures())
+		for(EStructuralFeature eStructuralFeature : companyClass.getEAllStructuralFeatures())
     	{
-    		assertTrue(asmUtilsy.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
+    		assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
     	}
 		
-		/////
-		
-		Optional<EClass> customerClassy = asmUtilsy.all(EClass.class).filter(c -> "Customer".equals(c.getName())).findAny();
-		assertTrue(customerClassy.isPresent());
+		////
 
-		assertTrue(asmUtilsy.getExtensionAnnotationByName(customerClassy.get(), "mappedEntityType", false).isPresent());
+		assertTrue(asmUtils.getExtensionAnnotationByName(customerClass, "mappedEntityType", false).isPresent());
 		
-		for(EStructuralFeature eStructuralFeature : customerClassy.get().getEAllStructuralFeatures())
+		for(EStructuralFeature eStructuralFeature : customerClass.getEAllStructuralFeatures())
     	{
-    		assertTrue(asmUtilsy.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
+    		assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
     	}
-		
-		//////
-		
-		/*Optional<EClass> orderClassy = asmUtilsy.all(EClass.class).filter(c -> "Order".equals(c.getName())).findAny();
-		assertTrue(orderClassy.isPresent());
-
-		assertTrue(asmUtilsy.getExtensionAnnotationByName(orderClassy.get(), "mappedEntityType", false).isPresent());
-		
-		for(EStructuralFeature eStructuralFeature : orderClassy.get().getEAllStructuralFeatures())
-    	{
-    		assertTrue(asmUtilsy.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
-    	}*/
 	}
 	
 	@Test
@@ -407,12 +380,12 @@ public class AsmUtilsTest {
 				.withEStructuralFeatures(ImmutableList.of(
 						newEReferenceBuilder().withName("orders")
 						.withEType(orderClass)
-						.withUpperBound(ETypedElement.UNBOUNDED_MULTIPLICITY)
-						.withContainment(true)
 						.build()))
 				.build();
 
-		final EPackage ePackage = newEPackageBuilder().withName("test5").withNsPrefix("test5")
+		final EPackage ePackage = newEPackageBuilder()
+				.withName("test")
+				.withNsPrefix("test")
 				.withNsURI("http://com.example.test.ecore")
 				.withEClassifiers(orderClass)
 				.withEClassifiers(customerClass)
@@ -430,28 +403,22 @@ public class AsmUtilsTest {
 
 		}
 
-		AsmUtils asmUtilsy = new AsmUtils(resourceSet);
+		AsmUtils asmUtils = new AsmUtils(resourceSet);
 		
-		Optional<EClass> customerClassy = asmUtilsy.all(EClass.class).filter(c -> "Customer".equals(c.getName())).findAny();
-		assertTrue(customerClassy.isPresent());
+		asmUtils.createMappedTransferObjectTypeByEntityType(customerClass);
 		
-		asmUtilsy.createMappedTransferObjectTypeByEntityType(customerClassy.get());
-
-		assertTrue(asmUtilsy.getExtensionAnnotationByName(customerClassy.get(), "mappedEntityType", false).isPresent());
+		assertTrue(asmUtils.getExtensionAnnotationByName(customerClass, "mappedEntityType", false).isPresent());
 		
-		for(EStructuralFeature eStructuralFeature : customerClassy.get().getEAllStructuralFeatures())
+		for(EStructuralFeature eStructuralFeature : customerClass.getEAllStructuralFeatures())
     	{
-    		assertTrue(asmUtilsy.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
+    		assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
     	}
-		
-		Optional<EClass> orderClassy = asmUtilsy.all(EClass.class).filter(c -> "Order".equals(c.getName())).findAny();
-		assertTrue(orderClassy.isPresent());
 
-		assertTrue(asmUtilsy.getExtensionAnnotationByName(orderClassy.get(), "mappedEntityType", false).isPresent());
+		assertTrue(asmUtils.getExtensionAnnotationByName(orderClass, "mappedEntityType", false).isPresent());
 		
-		for(EStructuralFeature eStructuralFeature : orderClassy.get().getEAllStructuralFeatures())
+		for(EStructuralFeature eStructuralFeature : orderClass.getEAllStructuralFeatures())
     	{
-    		assertTrue(asmUtilsy.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
+    		assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
     	}
 	}
 

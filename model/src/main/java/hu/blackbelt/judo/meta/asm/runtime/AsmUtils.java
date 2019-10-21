@@ -1507,7 +1507,7 @@ public class AsmUtils {
     				addExtensionAnnotation(eReference, "binding", eReference.getName());
     			}
     						
-    			createMappedTransferObjectTypeByEntityType(eReference.getEContainingClass(),doneList);
+    			createMappedTransferObjectTypeByEntityType(eReference.getEReferenceType(),doneList);
     		}
     		
     		//add annotation to all attributes
