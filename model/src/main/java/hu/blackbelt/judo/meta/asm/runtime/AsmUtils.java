@@ -1503,7 +1503,9 @@ public class AsmUtils {
     		for(EReference eReference : eClass.getEAllReferences())
     		{
     			if(!getExtensionAnnotationByName(eReference, "binding", false).isPresent())
-        		addExtensionAnnotation(eReference, "binding", eReference.getName());
+    			{
+    				addExtensionAnnotation(eReference, "binding", eReference.getName());
+    			}
     						
     			createMappedTransferObjectTypeByEntityType(eReference.getEContainingClass(),doneList);
     		}
@@ -1512,7 +1514,10 @@ public class AsmUtils {
     		for(EAttribute eAttribute : eClass.getEAllAttributes())
     		{
     			if(!getExtensionAnnotationByName(eAttribute, "binding", false).isPresent())
-    			addExtensionAnnotation(eAttribute, "binding", eAttribute.getName());
+    			{
+    				addExtensionAnnotation(eAttribute, "binding", eAttribute.getName());
+    			}
+
     		}
     		
     		//call the function on all supertypes
