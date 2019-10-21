@@ -22,6 +22,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.slf4j.Logger;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -254,7 +255,7 @@ public class AsmUtils {
      * Add new JUDO extension annotation to a given model element with a given value (if not exists yet).
      *
      * @param eModelElement  model element to which annotation value is added
-     * @param annotationName annotation name
+     * @param annotationName annotation namegetExtensionAnnotationByName
      * @param value          annotation value
      */
     public static boolean addExtensionAnnotation (final EModelElement eModelElement, final String annotationName, final String value) {
@@ -1486,26 +1487,38 @@ public class AsmUtils {
     
     void createMappedTransferObjectTypeByEntityType(EClass eClass)
     {
-    	if(isEntityType(eClass) && !isMappedTransferObjectType(eClass))
+    	createMappedTransferObjectTypeByEntityType(eClass,null);
+    }
+    
+    void createMappedTransferObjectTypeByEntityType(EClass eClass, List<EClass> doneList)
+    {
+    	if(doneList == null) doneList = new ArrayList<EClass>();
+    	
+    	if(isEntityType(eClass) && !isMappedTransferObjectType(eClass) && !doneList.contains(eClass))
     	{
     		addExtensionAnnotation(eClass, "mappedEntityType", getPackageFQName(eClass.getEPackage()));
+    		doneList.add(eClass);
     		
-    		for(EStructuralFeature eStructuralFeature : eClass.getEAllStructuralFeatures())
+    		//add annotation to all references and make them transfer object recursively
+    		for(EReference eReference : eClass.getEAllReferences())
     		{
-    			addExtensionAnnotation(eStructuralFeature, "binding", eStructuralFeature.getName());
+    			if(!getExtensionAnnotationByName(eReference, "binding", false).isPresent())
+        		addExtensionAnnotation(eReference, "binding", eReference.getName());
+    						
+    			createMappedTransferObjectTypeByEntityType(eReference.getEContainingClass(),doneList);
     		}
-    	}
-    	
-    	for(EClass superType : eClass.getEAllSuperTypes())
-    	{
-    		if(isEntityType(superType) && !isMappedTransferObjectType(superType))
+    		
+    		//add annotation to all attributes
+    		for(EAttribute eAttribute : eClass.getEAllAttributes())
+    		{
+    			if(!getExtensionAnnotationByName(eAttribute, "binding", false).isPresent())
+    			addExtensionAnnotation(eAttribute, "binding", eAttribute.getName());
+    		}
+    		
+    		//call the function on all supertypes
+    		for(EClass superType : eClass.getEAllSuperTypes())
         	{
-        		addExtensionAnnotation(superType, "mappedEntityType", getPackageFQName(eClass.getEPackage()));
-        		
-        		for(EStructuralFeature eStructuralFeature : eClass.getEAllStructuralFeatures())
-        		{
-        			addExtensionAnnotation(eStructuralFeature, "binding", eStructuralFeature.getName());
-        		}
+    			createMappedTransferObjectTypeByEntityType(superType,doneList);
         	}
     	}
     }

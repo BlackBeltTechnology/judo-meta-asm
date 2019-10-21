@@ -141,6 +141,17 @@ public class AsmUtilsTest {
     }
     
     @Test
+    public void testEnrichMethodNonEntity()
+    {
+    	Optional<EClass> iAPClass = asmUtils.all(EClass.class).filter(c -> "internalAP".equals(c.getName())).findAny();
+    	assertTrue(iAPClass.isPresent());
+    	
+    	asmUtils.createMappedTransferObjectTypeByEntityType(iAPClass.get());
+    	
+    	assertTrue(!asmUtils.getExtensionAnnotationByName(iAPClass.get(), "mappedEntityType", false).isPresent());
+    }
+    
+    @Test
     public void testEnrichMethodAlreadyPresent()
     {
     	Optional<EClass> orderClass = asmUtils.all(EClass.class).filter(c -> "OrderInfoQuery".equals(c.getName())).findAny();
@@ -151,6 +162,68 @@ public class AsmUtilsTest {
     	assertTrue(asmUtils.getExtensionAnnotationByName(orderClass.get(), "mappedEntityType", false).isPresent());
     	
     	for(EStructuralFeature eStructuralFeature : orderClass.get().getEAllStructuralFeatures())
+    	{
+    		assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
+    	}
+    }
+    
+    @Test
+    public void testEnrichMethodSuperType()
+    {
+    	Optional<EClass> employeeClass = asmUtils.all(EClass.class).filter(c -> "Employee".equals(c.getName())).findAny();
+    	assertTrue(employeeClass.isPresent());
+    	
+    	asmUtils.createMappedTransferObjectTypeByEntityType(employeeClass.get());
+    	
+    	assertTrue(asmUtils.getExtensionAnnotationByName(employeeClass.get(), "mappedEntityType", false).isPresent());
+    	
+    	for(EStructuralFeature eStructuralFeature : employeeClass.get().getEAllStructuralFeatures())
+    	{
+    		assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
+    	}
+    	
+    	Optional<EClass> personClass = asmUtils.all(EClass.class).filter(c -> "Person".equals(c.getName())).findAny();
+    	assertTrue(personClass.isPresent());
+    	
+        assertTrue(asmUtils.getExtensionAnnotationByName(personClass.get(), "mappedEntityType", false).isPresent());
+    	
+    	for(EStructuralFeature eStructuralFeature : personClass.get().getEAllStructuralFeatures())
+    	{
+    		assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
+    	}
+    }
+    
+    @Test
+    public void testEnrichMethodSuperTypes()
+    {
+    	Optional<EClass> shipperClass = asmUtils.all(EClass.class).filter(c -> "Shipper".equals(c.getName())).findAny();
+    	assertTrue(shipperClass.isPresent());
+    	
+    	asmUtils.createMappedTransferObjectTypeByEntityType(shipperClass.get());
+    	
+    	assertTrue(asmUtils.getExtensionAnnotationByName(shipperClass.get(), "mappedEntityType", false).isPresent());
+    	
+    	for(EStructuralFeature eStructuralFeature : shipperClass.get().getEAllStructuralFeatures())
+    	{
+    		assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
+    	}
+    	
+    	Optional<EClass> companyClass = asmUtils.all(EClass.class).filter(c -> "Company".equals(c.getName())).findAny();
+    	assertTrue(companyClass.isPresent());
+    	
+        assertTrue(asmUtils.getExtensionAnnotationByName(companyClass.get(), "mappedEntityType", false).isPresent());
+    	
+    	for(EStructuralFeature eStructuralFeature : companyClass.get().getEAllStructuralFeatures())
+    	{
+    		assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
+    	}
+    	
+    	Optional<EClass> customerClass = asmUtils.all(EClass.class).filter(c -> "Customer".equals(c.getName())).findAny();
+    	assertTrue(customerClass.isPresent());
+    	
+        assertTrue(asmUtils.getExtensionAnnotationByName(customerClass.get(), "mappedEntityType", false).isPresent());
+    	
+    	for(EStructuralFeature eStructuralFeature : customerClass.get().getEAllStructuralFeatures())
     	{
     		assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
     	}
