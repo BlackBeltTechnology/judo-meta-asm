@@ -125,7 +125,7 @@ public class AsmUtilsTest {
     }
     
     @Test
-    public void testEnrichMethod()
+    public void testMappedTransferObjectTypeByEntityTypeMethod()
     {
     	Optional<EClass> orderClass = asmUtils.all(EClass.class).filter(c -> "Order".equals(c.getName())).findAny();
     	assertTrue(orderClass.isPresent());
@@ -141,7 +141,7 @@ public class AsmUtilsTest {
     }
     
     @Test
-    public void testEnrichMethodNonEntity()
+    public void testMappedTransferObjectTypeByEntityTypeMethodNonEntity()
     {
     	Optional<EClass> iAPClass = asmUtils.all(EClass.class).filter(c -> "internalAP".equals(c.getName())).findAny();
     	assertTrue(iAPClass.isPresent());
@@ -152,7 +152,7 @@ public class AsmUtilsTest {
     }
     
     @Test
-    public void testEnrichMethodAlreadyPresent()
+    public void testMappedTransferObjectTypeByEntityTypeMethodAlreadyPresent()
     {
     	Optional<EClass> orderClass = asmUtils.all(EClass.class).filter(c -> "OrderInfoQuery".equals(c.getName())).findAny();
     	assertTrue(orderClass.isPresent());
@@ -168,7 +168,7 @@ public class AsmUtilsTest {
     }
     
     @Test
-    public void testEnrichMethodSuperType()
+    public void testMappedTransferObjectTypeByEntityTypeMethodSuperType()
     {
     	Optional<EClass> employeeClass = asmUtils.all(EClass.class).filter(c -> "Employee".equals(c.getName())).findAny();
     	assertTrue(employeeClass.isPresent());
@@ -194,7 +194,7 @@ public class AsmUtilsTest {
     }
     
     @Test
-    public void testEnrichMethodSuperTypes()
+    public void testMappedTransferObjectTypeByEntityTypeMethodSuperTypes()
     {
     	Optional<EClass> shipperClass = asmUtils.all(EClass.class).filter(c -> "Shipper".equals(c.getName())).findAny();
     	assertTrue(shipperClass.isPresent());
