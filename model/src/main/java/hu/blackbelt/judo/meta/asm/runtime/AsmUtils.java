@@ -1487,58 +1487,54 @@ public class AsmUtils {
     }
     
     /**
-     * Makes the model MappedTransferObjectType by adding the necessary annotations to the model and its references and super types if the model is an entity type, and not a transfer object already
+     * Makes the model MappedTransferObjectType by adding the necessary annotations to the model and its references and super types if the model is an
+     * entity type, and not a transfer object already
      *
-     * @param EClass EClass
+     * @param eClass EClass to perform the operation on
      */
-    
-    public void createMappedTransferObjectTypeByEntityType(EClass eClass)
-    {
-    	createMappedTransferObjectTypeByEntityType(eClass,null);
-    }
-    
-    /**
-     * Makes the model MappedTransferObjectType by adding the necessary annotations to the model and its references and super types if the model is an entity type, and not a transfer object already
-     *
-     * @param EClass EClass
-     * @param EList<EClass> contains the already processed EClasses
-     */
-    
-    public void createMappedTransferObjectTypeByEntityType(EClass eClass, EList<EClass> doneList)
-    {
-    	if(doneList == null) doneList = new UniqueEList<EClass>();
-    	
-    	if(isEntityType(eClass) && !isMappedTransferObjectType(eClass) && !doneList.contains(eClass))
-    	{
-    		addExtensionAnnotation(eClass, "mappedEntityType", getPackageFQName(eClass.getEPackage()));
-    		doneList.add(eClass);
-    		
-    		//add annotation to all references and make them transfer object recursively
-    		for(EReference eReference : eClass.getEAllReferences())
-    		{
-    			if(!getExtensionAnnotationByName(eReference, "binding", false).isPresent())
-    			{
-    				addExtensionAnnotation(eReference, "binding", eReference.getName());
-    			}
-    						
-    			createMappedTransferObjectTypeByEntityType(eReference.getEReferenceType(),doneList);
-    		}
-    		
-    		//add annotation to all attributes
-    		for(EAttribute eAttribute : eClass.getEAllAttributes())
-    		{
-    			if(!getExtensionAnnotationByName(eAttribute, "binding", false).isPresent())
-    			{
-    				addExtensionAnnotation(eAttribute, "binding", eAttribute.getName());
-    			}
 
-    		}
-    		
-    		//call the function on all supertypes
-    		for(EClass superType : eClass.getEAllSuperTypes())
-        	{
-    			createMappedTransferObjectTypeByEntityType(superType,doneList);
-        	}
-    	}
+    public void createMappedTransferObjectTypeByEntityType(EClass eClass) {
+        createMappedTransferObjectTypeByEntityType(eClass, null);
+    }
+
+    /**
+     * Makes the model MappedTransferObjectType by adding the necessary annotations to the model and its references and super types if the model is an
+     * entity type, and not a transfer object already
+     *
+     * @param eClass   EClass to perform the operation on
+     * @param doneList contains the already processed EClasses
+     */
+    
+    public void createMappedTransferObjectTypeByEntityType(EClass eClass, EList<EClass> doneList) {
+        if (doneList == null) {
+            doneList = new UniqueEList<EClass>();
+        }
+
+        if (isEntityType(eClass) && !isMappedTransferObjectType(eClass) && !doneList.contains(eClass)) {
+            addExtensionAnnotation(eClass, "mappedEntityType", getPackageFQName(eClass.getEPackage()));
+            doneList.add(eClass);
+
+            //add annotation to all references and make them transfer object recursively
+            for (EReference eReference : eClass.getEAllReferences()) {
+                if (!getExtensionAnnotationByName(eReference, "binding", false).isPresent()) {
+                    addExtensionAnnotation(eReference, "binding", eReference.getName());
+                }
+
+                createMappedTransferObjectTypeByEntityType(eReference.getEReferenceType(), doneList);
+            }
+
+            //add annotation to all attributes
+            for (EAttribute eAttribute : eClass.getEAllAttributes()) {
+                if (!getExtensionAnnotationByName(eAttribute, "binding", false).isPresent()) {
+                    addExtensionAnnotation(eAttribute, "binding", eAttribute.getName());
+                }
+
+            }
+
+            //call the function on all supertypes
+            for (EClass superType : eClass.getEAllSuperTypes()) {
+                createMappedTransferObjectTypeByEntityType(superType, doneList);
+            }
+        }
     }
 }
