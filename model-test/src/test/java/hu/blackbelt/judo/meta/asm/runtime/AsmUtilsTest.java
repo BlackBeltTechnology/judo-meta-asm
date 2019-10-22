@@ -182,11 +182,6 @@ public class AsmUtilsTest {
         
         final Resource resource = resourceSet.createResource(URI.createFileURI(testEcoreFile.getAbsolutePath()));
         resource.getContents().add(ePackage);
-        try {
-			resource.save(Collections.emptyMap());
-		} catch (IOException e) {
-			
-		}
         
         AsmUtils asmUtils = new AsmUtils(resourceSet);
     	
@@ -219,11 +214,6 @@ public class AsmUtilsTest {
 
 		final Resource resource = resourceSet.createResource(URI.createFileURI(testEcoreFile.getAbsolutePath()));
 		resource.getContents().add(ePackage);
-		try {
-			resource.save(Collections.emptyMap());
-		} catch (IOException e) {
-
-		}
 
 		AsmUtils asmUtils = new AsmUtils(resourceSet);
 
@@ -278,11 +268,6 @@ public class AsmUtilsTest {
 
 		final Resource resource = resourceSet.createResource(URI.createFileURI(testEcoreFile.getAbsolutePath()));
 		resource.getContents().add(ePackage);
-		try {
-			resource.save(Collections.emptyMap());
-		} catch (IOException e) {
-
-		}
 
 		AsmUtils asmUtils = new AsmUtils(resourceSet);
 
@@ -329,11 +314,6 @@ public class AsmUtilsTest {
 
 		final Resource resource = resourceSet.createResource(URI.createFileURI(testEcoreFile.getAbsolutePath()));
 		resource.getContents().add(ePackage);
-		try {
-			resource.save(Collections.emptyMap());
-		} catch (IOException e) {
-
-		}
 
 		AsmUtils asmUtils = new AsmUtils(resourceSet);
 
@@ -345,8 +325,6 @@ public class AsmUtilsTest {
     	{
     		assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
     	}
-		
-		////
 
 		assertTrue(asmUtils.getExtensionAnnotationByName(customerClass, "mappedEntityType", false).isPresent());
 		
@@ -397,12 +375,7 @@ public class AsmUtilsTest {
 
 		final Resource resource = resourceSet.createResource(URI.createFileURI(testEcoreFile.getAbsolutePath()));
 		resource.getContents().add(ePackage);
-		try {
-			resource.save(Collections.emptyMap());
-		} catch (IOException e) {
-
-		}
-
+		
 		AsmUtils asmUtils = new AsmUtils(resourceSet);
 		
 		asmUtils.createMappedTransferObjectTypeByEntityType(customerClass);
@@ -417,6 +390,69 @@ public class AsmUtilsTest {
 		assertTrue(asmUtils.getExtensionAnnotationByName(orderClass, "mappedEntityType", false).isPresent());
 		
 		for(EStructuralFeature eStructuralFeature : orderClass.getEAllStructuralFeatures())
+    	{
+    		assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
+    	}
+	}
+	
+	@Test
+	public void testMappedTransferObjectTypeByEntityTypeMethodCyclic() {
+		final EcorePackage ecore = EcorePackage.eINSTANCE;
+
+		EAnnotation eAnnotation = newEAnnotationBuilder()
+				.withSource("http://blackbelt.hu/judo/meta/ExtendedMetadata/entity").build();
+		
+		EAnnotation eAnnotation2 = newEAnnotationBuilder()
+				.withSource("http://blackbelt.hu/judo/meta/ExtendedMetadata/entity").build();
+
+		eAnnotation.getDetails().put("value", "true");
+		eAnnotation2.getDetails().put("value", "true");
+		
+		final EClass productClass = newEClassBuilder().withName("Product")
+				.withEAnnotations(ImmutableList.of(eAnnotation))
+				.build();
+		
+		final EClass categoryClass = newEClassBuilder().withName("Category")
+				.withEAnnotations(ImmutableList.of(eAnnotation2))
+				.withEStructuralFeatures(ImmutableList.of(
+						newEReferenceBuilder().withName("products")
+						.withEType(productClass)
+						.build()))
+				.build();
+		
+		productClass.getEStructuralFeatures().add(newEReferenceBuilder().withName("category")
+						.withEType(categoryClass)
+						.build());
+
+		final EPackage ePackage = newEPackageBuilder()
+				.withName("test")
+				.withNsPrefix("test")
+				.withNsURI("http://com.example.test.ecore")
+				.withEClassifiers(categoryClass)
+				.withEClassifiers(productClass)
+				.build();
+
+		final ResourceSet resourceSet = new ResourceSetImpl();
+		resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("*", new EcoreResourceFactoryImpl());
+		final File testEcoreFile = new File(targetDir(), "test6.ecore");
+
+		final Resource resource = resourceSet.createResource(URI.createFileURI(testEcoreFile.getAbsolutePath()));
+		resource.getContents().add(ePackage);
+
+		AsmUtils asmUtils = new AsmUtils(resourceSet);
+		
+		asmUtils.createMappedTransferObjectTypeByEntityType(productClass);
+		
+		assertTrue(asmUtils.getExtensionAnnotationByName(productClass, "mappedEntityType", false).isPresent());
+		
+		for(EStructuralFeature eStructuralFeature : productClass.getEAllStructuralFeatures())
+    	{
+    		assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
+    	}
+
+		assertTrue(asmUtils.getExtensionAnnotationByName(categoryClass, "mappedEntityType", false).isPresent());
+		
+		for(EStructuralFeature eStructuralFeature : categoryClass.getEAllStructuralFeatures())
     	{
     		assertTrue(asmUtils.getExtensionAnnotationByName(eStructuralFeature, "binding", false).isPresent());
     	}
