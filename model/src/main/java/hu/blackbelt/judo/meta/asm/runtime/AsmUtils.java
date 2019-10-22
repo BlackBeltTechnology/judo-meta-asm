@@ -1,6 +1,7 @@
 package hu.blackbelt.judo.meta.asm.runtime;
 
 import org.eclipse.emf.common.notify.Notifier;
+import org.eclipse.emf.common.util.AbstractEList;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
@@ -17,10 +18,12 @@ import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EParameter;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.slf4j.Logger;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -1481,5 +1484,55 @@ public class AsmUtils {
      */
     static Stream<EAnnotation> getExtensionAnnotationsAsStreamByName (final EModelElement eModelElement, final String annotationName) {
         return eModelElement.getEAnnotations().stream().filter(a -> getAnnotationUri(annotationName).equals(a.getSource()));
+    }
+    
+    /**
+     * Makes the model MappedTransferObjectType by adding the necessary annotations to the model and its references and super types if the model is an
+     * entity type, and not a transfer object already
+     *
+     * @param eclass EClass to perform the operation on
+     */
+    public void createMappedTransferObjectTypeByEntityType(EClass eclass) {
+        createMappedTransferObjectTypeByEntityType(eclass, null);
+    }
+
+    /**
+     * Makes the model MappedTransferObjectType by adding the necessary annotations to the model and its references and super types if the model is an
+     * entity type, and not a transfer object already
+     *
+     * @param eclass   EClass to perform the operation on
+     * @param doneList contains the already processed EClasses
+     */
+    private void createMappedTransferObjectTypeByEntityType(EClass eclass, EList<EClass> doneList) {
+        if (doneList == null) {
+            doneList = new UniqueEList<EClass>();
+        }
+
+        if (isEntityType(eclass) && !isMappedTransferObjectType(eclass) && !doneList.contains(eclass)) {
+            addExtensionAnnotation(eclass, "mappedEntityType", getPackageFQName(eclass.getEPackage()));
+            doneList.add(eclass);
+
+            //add annotation to all references and make them transfer object recursively
+            for (EReference ereference : eclass.getEAllReferences()) {
+                if (!getExtensionAnnotationByName(ereference, "binding", false).isPresent()) {
+                    addExtensionAnnotation(ereference, "binding", ereference.getName());
+                }
+
+                createMappedTransferObjectTypeByEntityType(ereference.getEReferenceType(), doneList);
+            }
+
+            //add annotation to all attributes
+            for (EAttribute eattribute : eclass.getEAllAttributes()) {
+                if (!getExtensionAnnotationByName(eattribute, "binding", false).isPresent()) {
+                    addExtensionAnnotation(eattribute, "binding", eattribute.getName());
+                }
+
+            }
+
+            //call the function on all supertypes
+            for (EClass superType : eclass.getEAllSuperTypes()) {
+                createMappedTransferObjectTypeByEntityType(superType, doneList);
+            }
+        }
     }
 }
