@@ -1,29 +1,16 @@
 package hu.blackbelt.judo.meta.asm.runtime;
 
+import com.google.common.collect.ImmutableList;
 import org.eclipse.emf.common.notify.Notifier;
-import org.eclipse.emf.common.util.AbstractEList;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.UniqueEList;
-import org.eclipse.emf.ecore.EAnnotation;
-import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EClassifier;
-import org.eclipse.emf.ecore.EDataType;
-import org.eclipse.emf.ecore.EEnum;
-import org.eclipse.emf.ecore.EModelElement;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EOperation;
-import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.EParameter;
-import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.slf4j.Logger;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -1534,5 +1521,98 @@ public class AsmUtils {
                 createMappedTransferObjectTypeByEntityType(superType, doneList);
             }
         }
+    }
+    
+    public EList<EClass> getAllDTOs() {
+        return new BasicEList<>(all(EClass.class)
+                .filter(c -> !getExtensionAnnotationListByName(c, "exposedBy").isEmpty() && (isEntityType(c) || isMappedTransferObjectType(c)))
+                .collect(Collectors.toList()));
+    }
+    
+    public static String safeName(String str)
+    {
+        if (str == "class") {
+            return "clazz";
+        } else if (ImmutableList.of(
+            "identifier",
+            "abstract", "assert", "boolean", "break", "byte", "case", "catch", "char",
+            "continue", "default", "do", "double", "else", "enum", "exports", "extends", 
+            "final", "finally", "float", "for", "if", "implements", "import", "instanceof",
+             "long", "module", "native", "new", "package", "private", "protected",
+             "public", "requires", "return", "short", "static", "strictfp", "super",
+             "switch", "synchronized", "this", "throw", "throws", "transient", "try",
+             "void", "volatile", "while", "true", "null", "false", "var", "const", "goto" ).contains(str)) {
+            return str + "_";
+        } else if (str == "Class") {
+            return "Clazz";
+        } else {
+            return str;
+        }
+    }
+    
+    public static String getTypeDefinition(EStructuralFeature estructuralfeature, String prefix)
+    {
+        if(estructuralfeature instanceof EAttribute)
+        {
+            if (estructuralfeature.getUpperBound() == -1) {
+                return "List<" + estructuralfeature.getEType().getInstanceClass().getName() + ">";
+            } else {
+                return estructuralfeature.getEType().getInstanceClass().getName();
+            }
+        }
+        else
+        {
+            if (estructuralfeature.getUpperBound() == -1) {
+                return "List<" + getBareTypeDefinition((EReference)estructuralfeature,prefix) + ">";
+            } else {
+                return getBareTypeDefinition((EReference)estructuralfeature,prefix);
+            }
+        }
+    }
+    
+    public static String getTypeDefinition(EParameter eparameter)
+    {
+        if (eparameter.isMany()) {
+            return "List<" + eparameter.getEType().getInstanceClass().getName() + ">";
+        } else if (eparameter.getEType().getInstanceClass() != null) {
+            return eparameter.getEType().getInstanceClass().getName();
+        } else {
+            return "Integer";
+        }
+    }
+    
+    public static String getDtoPackageName(EClass eclass, String prefix) {
+        
+       return prefix + getPackageFQName(eclass.getEPackage());
+    }
+    
+    public static String setterName(ENamedElement enamedelement)
+    {
+        return "set" + safeName(enamedelement.getName().toUpperCase());
+    }
+    
+    public static String getterName(ENamedElement enamedelement)
+    {
+        return "get" + safeName(enamedelement.getName().toUpperCase());
+    }
+    
+    public static String getFullOperationMethodName(EOperation eoperation)
+    {
+        return (getPackageFQName(eoperation.getEContainingClass().getEPackage()) + "." + eoperation.getName()).replaceAll("\\.", "/");
+    }
+    
+    public static String getFullOperationPath(EOperation eoperation)
+    {
+        return (getPackageFQName(eoperation.getEContainingClass().getEPackage()) + "." + eoperation.getName()).replaceAll("\\.", "_");
+    }
+    
+    private static String getBareTypeDefinition(EReference ereference, String prefix)
+    {
+        return getDtoPackageName(ereference.getEReferenceType(),prefix) + "." + ereference.getEReferenceType().getName();
+    }
+    
+    public static String idType()
+    {
+        return "java.util.UUID";
     }
 }
