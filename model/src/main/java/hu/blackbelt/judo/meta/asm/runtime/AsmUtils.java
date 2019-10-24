@@ -1521,56 +1521,75 @@ public class AsmUtils {
             }
         }
     }
-    
+
+    /**
+     * Returns a list of all DTO EClasses existing in the ResourceSet
+     *
+     * @return DTO model elements
+     */
     public EList<EClass> getAllDTOs() {
         return new BasicEList<>(all(EClass.class)
-                .filter(c -> !getExtensionAnnotationListByName(c, "exposedBy").isEmpty() && (isEntityType(c) || isMappedTransferObjectType(c)))
+                .filter(c -> !getExtensionAnnotationListByName(c, "exposedBy").isEmpty()
+                        && (!isEntityType(c) || isMappedTransferObjectType(c)))
                 .collect(Collectors.toList()));
     }
-    
-    public static String safeName(String str)
-    {
-        if (str == "class") {
+
+    /**
+     * Returns a safe conversion of the parameter string
+     *
+     * @param str the string to be converted
+     * @return the converted string
+     */
+    public static String safeName(String str) {
+        if (str.equals("class")) {
             return "clazz";
         } else if (Arrays.asList(
-            "identifier",
-            "abstract", "assert", "boolean", "break", "byte", "case", "catch", "char",
-            "continue", "default", "do", "double", "else", "enum", "exports", "extends", 
-            "final", "finally", "float", "for", "if", "implements", "import", "instanceof",
-             "long", "module", "native", "new", "package", "private", "protected",
-             "public", "requires", "return", "short", "static", "strictfp", "super",
-             "switch", "synchronized", "this", "throw", "throws", "transient", "try",
-             "void", "volatile", "while", "true", "null", "false", "var", "const", "goto" ).contains(str)) {
+                "identifier",
+                "abstract", "assert", "boolean", "break", "byte", "case", "catch", "char",
+                "continue", "default", "do", "double", "else", "enum", "exports", "extends",
+                "final", "finally", "float", "for", "if", "implements", "import", "instanceof",
+                "long", "module", "native", "new", "package", "private", "protected",
+                "public", "requires", "return", "short", "static", "strictfp", "super",
+                "switch", "synchronized", "this", "throw", "throws", "transient", "try",
+                "void", "volatile", "while", "true", "null", "false", "var", "const", "goto").contains(str)) {
             return str + "_";
-        } else if (str == "Class") {
+        } else if (str.equals("Class")) {
             return "Clazz";
         } else {
             return str;
         }
     }
-    
-    public static String getTypeDefinition(EStructuralFeature estructuralfeature, String prefix)
-    {
-        if(estructuralfeature instanceof EAttribute)
-        {
+
+    /**
+     * Returns the type definition of the parameter EStructuralFeature
+     *
+     * @param estructuralfeature EStructuralFeature
+     * @param prefix             the package prefix to be appended in case of EReference
+     * @return type definition string
+     */
+    public static String getTypeDefinition(EStructuralFeature estructuralfeature, String prefix) {
+        if (estructuralfeature instanceof EAttribute) {
             if (estructuralfeature.getUpperBound() == -1) {
                 return "List<" + estructuralfeature.getEType().getInstanceClass().getName() + ">";
             } else {
                 return estructuralfeature.getEType().getInstanceClass().getName();
             }
-        }
-        else
-        {
+        } else {
             if (estructuralfeature.getUpperBound() == -1) {
-                return "List<" + getBareTypeDefinition((EReference)estructuralfeature,prefix) + ">";
+                return "List<" + getBareTypeDefinition((EReference) estructuralfeature, prefix) + ">";
             } else {
-                return getBareTypeDefinition((EReference)estructuralfeature,prefix);
+                return getBareTypeDefinition((EReference) estructuralfeature, prefix);
             }
         }
     }
-    
-    public static String getTypeDefinition(EParameter eparameter)
-    {
+
+    /**
+     * Returns the type definition of the parameter EParameter
+     *
+     * @param eparameter EParameter
+     * @return type definition string
+     */
+    public static String getTypeDefinition(EParameter eparameter) {
         if (eparameter.isMany()) {
             return "List<" + eparameter.getEType().getInstanceClass().getName() + ">";
         } else if (eparameter.getEType().getInstanceClass() != null) {
@@ -1579,39 +1598,76 @@ public class AsmUtils {
             return "Integer";
         }
     }
-    
+
+    /**
+     * Returns the package name of the parameter EClass
+     *
+     * @param eclass EClass
+     * @param prefix the package prefix to be appended
+     * @return the package name
+     */
     public static String getDtoPackageName(EClass eclass, String prefix) {
-        
-       return prefix + getPackageFQName(eclass.getEPackage());
+
+        return prefix + getPackageFQName(eclass.getEPackage());
     }
-    
-    public static String setterName(ENamedElement enamedelement)
-    {
-        return "set" + safeName(enamedelement.getName().toUpperCase());
+
+    /**
+     * Returns the setter method signature of the ENamedElement
+     *
+     * @param enamedelement ENamedElement
+     * @return the setter method signature
+     */
+    public static String setterName(ENamedElement enamedelement) {
+        return "set" + safeName(
+                enamedelement.getName().substring(0, 1).toUpperCase() + enamedelement.getName().substring(1));
     }
-    
-    public static String getterName(ENamedElement enamedelement)
-    {
-        return "get" + safeName(enamedelement.getName().toUpperCase());
+
+    /**
+     * Returns the getter method signature of the ENamedElement
+     *
+     * @param enamedelement ENamedElement
+     * @return the getter method signature
+     */
+    public static String getterName(ENamedElement enamedelement) {
+        return "get" + safeName(
+                enamedelement.getName().substring(0, 1).toUpperCase() + enamedelement.getName().substring(1));
     }
-    
-    public static String getFullOperationMethodName(EOperation eoperation)
-    {
-        return (getPackageFQName(eoperation.getEContainingClass().getEPackage()) + "." + eoperation.getName()).replaceAll("\\.", "/");
+
+    /**
+     * Returns the operation method name
+     *
+     * @param eoperation EOperation
+     * @return the operation method name
+     */
+    public static String getFullOperationMethodName(EOperation eoperation) {
+        return (getPackageFQName(eoperation.getEContainingClass().getEPackage()) + "." + eoperation.getName())
+                .replaceAll("\\.", "_");
     }
-    
-    public static String getFullOperationPath(EOperation eoperation)
-    {
-        return (getPackageFQName(eoperation.getEContainingClass().getEPackage()) + "." + eoperation.getName()).replaceAll("\\.", "_");
+
+    /**
+     * Returns the operation path
+     *
+     * @param eoperation EOperation
+     * @return the operation path
+     */
+    public static String getFullOperationPath(EOperation eoperation) {
+        return (getPackageFQName(eoperation.getEContainingClass().getEPackage()) + "." + eoperation.getName())
+                .replaceAll("\\.", "/");
     }
-    
-    private static String getBareTypeDefinition(EReference ereference, String prefix)
-    {
-        return getDtoPackageName(ereference.getEReferenceType(),prefix) + "." + ereference.getEReferenceType().getName();
+
+    /**
+     * Returns the bare type definition of an EReference
+     *
+     * @param ereference EReference
+     * @param prefix     the package prefix to be appended
+     * @return the bare type definition
+     */
+    public static String getBareTypeDefinition(EReference ereference, String prefix) {
+        return getDtoPackageName(ereference.getEReferenceType(), prefix) + "."
+                + ereference.getEReferenceType().getName();
     }
-    
-    public static String idType()
-    {
+
+    public static String idType() {
         return "java.util.UUID";
     }
 }
