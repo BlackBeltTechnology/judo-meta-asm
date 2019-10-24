@@ -1,6 +1,5 @@
 package hu.blackbelt.judo.meta.asm.runtime;
 
-import com.google.common.collect.ImmutableList;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
@@ -1533,7 +1532,7 @@ public class AsmUtils {
     {
         if (str == "class") {
             return "clazz";
-        } else if (ImmutableList.of(
+        } else if (Arrays.asList(
             "identifier",
             "abstract", "assert", "boolean", "break", "byte", "case", "catch", "char",
             "continue", "default", "do", "double", "else", "enum", "exports", "extends", 
