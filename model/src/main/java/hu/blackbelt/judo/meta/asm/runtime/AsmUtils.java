@@ -1523,18 +1523,6 @@ public class AsmUtils {
     }
 
     /**
-     * Returns a list of all DTO EClasses existing in the ResourceSet
-     *
-     * @return DTO model elements
-     */
-    public EList<EClass> getAllDTOs() {
-        return new BasicEList<>(all(EClass.class)
-                .filter(c -> !getExtensionAnnotationListByName(c, "exposedBy").isEmpty()
-                        && (!isEntityType(c) || isMappedTransferObjectType(c)))
-                .collect(Collectors.toList()));
-    }
-
-    /**
      * Returns a safe conversion of the parameter string
      *
      * @param str the string to be converted
@@ -1665,9 +1653,5 @@ public class AsmUtils {
     public static String getBareTypeDefinition(EReference ereference, String prefix) {
         return getDtoPackageName(ereference.getEReferenceType(), prefix) + "."
                 + ereference.getEReferenceType().getName();
-    }
-
-    public static String idType() {
-        return "java.util.UUID";
     }
 }
