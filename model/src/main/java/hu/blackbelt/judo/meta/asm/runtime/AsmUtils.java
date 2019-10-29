@@ -1532,7 +1532,6 @@ public class AsmUtils {
         if (str.equals("class")) {
             return "clazz";
         } else if (Arrays.asList(
-                "identifier",
                 "abstract", "assert", "boolean", "break", "byte", "case", "catch", "char",
                 "continue", "default", "do", "double", "else", "enum", "exports", "extends",
                 "final", "finally", "float", "for", "if", "implements", "import", "instanceof",
@@ -1566,13 +1565,14 @@ public class AsmUtils {
      * @return the getter method signature
      */
     public static String getterName(EStructuralFeature eStructuralFeature) {
-        if(eStructuralFeature.getEType() == EcorePackage.eINSTANCE.getEBoolean()) {
+        if ("boolean".equals(eStructuralFeature.getEType().getInstanceClass())) {
             return "is" + safeName(
-                    eStructuralFeature.getName().substring(0, 1).toUpperCase() + eStructuralFeature.getName().substring(1));
-        }
-        else {
+                    eStructuralFeature.getName().substring(0, 1).toUpperCase()
+                            + eStructuralFeature.getName().substring(1));
+        } else {
             return "get" + safeName(
-                    eStructuralFeature.getName().substring(0, 1).toUpperCase() + eStructuralFeature.getName().substring(1));
+                    eStructuralFeature.getName().substring(0, 1).toUpperCase()
+                            + eStructuralFeature.getName().substring(1));
         }
     }
 }
