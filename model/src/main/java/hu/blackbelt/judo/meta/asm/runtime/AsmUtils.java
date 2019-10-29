@@ -1566,7 +1566,13 @@ public class AsmUtils {
      * @return the getter method signature
      */
     public static String getterName(EStructuralFeature eStructuralFeature) {
-        return "get" + safeName(
-                eStructuralFeature.getName().substring(0, 1).toUpperCase() + eStructuralFeature.getName().substring(1));
+        if(eStructuralFeature.getEType() == EcorePackage.eINSTANCE.getEBoolean()) {
+            return "is" + safeName(
+                    eStructuralFeature.getName().substring(0, 1).toUpperCase() + eStructuralFeature.getName().substring(1));
+        }
+        else {
+            return "get" + safeName(
+                    eStructuralFeature.getName().substring(0, 1).toUpperCase() + eStructuralFeature.getName().substring(1));
+        }
     }
 }
