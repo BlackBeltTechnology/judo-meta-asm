@@ -1,29 +1,15 @@
 package hu.blackbelt.judo.meta.asm.runtime;
 
 import org.eclipse.emf.common.notify.Notifier;
-import org.eclipse.emf.common.util.AbstractEList;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.UniqueEList;
-import org.eclipse.emf.ecore.EAnnotation;
-import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EClassifier;
-import org.eclipse.emf.ecore.EDataType;
-import org.eclipse.emf.ecore.EEnum;
-import org.eclipse.emf.ecore.EModelElement;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EOperation;
-import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.EParameter;
-import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.slf4j.Logger;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -1533,6 +1519,60 @@ public class AsmUtils {
             for (EClass superType : eclass.getEAllSuperTypes()) {
                 createMappedTransferObjectTypeByEntityType(superType, doneList);
             }
+        }
+    }
+
+    /**
+     * Returns a safe conversion of the parameter string
+     *
+     * @param str the string to be converted
+     * @return the converted string
+     */
+    public static String safeName(String str) {
+        if (str.equals("class")) {
+            return "clazz";
+        } else if (Arrays.asList(
+                "abstract", "assert", "boolean", "break", "byte", "case", "catch", "char",
+                "continue", "default", "do", "double", "else", "enum", "exports", "extends",
+                "final", "finally", "float", "for", "if", "implements", "import", "instanceof",
+                "long", "module", "native", "new", "package", "private", "protected",
+                "public", "requires", "return", "short", "static", "strictfp", "super",
+                "switch", "synchronized", "this", "throw", "throws", "transient", "try",
+                "void", "volatile", "while", "true", "null", "false", "var", "const", "goto").contains(str)) {
+            return str + "_";
+        } else if (str.equals("Class")) {
+            return "Clazz";
+        } else {
+            return str;
+        }
+    }
+
+    /**
+     * Returns the setter method signature of the ENamedElement
+     *
+     * @param enamedelement ENamedElement
+     * @return the setter method signature
+     */
+    public static String setterName(EStructuralFeature eStructuralFeature) {
+        return "set" + safeName(
+                eStructuralFeature.getName().substring(0, 1).toUpperCase() + eStructuralFeature.getName().substring(1));
+    }
+
+    /**
+     * Returns the getter method signature of the ENamedElement
+     *
+     * @param enamedelement ENamedElement
+     * @return the getter method signature
+     */
+    public static String getterName(EStructuralFeature eStructuralFeature) {
+        if ("boolean".equals(eStructuralFeature.getEType().getInstanceClassName())) {
+            return "is" + safeName(
+                    eStructuralFeature.getName().substring(0, 1).toUpperCase()
+                            + eStructuralFeature.getName().substring(1));
+        } else {
+            return "get" + safeName(
+                    eStructuralFeature.getName().substring(0, 1).toUpperCase()
+                            + eStructuralFeature.getName().substring(1));
         }
     }
 }
