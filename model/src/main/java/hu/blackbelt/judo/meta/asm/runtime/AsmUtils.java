@@ -1549,37 +1549,14 @@ public class AsmUtils {
     }
 
     /**
-     * Returns the type definition of the parameter EStructuralFeature
-     *
-     * @param estructuralfeature EStructuralFeature
-     * @param prefix             the package prefix to be appended in case of EReference
-     * @return type definition string
-     */
-    public static String getTypeDefinition(EStructuralFeature estructuralfeature, String prefix) {
-        if (estructuralfeature instanceof EAttribute) {
-            if (estructuralfeature.getUpperBound() == -1) {
-                return "List<" + estructuralfeature.getEType().getInstanceClass().getName() + ">";
-            } else {
-                return estructuralfeature.getEType().getInstanceClass().getName();
-            }
-        } else {
-            if (estructuralfeature.getUpperBound() == -1) {
-                return "List<" + getBareTypeDefinition((EReference) estructuralfeature, prefix) + ">";
-            } else {
-                return getBareTypeDefinition((EReference) estructuralfeature, prefix);
-            }
-        }
-    }
-
-    /**
      * Returns the setter method signature of the ENamedElement
      *
      * @param enamedelement ENamedElement
      * @return the setter method signature
      */
-    public static String setterName(ENamedElement enamedelement) {
+    public static String setterName(EStructuralFeature eStructuralFeature) {
         return "set" + safeName(
-                enamedelement.getName().substring(0, 1).toUpperCase() + enamedelement.getName().substring(1));
+                eStructuralFeature.getName().substring(0, 1).toUpperCase() + eStructuralFeature.getName().substring(1));
     }
 
     /**
@@ -1588,20 +1565,8 @@ public class AsmUtils {
      * @param enamedelement ENamedElement
      * @return the getter method signature
      */
-    public static String getterName(ENamedElement enamedelement) {
+    public static String getterName(EStructuralFeature eStructuralFeature) {
         return "get" + safeName(
-                enamedelement.getName().substring(0, 1).toUpperCase() + enamedelement.getName().substring(1));
-    }
-
-    /**
-     * Returns the bare type definition of an EReference
-     *
-     * @param ereference EReference
-     * @param prefix     the package prefix to be appended
-     * @return the bare type definition
-     */
-    public static String getBareTypeDefinition(EReference ereference, String prefix) {
-        return prefix + getPackageFQName(ereference.getEReferenceType().getEPackage()) + "."
-                + ereference.getEReferenceType().getName();
+                eStructuralFeature.getName().substring(0, 1).toUpperCase() + eStructuralFeature.getName().substring(1));
     }
 }
