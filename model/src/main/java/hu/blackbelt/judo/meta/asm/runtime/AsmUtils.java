@@ -1572,34 +1572,6 @@ public class AsmUtils {
     }
 
     /**
-     * Returns the type definition of the parameter EParameter
-     *
-     * @param eparameter EParameter
-     * @return type definition string
-     */
-    public static String getTypeDefinition(EParameter eparameter) {
-        if (eparameter.isMany()) {
-            return "List<" + eparameter.getEType().getInstanceClass().getName() + ">";
-        } else if (eparameter.getEType().getInstanceClass() != null) {
-            return eparameter.getEType().getInstanceClass().getName();
-        } else {
-            return "Integer";
-        }
-    }
-
-    /**
-     * Returns the package name of the parameter EClass
-     *
-     * @param eclass EClass
-     * @param prefix the package prefix to be appended
-     * @return the package name
-     */
-    public static String getDtoPackageName(EClass eclass, String prefix) {
-
-        return prefix + getPackageFQName(eclass.getEPackage());
-    }
-
-    /**
      * Returns the setter method signature of the ENamedElement
      *
      * @param enamedelement ENamedElement
@@ -1622,28 +1594,6 @@ public class AsmUtils {
     }
 
     /**
-     * Returns the operation method name
-     *
-     * @param eoperation EOperation
-     * @return the operation method name
-     */
-    public static String getFullOperationMethodName(EOperation eoperation) {
-        return (getPackageFQName(eoperation.getEContainingClass().getEPackage()) + "." + eoperation.getName())
-                .replaceAll("\\.", "_");
-    }
-
-    /**
-     * Returns the operation path
-     *
-     * @param eoperation EOperation
-     * @return the operation path
-     */
-    public static String getFullOperationPath(EOperation eoperation) {
-        return (getPackageFQName(eoperation.getEContainingClass().getEPackage()) + "." + eoperation.getName())
-                .replaceAll("\\.", "/");
-    }
-
-    /**
      * Returns the bare type definition of an EReference
      *
      * @param ereference EReference
@@ -1651,7 +1601,7 @@ public class AsmUtils {
      * @return the bare type definition
      */
     public static String getBareTypeDefinition(EReference ereference, String prefix) {
-        return getDtoPackageName(ereference.getEReferenceType(), prefix) + "."
+        return prefix + getPackageFQName(ereference.getEReferenceType().getEPackage()) + "."
                 + ereference.getEReferenceType().getName();
     }
 }
