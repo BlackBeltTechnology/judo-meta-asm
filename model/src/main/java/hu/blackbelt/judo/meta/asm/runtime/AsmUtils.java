@@ -1565,7 +1565,7 @@ public class AsmUtils {
      * @return the getter method signature
      */
     public static String getterName(EStructuralFeature eStructuralFeature) {
-        if ("boolean".equals(eStructuralFeature.getEType().getInstanceClass())) {
+        if ("boolean".equals(eStructuralFeature.getEType().getInstanceClassName())) {
             return "is" + safeName(
                     eStructuralFeature.getName().substring(0, 1).toUpperCase()
                             + eStructuralFeature.getName().substring(1));
