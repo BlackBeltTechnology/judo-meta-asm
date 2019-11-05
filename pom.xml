@@ -64,7 +64,7 @@
 		<maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
 
 		<epsilon-runtime-version>1.2.0.20191018_105940_dc9d257_develop</epsilon-runtime-version>
-		<epsilon-runtime-eclipse-version>1.2.0.20191105_173557_3cc526f_develop</epsilon-runtime-eclipse-version>
+		<epsilon-runtime-eclipse-version>1.2.0.20191105_183445_4b0b2da_develop</epsilon-runtime-eclipse-version>
 
 		<src.dir>src/main</src.dir>
 
@@ -73,8 +73,8 @@
 		<tycho-version>1.4.0</tycho-version>
 		<eclipse-p2-base>http://download.eclipse.org/releases/2019-03</eclipse-p2-base>
 
-		<emf-genmodel-generator-version>1.0.0.20191105_161805_09da63b_develop</emf-genmodel-generator-version>
-		<judo-genmodel-generator-version>1.0.0.20191105_170509_beb6b31_develop</judo-genmodel-generator-version>
+		<emf-genmodel-generator-version>1.0.0.20191105_182930_676cf43_develop</emf-genmodel-generator-version>
+		<judo-genmodel-generator-version>1.0.0.20191105_183255_7673428_develop</judo-genmodel-generator-version>
 
 		<northwind-model-version>1.0.0.20191022_140717_d575fe8_develop</northwind-model-version>
 		<judo-tatami-version>1.0.0.20191104_103436_c121721_develop</judo-tatami-version>
