@@ -1521,6 +1521,7 @@ public class AsmUtils {
             }
         }
     }
+    
 
     /**
      * Returns a safe conversion of the parameter string
@@ -1529,24 +1530,19 @@ public class AsmUtils {
      * @return the converted string
      */
     public static String safeName(String str) {
-        if (str.equals("class")) {
-            return "clazz";
-        } else if (Arrays.asList(
+        if (Arrays.asList(
                 "abstract", "assert", "boolean", "break", "byte", "case", "catch", "char",
                 "continue", "default", "do", "double", "else", "enum", "exports", "extends",
                 "final", "finally", "float", "for", "if", "implements", "import", "instanceof",
                 "long", "module", "native", "new", "package", "private", "protected",
                 "public", "requires", "return", "short", "static", "strictfp", "super",
                 "switch", "synchronized", "this", "throw", "throws", "transient", "try",
-                "void", "volatile", "while", "true", "null", "false", "var", "const", "goto").contains(str)) {
+                "void", "volatile", "while", "true", "null", "false", "var", "const", "goto", "class", "Class").contains(str)) {
             return str + "_";
-        } else if (str.equals("Class")) {
-            return "Clazz";
         } else {
             return str;
         }
     }
-
     /**
      * Returns the setter method signature of the ENamedElement
      *
