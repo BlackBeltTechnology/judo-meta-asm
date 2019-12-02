@@ -1075,11 +1075,12 @@ public class AsmUtils {
         }
         final boolean added = addExtensionAnnotation(transferObjectType, "exposedBy", accessPointFqName);
         if (added) { // TODO - or includeOperations (is not added them previously)
-            transferObjectType.getEAllReferences().forEach(eReference -> addExposedByAnnotationToTransferObjectType(eReference.getEReferenceType(), accessPointFqName, includeOperations));
-
             transferObjectType.getEAllAttributes().forEach(eAttribute -> addExtensionAnnotation(eAttribute, "exposedBy", accessPointFqName));
             transferObjectType.getEAllReferences().forEach(eReference -> addExtensionAnnotation(eReference, "exposedBy", accessPointFqName));
-
+            transferObjectType.getEAllReferences().forEach(eReference -> addExposedByAnnotationToTransferObjectType(eReference.getEReferenceType(), accessPointFqName, includeOperations));
+            transferObjectType.getEAllSuperTypes().forEach(superType -> {
+                addExposedByAnnotationToTransferObjectType(superType, accessPointFqName, true);
+            });
             final Optional<EClass> entityType = getMappedEntityType(transferObjectType);
             if (entityType.isPresent() && includeOperations) {
                 // add exposedBy annotation to (bound and built-in) operations
@@ -1087,6 +1088,10 @@ public class AsmUtils {
                 if (log.isDebugEnabled()) {
                     log.debug("      - entity type: {}", getClassifierFQName(entityType.get()));
                 }
+                addExtensionAnnotation(entityType.get(), "exposedBy", accessPointFqName);
+                entityType.get().getEAllSuperTypes().forEach(superType -> {
+                    addExtensionAnnotation(superType, "exposedBy", accessPointFqName);
+                });
 
                 getNestedClasses(transferObjectType).forEach(nestedClass -> {
                     if (log.isDebugEnabled()) {
@@ -1198,10 +1203,23 @@ public class AsmUtils {
                 log.debug("      - entity type: {}", getClassifierFQName(entityType.get()));
             }
 
-            addExtensionAnnotation(mappedTransferObjectType, "exposedBy", accessPointFqName);
             final boolean added = addExtensionAnnotation(mappedTransferObjectType, "exposedGraph", exposedGraphFqName);
+
             if (added) {
+                addExtensionAnnotation(mappedTransferObjectType, "exposedBy", accessPointFqName);
+                mappedTransferObjectType.getEAllAttributes().forEach(eAttribute -> addExtensionAnnotation(eAttribute, "exposedBy", accessPointFqName));
+                mappedTransferObjectType.getEAllReferences().forEach(eReference -> addExtensionAnnotation(eReference, "exposedBy", accessPointFqName));
+                mappedTransferObjectType.getEAllReferences().forEach(eReference -> addExposedByAnnotationToTransferObjectType(eReference.getEReferenceType(), accessPointFqName, true));//todo: check this
+                mappedTransferObjectType.getEAllSuperTypes().forEach(superType -> {
+                    addExposedGraphAnnotationToTransferObjectType(superType, accessPointFqName, exposedGraphFqName);
+                    addExposedByAnnotationToTransferObjectType(superType, accessPointFqName, true);
+                });
+
                 addExtensionAnnotation(entityType.get(), "exposedBy", accessPointFqName);
+                entityType.get().getEAllSuperTypes().forEach(superType -> {
+                    addExtensionAnnotation(superType, "exposedBy", accessPointFqName);
+                });
+
 
                 getNestedClasses(mappedTransferObjectType).forEach(nestedClass -> {
                     if (log.isDebugEnabled()) {
