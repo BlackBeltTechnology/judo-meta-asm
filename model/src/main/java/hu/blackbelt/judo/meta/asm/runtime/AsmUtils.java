@@ -1088,10 +1088,10 @@ public class AsmUtils {
                 if (log.isDebugEnabled()) {
                     log.debug("      - entity type: {}", getClassifierFQName(entityType.get()));
                 }
-                addExtensionAnnotation(entityType.get(), "exposedBy", accessPointFqName);
+                /*addExtensionAnnotation(entityType.get(), "exposedBy", accessPointFqName);
                 entityType.get().getEAllSuperTypes().forEach(superType -> {
                     addExtensionAnnotation(superType, "exposedBy", accessPointFqName);
-                });
+                });*/
 
                 getNestedClasses(transferObjectType).forEach(nestedClass -> {
                     if (log.isDebugEnabled()) {
@@ -1212,7 +1212,6 @@ public class AsmUtils {
                 mappedTransferObjectType.getEAllReferences().forEach(eReference -> addExposedByAnnotationToTransferObjectType(eReference.getEReferenceType(), accessPointFqName, true));//todo: check this
                 mappedTransferObjectType.getEAllSuperTypes().forEach(superType -> {
                     addExposedGraphAnnotationToTransferObjectType(superType, accessPointFqName, exposedGraphFqName);
-                    addExposedByAnnotationToTransferObjectType(superType, accessPointFqName, true);
                 });
 
                 addExtensionAnnotation(entityType.get(), "exposedBy", accessPointFqName);
