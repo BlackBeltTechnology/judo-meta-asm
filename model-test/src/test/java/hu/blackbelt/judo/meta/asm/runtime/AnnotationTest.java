@@ -177,43 +177,6 @@ public class AnnotationTest {
         assertThat(asmUtils.getExposedServicesOfAccessPoint(internalAP.get()), hasItems(getAllOrders.get(), createOrder.get()));
     }
 
-    //@Test
-    public void testGetResolvedRoot () {
-        Optional<EClass> internalAP = asmUtils.all(EClass.class).filter(c -> "internalAP".equals(c.getName())).findAny();
-        Optional<EClass> orderInfoQuery = asmUtils.all(EClass.class).filter(a -> "OrderInfoQuery".equals(a.getName())).findAny();
-        Optional<EAnnotation> graph = internalAP.get().getEAnnotations().stream().filter(a -> "http://blackbelt.hu/judo/meta/ExtendedMetadata/graph".equals(a.getSource())).findAny();
-        assertTrue(graph.isPresent());
-        //assertThat(asmUtils.getResolvedRoot(graph.get()), is(orderInfoQuery));
-
-        //negtest: no root key
-        EAnnotation annotationWithoutRoot = newEAnnotationBuilder().withSource("http://blackbelt.hu/judo/meta/ExtendedMetadata/graph").build();
-        //assertThat(asmUtils.getResolvedRoot(annotationWithoutRoot), is(Optional.empty()));
-
-        //negtest: root not found
-        EAnnotation annotationWithNotExistingRoot = newEAnnotationBuilder().withSource("http://blackbelt.hu/judo/meta/ExtendedMetadata/graph").build();
-        annotationWithNotExistingRoot.getDetails().put("root", "demo.entities.OrderInfoQuery");
-        //assertThat(asmUtils.getResolvedRoot(annotationWithNotExistingRoot), is(Optional.empty()));
-
-        //negtest: root not a mapped transfer object
-        EAnnotation annotationWithInvalidRoot = newEAnnotationBuilder().withSource("http://blackbelt.hu/judo/meta/ExtendedMetadata/graph").build();
-        annotationWithInvalidRoot.getDetails().put("root", "demo.entities.Order");
-        //assertThat(asmUtils.getResolvedRoot(annotationWithInvalidRoot), is(Optional.empty()));
-    }
-
-    //@Test
-    public void testGetExposedGraphByFqName () {
-        Optional<EClass> internalAP = asmUtils.all(EClass.class).filter(c -> "internalAP".equals(c.getName())).findAny();
-        assertTrue(internalAP.isPresent());
-        Optional<EAnnotation> internalAPGraphAnnotation = internalAP.get().getEAnnotations().stream().filter(annotation -> "http://blackbelt.hu/judo/meta/ExtendedMetadata/graph".equals(annotation.getSource())).findAny();
-        assertThat(asmUtils.getExposedGraphByFqName("demo.internalAP/ordersAssignedToEmployee"), is(internalAPGraphAnnotation));
-
-        //negtest: invalid exposed graph name (not matching exposed graph pattern)
-        assertThat(asmUtils.getExposedGraphByFqName("ordersAssignedToEmployee"), is(Optional.empty()));
-
-        //negtest: invalid exposed graph name (access point not found)
-        assertThat(asmUtils.getExposedGraphByFqName("demo.AP/ordersAssignedToEmployee"), is(Optional.empty()));
-    }
-
     @Test
     public void testGetMappedEntity () {
         Optional<EClass> order = asmUtils.all(EClass.class).filter(c -> "Order".equals(c.getName())).findAny();
@@ -265,21 +228,14 @@ public class AnnotationTest {
 
     @Test
     public void testAnnotatedAsFalseOrTrue () {
-        Optional<EClass> internationalOrderInfoQueryItems = asmUtils.all(EClass.class).filter(c -> "InternationalOrderInfoQuery__items".equals(c.getName())).findAny();
-        assertTrue(internationalOrderInfoQueryItems.isPresent());
+        Optional<EClass> order = asmUtils.all(EClass.class).filter(c -> "Order".equals(c.getName())).findAny();
+        assertTrue(order.isPresent());
 
-        Optional<EOperation> get = internationalOrderInfoQueryItems.get().getEAllOperations().stream().filter(operation -> "get".equals(operation.getName())).findAny();
-        assertTrue(get.isPresent());
+        assertTrue(asmUtils.annotatedAsTrue(order.get(), "entity"));
+        assertFalse(asmUtils.annotatedAsTrue(order.get(), "missingAnnotation"));
 
-        assertTrue(asmUtils.annotatedAsFalse(get.get(), "stateful"));
-        assertFalse(asmUtils.annotatedAsFalse(get.get(), "missingAnnotation"));
-
-        Optional<EOperation> set = internationalOrderInfoQueryItems.get().getEAllOperations().stream().filter(operation -> "set".equals(operation.getName())).findAny();
-        assertTrue(set.isPresent());
-
-        assertTrue(asmUtils.annotatedAsTrue(set.get(), "stateful"));
-        assertFalse(asmUtils.annotatedAsTrue(set.get(), "missingAnnotation"));
-
+        assertFalse(asmUtils.annotatedAsFalse(order.get(), "entity"));
+        assertFalse(asmUtils.annotatedAsFalse(order.get(), "missingAnnotation"));
     }
 
 }

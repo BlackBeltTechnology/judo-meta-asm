@@ -55,7 +55,7 @@ public class AsmOsgiPackageRegistrationTest {
         TreeIterator<Notifier> iter = asmModel.getResourceSet().getAllContents();
         while (iter.hasNext()) {
             final Notifier obj = iter.next();
-            log.debug(obj.toString());
+            log.trace(obj.toString());
         }
     }
 }

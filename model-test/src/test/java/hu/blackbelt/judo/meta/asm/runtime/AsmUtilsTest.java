@@ -1,33 +1,22 @@
 package hu.blackbelt.judo.meta.asm.runtime;
 
+import com.google.common.collect.ImmutableList;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EAnnotation;
-import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EClassifier;
-import org.eclipse.emf.ecore.EOperation;
-import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.EcorePackage;
+import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import com.google.common.collect.ImmutableList;
 
 import java.io.File;
 import java.util.Optional;
 
 import static hu.blackbelt.judo.meta.asm.runtime.AsmModel.LoadArguments.asmLoadArgumentsBuilder;
 import static hu.blackbelt.judo.meta.asm.runtime.AsmModel.loadAsmModel;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEAttributeBuilder;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEClassBuilder;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEPackageBuilder;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEAnnotationBuilder;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEReferenceBuilder;
+import static hu.blackbelt.judo.meta.asm.runtime.AsmUtils.getAnnotationUri;
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.*;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -164,9 +153,9 @@ public class AsmUtilsTest {
                 .withEAnnotations(eannotation)
                 .withEStructuralFeatures(
                         ImmutableList.of(newEAttributeBuilder()
-                                .withName("firstName")
-                                .withEType(ecore.getEString())
-                                .build(),
+                                        .withName("firstName")
+                                        .withEType(ecore.getEString())
+                                        .build(),
                                 newEAttributeBuilder()
                                         .withName("lastName")
                                         .withEType(ecore.getEString())
@@ -355,9 +344,9 @@ public class AsmUtilsTest {
                 .withEAnnotations(ImmutableList.of(eannotation))
                 .withEStructuralFeatures(ImmutableList.of(
                         newEAttributeBuilder()
-                        .withName("shipName")
-                        .withEType(ecore.getEString())
-                        .build()))
+                                .withName("shipName")
+                                .withEType(ecore.getEString())
+                                .build()))
                 .build();
 
         final EClass customerClass = newEClassBuilder().withName("Customer")
@@ -459,6 +448,57 @@ public class AsmUtilsTest {
         for (EStructuralFeature estructuralfeature : categoryClass.getEAllStructuralFeatures()) {
             assertTrue(asmUtils.getExtensionAnnotationByName(estructuralfeature, "binding", false).isPresent());
         }
+    }
+
+    @Test
+    public void testGetResolvedRoot() {
+        Optional<EClass> internalAP = asmUtils.all(EClass.class).filter(c -> "internalAP".equals(c.getName())).findAny();
+        Optional<EClass> orderInfoQuery = asmUtils.all(EClass.class).filter(c -> "OrderInfoQuery".equals(c.getName())).findAny();
+        Optional<EReference> graphReference = internalAP.get().getEReferences().stream().filter(eReference -> "ordersAssignedToEmployee".equals(eReference.getName())).findAny();
+        assertTrue(graphReference.isPresent());
+        assertThat(asmUtils.getResolvedRoot(graphReference.get()), is(orderInfoQuery));
+
+        //negtest: root not found
+        final EAnnotation expressionAnnotationOfGraphReferenceWithNotExistingRoot = newEAnnotationBuilder().withSource(getAnnotationUri("expression")).build();
+        expressionAnnotationOfGraphReferenceWithNotExistingRoot.getDetails().put("getter", "northwind::entities::Employee.orders");
+        expressionAnnotationOfGraphReferenceWithNotExistingRoot.getDetails().put("getter.dialect", "JQL");
+        final EReference graphReferenceWithNotExistingRoot = newEReferenceBuilder().withName("ordersAssignedToEmployee")
+                .withEAnnotations(expressionAnnotationOfGraphReferenceWithNotExistingRoot)
+                .withDerived(true)
+                .withUpperBound(-1)
+                .build();
+        assertThat(asmUtils.getResolvedRoot(graphReferenceWithNotExistingRoot), is(Optional.empty()));
+
+        //negtest: root not a mapped transfer object
+        final EAnnotation expressionAnnotationOfGraphReferenceWithInvalidRoot = newEAnnotationBuilder().withSource(getAnnotationUri("expression")).build();
+        expressionAnnotationOfGraphReferenceWithInvalidRoot.getDetails().put("getter", "northwind::entities::Employee.orders");
+        expressionAnnotationOfGraphReferenceWithInvalidRoot.getDetails().put("getter.dialect", "JQL");
+
+        Optional<EClass> order = asmUtils.all(EClass.class).filter(c -> "Order".equals(c.getName())).findAny();
+        assertTrue(order.isPresent());
+
+        final EReference graphReferenceWithInvalidRoot = newEReferenceBuilder().withName("ordersAssignedToEmployee")
+                .withEAnnotations(expressionAnnotationOfGraphReferenceWithInvalidRoot)
+                .withDerived(true)
+                .withUpperBound(-1)
+                .withEType(order.get())
+                .build();
+        assertThat(asmUtils.getResolvedRoot(graphReferenceWithInvalidRoot), is(Optional.empty()));
+    }
+
+    @Test
+    public void testGetExposedGraphByFqName() {
+        Optional<EClass> internalAP = asmUtils.all(EClass.class).filter(c -> "internalAP".equals(c.getName())).findAny();
+        assertTrue(internalAP.isPresent());
+        Optional<EReference> graphReference = internalAP.get().getEReferences().stream().filter(eReference -> "ordersAssignedToEmployee".equals(eReference.getName())).findAny();
+        assertTrue(graphReference.isPresent());
+        assertThat(asmUtils.getExposedGraphByFqName("demo.internalAP/ordersAssignedToEmployee"), is(graphReference));
+
+        //negtest: invalid exposed graph name (not matching exposed graph pattern)
+        assertThat(asmUtils.getExposedGraphByFqName("ordersAssignedToEmployee"), is(Optional.empty()));
+
+        //negtest: invalid exposed graph name (access point not found)
+        assertThat(asmUtils.getExposedGraphByFqName("demo.AP/ordersAssignedToEmployee"), is(Optional.empty()));
     }
 
     public File targetDir() {
