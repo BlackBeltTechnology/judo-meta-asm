@@ -31,7 +31,7 @@ public class AsmModelLoaderTest {
         assertTrue(asmModel.isValid());
 
         for (Iterator<EObject> i = asmModel.getResourceSet().getResource(asmModel.getUri(), false).getAllContents(); i.hasNext(); ) {
-            log.info(i.next().toString());
+            log.trace(i.next().toString());
         }
     }
 
