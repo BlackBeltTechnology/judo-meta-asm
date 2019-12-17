@@ -10,7 +10,12 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.slf4j.Logger;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -638,20 +643,16 @@ public class AsmUtils {
     /**
      * Get resolved root.
      *
-     * @param eAnnotation annotation (representing an exposed graph)
+     * @param eReference reference (representing an exposed graph)
      * @return mapped transfer object type (root) of an exposed graph (or null if root is not resolved)
      */
     public Optional<EClass> getResolvedRoot(final EReference eReference) {
         if (eReference.getEType() != null) {
-            final EClassifier type = eReference.getEType();
-            if (type instanceof EClass) {
-                if (isMappedTransferObjectType((EClass) type)) {
-                    return Optional.of((EClass) type);
-                } else {
-                    log.error("Invalid root of graph: {}", type);
-                    return Optional.empty();
-                }
+            final EClassifier root = eReference.getEType();
+            if (isMappedTransferObjectType((EClass) root)) {
+                return Optional.of((EClass) root);
             } else {
+                log.error("Invalid root of graph: {}", root);
                 return Optional.empty();
             }
         } else {
@@ -660,10 +661,10 @@ public class AsmUtils {
     }
 
     /**
-     * Check if an annotaion represents an exposed graph.
+     * Check if a reference represents an exposed graph.
      *
-     * @param eAnnotation annotation
-     * @return <code>true</code> if annotation represents an exposed graph, <code>false</code> otherwise
+     * @param eReference reference
+     * @return <code>true</code> if reference represents an exposed graph, <code>false</code> otherwise
      */
     public boolean isGraph(final EReference eReference) {
         return isAccessPoint((EClass) eReference.eContainer()) && getResolvedRoot(eReference).isPresent();
@@ -672,7 +673,7 @@ public class AsmUtils {
     /**
      * Get access point of a graph.
      *
-     * @param eAnnotation annotation (representing an exposed graph)
+     * @param eReference reference (representing an exposed graph)
      * @return access point of the exposed graph
      */
     public Optional<EClass> getAccessPointOfGraph(final EReference eReference) {
@@ -696,8 +697,8 @@ public class AsmUtils {
     /**
      * Get name of a graph.
      *
-     * @param eAnnotation annotation (representing a graph)
-     * @return name of the graph (or null is annotation is not an exposed graph)
+     * @param eReference reference (representing a graph)
+     * @return name of the graph (or null is reference is not an exposed graph)
      */
     public Optional<String> getGraphName(final EReference eReference) {
         return isGraph(eReference) ? Optional.of(eReference.getName()) : Optional.empty();
@@ -820,7 +821,7 @@ public class AsmUtils {
     /**
      * Get list of mapped transfer object types that are available in the given exposed graph.
      *
-     * @param eAnnotation annotation (representing a graph)
+     * @param eReference reference (representing a graph)
      * @return list of mapped transfer object types (empty list is returned if annotation is not a graph)
      */
     public EList<EClass> getMappedTransferObjectTypesOfGraph(final EReference eReference) {
@@ -1374,7 +1375,6 @@ public class AsmUtils {
                     }
                 });
             });
-
             getGraphListOfAccessPoint(accessPoint).forEach(exposedGraph -> {
                 final String exposedGraphFqName = accessPointFqName + "/" + getGraphName(exposedGraph).orElse("");
                 if (log.isDebugEnabled()) {
