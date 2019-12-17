@@ -647,10 +647,10 @@ public class AsmUtils {
      * @return mapped transfer object type (root) of an exposed graph (or null if root is not resolved)
      */
     public Optional<EClass> getResolvedRoot(final EReference eReference) {
-        if (eReference.getEType() != null) {
-            final EClassifier root = eReference.getEType();
-            if (isMappedTransferObjectType((EClass) root)) {
-                return Optional.of((EClass) root);
+        if (eReference.getEReferenceType() != null) {
+            final EClass root = eReference.getEReferenceType();
+            if (isMappedTransferObjectType(root)) {
+                return Optional.of(root);
             } else {
                 log.error("Invalid root of graph: {}", root);
                 return Optional.empty();
@@ -1377,12 +1377,9 @@ public class AsmUtils {
             });
             getGraphListOfAccessPoint(accessPoint).forEach(exposedGraph -> {
                 final String exposedGraphFqName = accessPointFqName + "/" + getGraphName(exposedGraph).orElse("");
+                final EClass root = exposedGraph.getEReferenceType();
                 if (log.isDebugEnabled()) {
-                    log.debug("  - exposed graph: {}", exposedGraphFqName);
-                }
-                final EClass root = (EClass) exposedGraph.getEType();
-                if (log.isDebugEnabled()) {
-                    log.debug("    - root: {}", getClassifierFQName(root));
+                    log.debug(" - exposed graph: {}, root: {}", exposedGraphFqName, getClassifierFQName(root));
                 }
 
                 getMappedTransferObjectGraph(root).forEach(mappedTransferObjectType -> {
