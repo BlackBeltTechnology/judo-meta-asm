@@ -40,11 +40,11 @@
 					</execution>
 				</executions>
                 <dependencies>
-					<dependency>
-						<groupId>hu.blackbelt.model</groupId>
-						<artifactId>hu.blackbelt.model.northwind.model</artifactId>
-						<version>${northwind-model-version}</version>
-					</dependency>
+                    <dependency>
+                        <groupId>hu.blackbelt.judo.meta</groupId>
+                        <artifactId>hu.blackbelt.judo.meta.psm.model.northwind</artifactId>
+                        <version>${judo-meta-psm-version}</version>
+                    </dependency>
 				</dependencies>
 			</plugin>
 			<plugin>

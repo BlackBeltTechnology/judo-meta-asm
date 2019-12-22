@@ -267,14 +267,6 @@
             <scope>test</scope>
         </dependency>
 
-
-        <dependency>
-            <groupId>hu.blackbelt.model</groupId>
-            <artifactId>hu.blackbelt.model.northwind.model</artifactId>
-            <version>${northwind-model-version}</version>
-            <scope>test</scope>
-        </dependency>
-
         <dependency>
             <groupId>hu.blackbelt.judo.tatami</groupId>
             <artifactId>judo-tatami-psm2asm</artifactId>
@@ -315,9 +307,9 @@
                 </executions>
                 <dependencies>
                     <dependency>
-                        <groupId>hu.blackbelt.model</groupId>
-                        <artifactId>hu.blackbelt.model.northwind.model</artifactId>
-                        <version>${northwind-model-version}</version>
+                        <groupId>hu.blackbelt.judo.meta</groupId>
+                        <artifactId>hu.blackbelt.judo.meta.psm.model.northwind</artifactId>
+                        <version>${judo-meta-psm-version}</version>
                     </dependency>
                 </dependencies>
             </plugin>
