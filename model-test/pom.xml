@@ -50,7 +50,7 @@
 			<plugin>
 				<groupId>hu.blackbelt.judo.tatami</groupId>
 				<artifactId>judo-tatami-workflow-maven-plugin</artifactId>
-				<version>${judo-tatami-version}</version>
+				<version>${judo-tatami-maven-plugin-version}</version>
 				<executions>
 					<execution>
 						<phase>compile</phase>
@@ -99,11 +99,6 @@
 			<artifactId>hamcrest-library</artifactId>
 			<version>2.1</version>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>hu.blackbelt.judo.tatami</groupId>
-			<artifactId>judo-tatami-psm2asm</artifactId>
-			<version>${judo-tatami-version}</version>
 		</dependency>
 	</dependencies>
 </project>
