@@ -1604,4 +1604,200 @@ public class AsmUtils {
         final Optional<String> value = getExtensionAnnotationCustomValue(eReference, "embedded", "delete", false);
         return value.isPresent() && Boolean.valueOf(value.get());
     }
+
+    /**
+     * Get default behaviour of a given operation (defined by annotation).
+     *
+     * @param operation operation
+     * @return default behaviour
+     */
+    public static Optional<OperationBehaviour> getBehaviour(final EOperation operation) {
+        final Optional<EAnnotation> annotation = getExtensionAnnotationByName(operation, "behaviour", false);
+        if (annotation.isPresent()) {
+            return Optional.ofNullable(OperationBehaviour.resolve(annotation.get().getDetails().get("type")));
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Get owner of an operation with default behaviour. Owner is a named element (mapped transfer object type,
+     * reference or operation parameter) referencing the given operation with a given name.
+     *
+     * @param operation operation
+     * @return operation owner (referencer)
+     */
+    public Optional<? extends ENamedElement> getOwnerOfOperationWithDefaultBehaviour(final EOperation operation) {
+        final Optional<EAnnotation> annotation = getExtensionAnnotationByName(operation, "behaviour", false);
+        if (annotation.isPresent()) {
+            final OperationBehaviour behaviour = OperationBehaviour.resolve(annotation.get().getDetails().get("type"));
+
+            if (behaviour == null) {
+                return Optional.empty();
+            }
+
+            final String ownerString = annotation.get().getDetails().get("owner");
+
+            switch (behaviour) {
+                case GET_RANGE: {
+                    final String[] parts = ownerString.split("#");
+                    final Optional<EClassifier> classifier = resolve(parts[0]);
+                    if (classifier.isPresent()) {
+                        if (classifier.get() instanceof EClass) {
+                            final Optional<EOperation> owner = ((EClass) classifier.get()).getEAllOperations().stream()
+                                    .filter(r -> Objects.equals(r.getName(), parts[1]))
+                                    .findAny();
+
+                            if (owner.isPresent()) {
+                                return owner.get().getEParameters().stream()
+                                        .filter(p -> Objects.equals(p.getName(), annotation.get().getDetails().get("parameterName")))
+                                        .findAny();
+                            } else {
+                                throw new IllegalStateException("Unable to resolve owner: " + ownerString);
+                            }
+                        } else {
+                            throw new IllegalStateException("Invalid owner: " + ownerString);
+                        }
+                    } else {
+                        throw new IllegalStateException("Unable to resolve owner: " + ownerString);
+                    }
+                }
+                case GET_TEMPLATE: {
+                    return resolve(ownerString);
+                }
+                default: {
+                    final String[] parts = ownerString.split("#");
+                    final Optional<EClassifier> classifier = resolve(parts[0]);
+                    if (classifier.isPresent()) {
+                        if (classifier.get() instanceof EClass) {
+                            return ((EClass) classifier.get()).getEAllReferences().stream()
+                                    .filter(r -> Objects.equals(r.getName(), parts[1]))
+                                    .findAny();
+                        } else {
+                            throw new IllegalStateException("Invalid owner: " + ownerString);
+                        }
+                    } else {
+                        throw new IllegalStateException("Unable to resolve owner: " + ownerString);
+                    }
+                }
+            }
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    /**
+     * Get relation of an operation with default behaviour. Relation can be used to select which fragment of payload to
+     * use.
+     *
+     * @param operation operation
+     * @return relation of payload
+     */
+    public Optional<? extends EReference> getRelationOfOperationWithDefaultBehaviour(final EOperation operation) {
+        final Optional<EAnnotation> annotation = getExtensionAnnotationByName(operation, "behaviour", false);
+        if (annotation.isPresent()) {
+            final OperationBehaviour behaviour = OperationBehaviour.resolve(annotation.get().getDetails().get("type"));
+
+            if (behaviour == null) {
+                return Optional.empty();
+            }
+
+            final String relationString = annotation.get().getDetails().get("relation");
+
+            switch (behaviour) {
+                case SET:
+                case UNSET:
+                case ADD_ALL:
+                case REMOVE_ALL:
+                case GET_RANGE: {
+                    final String[] parts = relationString.split("#");
+                    final Optional<EClassifier> classifier = resolve(parts[0]);
+                    if (classifier.isPresent()) {
+                        if (classifier.get() instanceof EClass) {
+                            return ((EClass) classifier.get()).getEReferences().stream()
+                                    .filter(r -> Objects.equals(r.getName(), parts[1]))
+                                    .findAny();
+                        } else {
+                            throw new IllegalStateException("Invalid relation owner: " + relationString);
+                        }
+                    } else {
+                        throw new IllegalStateException("Unable to resolve relation owner: " + relationString);
+                    }
+                }
+                default: {
+                    return Optional.empty();
+                }
+            }
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    public enum OperationBehaviour {
+        /**
+         * Get reference element(s) of a given relation or exposed graph.
+         */
+        GET("get"),
+
+        /**
+         * Create a referenced element of a given relation of exposed graph.
+         */
+        CREATE("create"),
+
+        /**
+         * Update a referenced element from a given relation or exposed graph.
+         */
+        UPDATE("update"),
+
+        /**
+         * Delete a referenced element from a given relation or exposed graph.
+         */
+        DELETE("delete"),
+
+        /**
+         * Set one relation in a referenced element of a given relation or exposed graph.
+         */
+        SET("set"),
+
+        /**
+         * Unset one relation (with single cardinality) in a referenced element of a given relation or exposed graph.
+         */
+        UNSET("unset"),
+
+        /**
+         * Add elements to one relation (with multiple cardinality) in a referenced element of a given relation or exposed graph.
+         */
+        ADD_ALL("addAll"),
+
+        /**
+         * Remove elements from one relation (with multiple cardinality) in a referenced element of a given relation or exposed graph.
+         */
+        REMOVE_ALL("removeAll"),
+
+        /**
+         * Get list of possible elements of one relation in a referenced element of a given relation or exposed graph.
+         */
+        GET_RANGE("getRange"),
+
+        /**
+         * Get template (a pre-instance filled with default values) of a given transfer object type.
+         */
+        GET_TEMPLATE("getTemplate");
+
+        private final String type;
+
+        OperationBehaviour(final String type) {
+            this.type = type;
+        }
+
+        static OperationBehaviour resolve(final String type) {
+            for (OperationBehaviour operationBehaviour : values()) {
+                if (Objects.equals(type, operationBehaviour.type)) {
+                    return operationBehaviour;
+                }
+            }
+
+            return null;
+        }
+    }
 }
