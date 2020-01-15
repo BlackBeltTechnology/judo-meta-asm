@@ -497,33 +497,7 @@ public class AsmUtils {
      * @return <code>true</code> if operation is bound (to transfer object type), <code>false</code> otherwise
      */
     public boolean isBound(final EOperation eOperation) {
-        return isMappedTransferObjectType(eOperation.getEContainingClass()) || isBuiltInOperation(eOperation);
-    }
-
-    /**
-     * Check if an class is container of built-in operations.
-     * <p>
-     * Containers are nested class of transfer object types.
-     *
-     * @param eClass class
-     * @return <code>true</code> if class is container of built-in operations, <code>false</code> otherwise.
-     */
-    public boolean isBuiltInOperationGroup(final EClass eClass) {
-        final Optional<EClass> containerClass = getContainerClass(eClass);
-
-        return eClass.isInterface() && containerClass.isPresent() && isMappedTransferObjectType(containerClass.get());
-    }
-
-    /**
-     * Check if an operation is built-in.
-     * <p>
-     * Built-in operations are operations created for graph navigation and wiring (set/unset/add/remove references). Container class of built-in operations are nested classes.
-     *
-     * @param eOperation operation
-     * @return <code>true</code> if operation is built-in, <code>false</code> otherwise.
-     */
-    public boolean isBuiltInOperation(final EOperation eOperation) {
-        return (eOperation.getEContainingClass() != null) && isBuiltInOperationGroup(eOperation.getEContainingClass());
+        return isMappedTransferObjectType(eOperation.getEContainingClass());
     }
 
     /**
@@ -623,7 +597,7 @@ public class AsmUtils {
     public EList<EOperation> getExposedServicesOfAccessPoint(final EClass eClass) {
         return isAccessPoint(eClass) ?
                 new BasicEList<>(all(EOperation.class)
-                        .filter(o -> !isBuiltInOperation(o) && !isBound(o))
+                        .filter(o -> !isBound(o))
                         .filter(o -> o.getEAnnotations().stream()
                                 .anyMatch(a -> EcoreUtil.equals(eClass, getResolvedExposedBy(a).orElse(null))))
                         .collect(Collectors.toList())) :
@@ -1084,6 +1058,8 @@ public class AsmUtils {
                     log.debug("      - entity type: {}", getClassifierFQName(entityType.get()));
                 }
 
+                /*
+                // built-in operations are eliminated so nested classes are not used
                 getNestedClasses(transferObjectType).forEach(nestedClass -> {
                     if (log.isDebugEnabled()) {
                         log.debug("      - target: {}", getClassifierFQName(nestedClass));
@@ -1129,7 +1105,7 @@ public class AsmUtils {
                             }
                         });
                     });
-                });
+                }); */
 
                 transferObjectType.getEAllOperations().forEach(boundOperation -> {
                     if (log.isDebugEnabled()) {
@@ -1211,6 +1187,8 @@ public class AsmUtils {
                 });
 
 
+                /*
+                // built-in operations are eliminated so nested classes are not used
                 getNestedClasses(mappedTransferObjectType).forEach(nestedClass -> {
                     if (log.isDebugEnabled()) {
                         log.debug("      - target: {}", getClassifierFQName(nestedClass));
@@ -1271,7 +1249,7 @@ public class AsmUtils {
                             }
                         });
                     });
-                });
+                }); */
 
                 mappedTransferObjectType.getEAllOperations().forEach(boundOperation -> {
                     if (log.isDebugEnabled()) {
