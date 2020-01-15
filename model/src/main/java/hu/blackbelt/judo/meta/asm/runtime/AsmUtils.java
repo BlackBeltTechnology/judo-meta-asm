@@ -50,7 +50,7 @@ public class AsmUtils {
     private static final List<String> BYTE_ARRAY_TYPES = Arrays.asList("byte[]", "java.sql.Blob");
     private static final List<String> TEXT_TYPES = Arrays.asList("java.sql.Clob");
 
-    private static final Pattern EXPOSED_GRAPH_PATTERN = Pattern.compile("^(.*)/(.*)$");
+    private static final Pattern EXPOSED_GRAPH_PATTERN = Pattern.compile("^(.*)#(.*)$");
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(AsmUtils.class);
 
     private static final boolean ADD_BOUND_OPERATIONS_TO_MAPPED_INPUT_TYPES = true;
@@ -150,6 +150,18 @@ public class AsmUtils {
                     .filter(c -> Objects.equals(fqName, c.getName()))
                     .findAny();
         }
+    }
+
+    /**
+     * Resolve a name to get a reference.
+     *
+     * @param fqName name to resolve
+     * @return resolved reference (if found)
+     */
+    public Optional<EReference> resolveReference(final String fqName) {
+        return all(EReference.class)
+                .filter(r -> Objects.equals(fqName, getReferenceFQName(r)))
+                .findAny();
     }
 
     /**
@@ -1240,7 +1252,7 @@ public class AsmUtils {
                 });
             });
             getGraphListOfAccessPoint(accessPoint).forEach(exposedGraph -> {
-                final String exposedGraphFqName = accessPointFqName + "/" + getGraphName(exposedGraph).orElse("");
+                final String exposedGraphFqName = accessPointFqName + "#" + getGraphName(exposedGraph).orElse("");
                 final EClass root = exposedGraph.getEReferenceType();
                 if (log.isDebugEnabled()) {
                     log.debug(" - exposed graph: {}, root: {}", exposedGraphFqName, getClassifierFQName(root));
