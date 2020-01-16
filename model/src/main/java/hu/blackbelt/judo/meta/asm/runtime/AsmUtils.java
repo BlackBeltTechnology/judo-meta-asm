@@ -165,6 +165,30 @@ public class AsmUtils {
     }
 
     /**
+     * Resolve a name to get an attribute.
+     *
+     * @param fqName name to resolve
+     * @return resolved attribute (if found)
+     */
+    public Optional<EAttribute> resolveAttribute(final String fqName) {
+        return all(EAttribute.class)
+                .filter(a -> Objects.equals(fqName, getAttributeFQName(a)))
+                .findAny();
+    }
+
+    /**
+     * Resolve a name to get an operation.
+     *
+     * @param fqName name to resolve
+     * @return resolved operation (if found)
+     */
+    public Optional<EOperation> resolveOperation(final String fqName) {
+        return all(EOperation.class)
+                .filter(o -> Objects.equals(fqName, getOperationFQName(o)))
+                .findAny();
+    }
+
+    /**
      * Returns the EClass of the given fully qualified name.
      *
      * @param fqName Fully qualified name
@@ -1619,6 +1643,10 @@ public class AsmUtils {
         } else {
             return Optional.empty();
         }
+    }
+
+    final Optional<String> getOutputParameterName(final EOperation operation) {
+        return getExtensionAnnotationValue(operation, "outputParameterName", false);
     }
 
     /**
