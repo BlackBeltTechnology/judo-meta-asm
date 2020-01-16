@@ -492,13 +492,13 @@ public class AsmUtilsTest {
         assertTrue(internalAP.isPresent());
         Optional<EReference> graphReference = internalAP.get().getEReferences().stream().filter(eReference -> "ordersAssignedToEmployee".equals(eReference.getName())).findAny();
         assertTrue(graphReference.isPresent());
-        assertThat(asmUtils.getExposedGraphByFqName("demo.internalAP/ordersAssignedToEmployee"), is(graphReference));
+        assertThat(asmUtils.getExposedGraphByFqName("demo.internalAP#ordersAssignedToEmployee"), is(graphReference));
 
         //negtest: invalid exposed graph name (not matching exposed graph pattern)
         assertThat(asmUtils.getExposedGraphByFqName("ordersAssignedToEmployee"), is(Optional.empty()));
 
         //negtest: invalid exposed graph name (access point not found)
-        assertThat(asmUtils.getExposedGraphByFqName("demo.AP/ordersAssignedToEmployee"), is(Optional.empty()));
+        assertThat(asmUtils.getExposedGraphByFqName("demo.AP#ordersAssignedToEmployee"), is(Optional.empty()));
     }
 
     public File targetDir() {
