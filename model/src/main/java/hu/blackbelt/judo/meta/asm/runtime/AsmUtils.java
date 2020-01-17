@@ -532,8 +532,8 @@ public class AsmUtils {
      * @param eOperation operation
      * @return <code>true</code> if operation is bound (to transfer object type), <code>false</code> otherwise
      */
-    public boolean isBound(final EOperation eOperation) {
-        return isMappedTransferObjectType(eOperation.getEContainingClass());
+    public static boolean isBound(final EOperation eOperation) {
+        return annotatedAsTrue(eOperation, "bound");
     }
 
     /**
@@ -544,9 +544,8 @@ public class AsmUtils {
      * @param eOperation operation
      * @return <code>true</code> if operation is unbound, <code>false</code> otherwise.
      */
-    public boolean isUnbound(final EOperation eOperation) {
-        // TODO - is it really enough to check interface flag? (bound services must be part of mapped transfer object types
-        return eOperation.getEContainingClass() != null && eOperation.getEContainingClass().isInterface() && !getContainerClass(eOperation.getEContainingClass()).isPresent() && !isMappedTransferObjectType(eOperation.getEContainingClass());
+    public static boolean isUnbound(final EOperation eOperation) {
+        return annotatedAsFalse(eOperation, "bound");
     }
 
     /**
