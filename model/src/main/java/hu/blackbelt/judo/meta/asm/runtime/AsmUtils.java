@@ -640,6 +640,21 @@ public class AsmUtils {
     }
 
     /**
+     * Get list of exposed transfer object types (unbound operations) of an access point.
+     *
+     * @param eClass access point
+     * @return list of exposed transfer object types (empty list is returned if eClass is not an access point).
+     */
+    public EList<EClass> getExposedTransferObjectTypesOfAccessPoint(final EClass eClass) {
+        return isAccessPoint(eClass) ?
+                new BasicEList<>(all(EClass.class)
+                        .filter(o -> o.getEAnnotations().stream()
+                                .anyMatch(a -> EcoreUtil.equals(eClass, getResolvedExposedBy(a).orElse(null))))
+                        .collect(Collectors.toList())) :
+                ECollections.emptyEList();
+    }
+
+    /**
      * Check if an operation is exposed by an access point.
      *
      * @param eOperation operation
@@ -1244,37 +1259,45 @@ public class AsmUtils {
             if (log.isDebugEnabled()) {
                 log.debug("Access point: {}", accessPointFqName);
             }
-            getExposedServicesOfAccessPoint(accessPoint).forEach(exposedService -> {
-                if (log.isDebugEnabled()) {
-                    log.debug("  - exposed service: {}", getOperationFQName(exposedService));
+            all(EClass.class).forEach(clazz -> {
+                final Optional<String> exposedServiceGroup = getExtensionAnnotationValue(clazz, "exposedService", false);
+                if (exposedServiceGroup.isPresent() && exposedServiceGroup.get().startsWith(accessPointFqName)) {
+                    clazz.getEAllOperations().stream()
+                            .filter(op -> !isBound(op))
+                            .forEach(exposedService -> {
+                                if (log.isDebugEnabled()) {
+                                    log.debug("  - exposed service: {}", getOperationFQName(exposedService));
+                                }
+                                addExtensionAnnotation(exposedService, "exposedBy", accessPointFqName);
+                                exposedService.getEParameters().forEach(inputParameter -> {
+                                    if (log.isDebugEnabled()) {
+                                        log.debug("      - input parameter ({}): {}", inputParameter.getName(), getClassifierFQName(inputParameter.getEType()));
+                                    }
+                                    final EClassifier type = inputParameter.getEType();
+                                    if ((type instanceof EClass) && isMappedTransferObjectType((EClass) type)) {
+                                        addExtensionAnnotation(inputParameter, "exposedBy", accessPointFqName);
+                                        addExposedByAnnotationToTransferObjectType((EClass) type, accessPointFqName, ADD_BOUND_OPERATIONS_TO_MAPPED_INPUT_TYPES);
+                                    }
+                                });
+                                if (exposedService.getEType() != null) {
+                                    if (log.isDebugEnabled()) {
+                                        log.debug("      - output parameter: {}", getClassifierFQName(exposedService.getEType()));
+                                    }
+                                    final EClassifier type = exposedService.getEType();
+                                    if ((type instanceof EClass) && isMappedTransferObjectType((EClass) type)) {
+                                        addExposedByAnnotationToTransferObjectType((EClass) type, accessPointFqName, true);
+                                    }
+                                }
+                                exposedService.getEExceptions().forEach(faultParameter -> {
+                                    if (log.isDebugEnabled()) {
+                                        log.debug("      - fault parameter ({}): {}", faultParameter.getName(), getClassifierFQName(faultParameter));
+                                    }
+                                    if ((faultParameter instanceof EClass) && isMappedTransferObjectType((EClass) faultParameter)) {
+                                        addExposedByAnnotationToTransferObjectType((EClass) faultParameter, accessPointFqName, true);
+                                    }
+                                });
+                            });
                 }
-                exposedService.getEParameters().forEach(inputParameter -> {
-                    if (log.isDebugEnabled()) {
-                        log.debug("      - input parameter ({}): {}", inputParameter.getName(), getClassifierFQName(inputParameter.getEType()));
-                    }
-                    final EClassifier type = inputParameter.getEType();
-                    if ((type instanceof EClass) && isMappedTransferObjectType((EClass) type)) {
-                        addExtensionAnnotation(inputParameter, "exposedBy", accessPointFqName);
-                        addExposedByAnnotationToTransferObjectType((EClass) type, accessPointFqName, ADD_BOUND_OPERATIONS_TO_MAPPED_INPUT_TYPES);
-                    }
-                });
-                if (exposedService.getEType() != null) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("      - output parameter: {}", getClassifierFQName(exposedService.getEType()));
-                    }
-                    final EClassifier type = exposedService.getEType();
-                    if ((type instanceof EClass) && isMappedTransferObjectType((EClass) type)) {
-                        addExposedByAnnotationToTransferObjectType((EClass) type, accessPointFqName, true);
-                    }
-                }
-                exposedService.getEExceptions().forEach(faultParameter -> {
-                    if (log.isDebugEnabled()) {
-                        log.debug("      - fault parameter ({}): {}", faultParameter.getName(), getClassifierFQName(faultParameter));
-                    }
-                    if ((faultParameter instanceof EClass) && isMappedTransferObjectType((EClass) faultParameter)) {
-                        addExposedByAnnotationToTransferObjectType((EClass) faultParameter, accessPointFqName, true);
-                    }
-                });
             });
             getGraphListOfAccessPoint(accessPoint).forEach(exposedGraph -> {
                 final String exposedGraphFqName = accessPointFqName + "#" + getGraphName(exposedGraph).orElse("");
