@@ -1281,7 +1281,7 @@ public class AsmUtils {
             return Optional.empty();
         }
 
-        final Optional<EClass> implementation = classesToCheck.stream().filter(c -> c.getEAllOperations().stream().anyMatch(o -> Objects.equals(o.getName(), operationName) && isAbstract(o))).findAny();
+        final Optional<EClass> implementation = classesToCheck.stream().filter(c -> c.getEAllOperations().stream().anyMatch(o -> Objects.equals(o.getName(), operationName) && !isAbstract(o))).findAny();
         if (implementation.isPresent()) {
             return implementation;
         }
