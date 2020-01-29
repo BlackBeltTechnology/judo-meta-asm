@@ -1340,6 +1340,10 @@ public class AsmUtils {
         }
     }
 
+    public Optional<EPackage> getModel() {
+        return all(EPackage.class).filter(p -> p.eContainer() == null).findAny();
+    }
+
     public enum OperationBehaviour {
         /**
          * Get reference element(s) of a given relation or exposed graph.
