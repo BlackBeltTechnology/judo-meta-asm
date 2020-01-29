@@ -2,13 +2,20 @@ package hu.blackbelt.judo.meta.asm.runtime;
 
 import com.google.common.collect.ImmutableList;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.*;
+import org.eclipse.emf.ecore.EAnnotation;
+import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
+import org.eclipse.emf.ecore.EOperation;
+import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -18,7 +25,6 @@ import static hu.blackbelt.judo.meta.asm.runtime.AsmModel.LoadArguments.asmLoadA
 import static hu.blackbelt.judo.meta.asm.runtime.AsmModel.loadAsmModel;
 import static hu.blackbelt.judo.meta.asm.runtime.AsmUtils.getAnnotationUri;
 import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.*;
-import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -101,42 +107,6 @@ public class AsmUtilsTest {
         assertThat(asmUtils.getClassByFQName("ProductInfo").get(), is(productInfo.get()));
 
         assertFalse(asmUtils.getClassByFQName("MissingEClass").isPresent());
-    }
-
-    @Test
-    public void testGetNestedClasses() {
-        Optional<EClass> nestedClass = asmUtils.all(EClass.class)
-                .filter(c -> "OrderInfoQuery__items".equals(c.getName())).findAny();
-        assertTrue(nestedClass.isPresent());
-        Optional<EClass> containerClass = asmUtils.all(EClass.class).filter(c -> "OrderInfoQuery".equals(c.getName()))
-                .findAny();
-        assertTrue(containerClass.isPresent());
-
-        assertThat(asmUtils.getNestedClasses(containerClass.get()), hasItem(nestedClass.get()));
-
-        Optional<EClass> classWithoutNestedClass = asmUtils.all(EClass.class).filter(c -> "Order".equals(c.getName()))
-                .findAny();
-        assertTrue(classWithoutNestedClass.isPresent());
-
-        assertTrue(asmUtils.getNestedClasses(classWithoutNestedClass.get()).isEmpty());
-    }
-
-    @Test
-    public void testGetContainerClass() {
-        Optional<EClass> containerClass = asmUtils.all(EClass.class)
-                .filter(c -> "OrderInfoQuery__items".equals(c.getName())).findAny();
-        assertTrue(containerClass.isPresent());
-        Optional<EClass> nestedClass = asmUtils.all(EClass.class)
-                .filter(c -> "OrderInfoQuery__items__Reference".equals(c.getName())).findAny();
-        assertTrue(nestedClass.isPresent());
-
-        assertThat(asmUtils.getContainerClass(nestedClass.get()).get(), is(containerClass.get()));
-
-        Optional<EClass> classWithoutContainer = asmUtils.all(EClass.class)
-                .filter(c -> "OrderInfoQuery".equals(c.getName())).findAny();
-        assertTrue(classWithoutContainer.isPresent());
-
-        assertFalse(asmUtils.getContainerClass(classWithoutContainer.get()).isPresent());
     }
 
     @Test
@@ -485,22 +455,6 @@ public class AsmUtilsTest {
                 .withEType(order.get())
                 .build();
         assertThat(asmUtils.getResolvedRoot(graphReferenceWithInvalidRoot), is(Optional.empty()));
-    }
-
-    @Test
-    @Disabled
-    public void testGetExposedGraphByFqName() {
-        Optional<EClass> internalAP = asmUtils.all(EClass.class).filter(c -> "internalAP".equals(c.getName())).findAny();
-        assertTrue(internalAP.isPresent());
-        Optional<EReference> graphReference = internalAP.get().getEReferences().stream().filter(eReference -> "ordersAssignedToEmployee".equals(eReference.getName())).findAny();
-        assertTrue(graphReference.isPresent());
-        assertThat(asmUtils.getExposedGraphByFqName("demo.internalAP#ordersAssignedToEmployee"), is(graphReference));
-
-        //negtest: invalid exposed graph name (not matching exposed graph pattern)
-        assertThat(asmUtils.getExposedGraphByFqName("ordersAssignedToEmployee"), is(Optional.empty()));
-
-        //negtest: invalid exposed graph name (access point not found)
-        assertThat(asmUtils.getExposedGraphByFqName("demo.AP#ordersAssignedToEmployee"), is(Optional.empty()));
     }
 
     public File targetDir() {

@@ -39,7 +39,7 @@ public class AsmEpsilonValidator {
                                 .resource(asmModel.getResource())
                                 .validateModel(false)
                                 .build()))
-                .injectContexts(singletonMap("asmUtils", new AsmUtils(asmModel.getResourceSet(),false)))
+                .injectContexts(singletonMap("asmUtils", new AsmUtils(asmModel.getResourceSet())))
                 .build();
 
 		try {

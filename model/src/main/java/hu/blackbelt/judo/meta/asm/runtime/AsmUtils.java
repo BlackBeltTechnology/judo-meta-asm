@@ -5,7 +5,20 @@ import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.UniqueEList;
-import org.eclipse.emf.ecore.*;
+import org.eclipse.emf.ecore.EAnnotation;
+import org.eclipse.emf.ecore.EAttribute;
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
+import org.eclipse.emf.ecore.EDataType;
+import org.eclipse.emf.ecore.EEnum;
+import org.eclipse.emf.ecore.EModelElement;
+import org.eclipse.emf.ecore.ENamedElement;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EOperation;
+import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EParameter;
+import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.EStructuralFeature;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.slf4j.Logger;
@@ -16,8 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -34,8 +45,6 @@ public class AsmUtils {
     public static final String FEATURE_SEPARATOR = "#";
     public static final String OPERATION_SEPARATOR = "#";
 
-    public static final String SEPARATOR = "__";
-
     private static final List<String> INTEGER_TYPES = Arrays.asList("byte", "short", "int", "long",
             "java.math.BigInteger", "java.lang.Byte", "java.lang.Short", "java.lang.Integer", "java.lang.Long");
     private static final List<String> DECIMAL_TYPES = Arrays.asList("float", "double",
@@ -50,31 +59,16 @@ public class AsmUtils {
     private static final List<String> BYTE_ARRAY_TYPES = Arrays.asList("byte[]", "java.sql.Blob");
     private static final List<String> TEXT_TYPES = Arrays.asList("java.sql.Clob");
 
-    private static final Pattern EXPOSED_GRAPH_PATTERN = Pattern.compile("^(.*)#(.*)$");
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(AsmUtils.class);
 
+    private static final String EXPOSED_GRAPH_ANNOTATION_NAME = "exposedGraph";
+    private static final String EXPOSED_SERVICE_ANNOTATION_NAME = "exposedService";
     private static final String EXPOSED_BY_ANNOTATION_NAME = "exposedBy";
 
-    private static final boolean ADD_BOUND_OPERATIONS_TO_MAPPED_INPUT_TYPES = true;
-    private static final boolean ADD_UNBOUND_OPERATIONS_TO_MAPPED_INPUT_TYPES = true;
+    private final ResourceSet resourceSet;
 
-    final ResourceSet resourceSet;
-
-    private boolean failOnError;
-
-    public void setFailOnError(final boolean failOnError) {
-        this.failOnError = failOnError;
-    }
-
-    public AsmUtils(ResourceSet resourceSet) {
+    public AsmUtils(final ResourceSet resourceSet) {
         this.resourceSet = resourceSet;
-    }
-
-    public AsmUtils(final ResourceSet resourceSet, final boolean failOnError) {
-        this.resourceSet = resourceSet;
-        this.failOnError = failOnError;
-
-        // TODO: Processes here
     }
 
     /**
@@ -210,29 +204,6 @@ public class AsmUtils {
         } else {
             return Optional.empty();
         }
-    }
-
-    /**
-     * Get nested classes of a class.
-     *
-     * @param eClass container class
-     * @return list of nested classes
-     */
-    public EList<EClass> getNestedClasses(final EClass eClass) {
-        return new BasicEList<>(all(EClass.class)
-                .filter(c -> c.getName().startsWith(eClass.getName() + SEPARATOR) && !c.getName().substring(eClass.getName().length() + 1).contains(SEPARATOR)).collect(Collectors.toList()));
-    }
-
-    /**
-     * Get container class of a nested class.
-     *
-     * @param eClass nested class
-     * @return container class (or null if eClass is not nested)
-     */
-    public Optional<EClass> getContainerClass(final EClass eClass) {
-        return all(EClass.class)
-                .filter(c -> getClassifierFQName(eClass).startsWith(getClassifierFQName(c) + SEPARATOR) && !eClass.getName().substring(c.getName().length() + 1).contains(SEPARATOR))
-                .findAny();
     }
 
     /**
@@ -627,31 +598,6 @@ public class AsmUtils {
     }
 
     /**
-     * Get list of exposed transfer object types (unbound operations) of an access point.
-     *
-     * @param eClass access point
-     * @return list of exposed transfer object types (empty list is returned if eClass is not an access point).
-     */
-    public EList<EClass> getExposedTransferObjectTypesOfAccessPoint(final EClass eClass) {
-        return isAccessPoint(eClass) ?
-                new BasicEList<>(all(EClass.class)
-                        .filter(o -> o.getEAnnotations().stream()
-                                .anyMatch(a -> EcoreUtil.equals(eClass, getResolvedExposedBy(a).orElse(null))))
-                        .collect(Collectors.toList())) :
-                ECollections.emptyEList();
-    }
-
-    /**
-     * Check if an operation is exposed by an access point.
-     *
-     * @param eOperation operation
-     * @return <code>true</code> is operation is exposed by an access point, <code>false</code> otherwise
-     */
-    public boolean isExposedService(final EOperation eOperation) {
-        return !isBound(eOperation) && !getAccessPointsOfOperation(eOperation).isEmpty();
-    }
-
-    /**
      * Get resolved root.
      *
      * @param eReference reference (representing an exposed graph)
@@ -701,7 +647,7 @@ public class AsmUtils {
      */
     public EList<EReference> getGraphListOfAccessPoint(final EClass eClass) {
         return isAccessPoint(eClass) ?
-                new BasicEList<>(eClass.getEAllReferences().stream().filter(r -> annotatedAsTrue(r, "exposedGraph")).collect(Collectors.toList())) :
+                new BasicEList<>(eClass.getEAllReferences().stream().filter(r -> annotatedAsTrue(r, EXPOSED_GRAPH_ANNOTATION_NAME)).collect(Collectors.toList())) :
                 ECollections.emptyEList();
     }
 
@@ -713,169 +659,8 @@ public class AsmUtils {
      */
     public EList<EReference> getServiceGroupListOfAccessPoint(final EClass eClass) {
         return isAccessPoint(eClass) ?
-                new BasicEList<>(eClass.getEAllReferences().stream().filter(r -> annotatedAsTrue(r, "exposedService")).collect(Collectors.toList())) :
+                new BasicEList<>(eClass.getEAllReferences().stream().filter(r -> annotatedAsTrue(r, EXPOSED_SERVICE_ANNOTATION_NAME)).collect(Collectors.toList())) :
                 ECollections.emptyEList();
-    }
-
-    /**
-     * Get name of a graph.
-     *
-     * @param eReference reference (representing a graph)
-     * @return name of the graph (or null is reference is not an exposed graph)
-     */
-    public Optional<String> getGraphName(final EReference eReference) {
-        return isGraph(eReference) ? Optional.of(eReference.getName()) : Optional.empty();
-    }
-
-    /**
-     * Get exposed graph by fully qualified name.
-     *
-     * @param fqName fully qualified name of an exposed graph.
-     * @return exposed graph (if found and resolved), null otherwise
-     */
-    public Optional<EReference> getExposedGraphByFqName(final String fqName) {
-        final Matcher m = EXPOSED_GRAPH_PATTERN.matcher(fqName);
-        if (m.matches()) {
-            final Optional<EClass> accessPoint = getClassByFQName(m.group(1));
-            final String graphName = m.group(2);
-
-            if (accessPoint.isPresent()) {
-                return getGraphListOfAccessPoint(accessPoint.get()).stream()
-                        .filter(g -> Objects.equals(getGraphName(g).orElse(null), graphName))
-                        .findAny();
-            } else {
-                log.error("Invalid access point of exposed graph: {}", m.group(1));
-                return Optional.empty();
-            }
-        } else {
-            log.error("Invalid exposed graph: {}", fqName);
-            return Optional.empty();
-        }
-    }
-
-    /**
-     * Get exposed graph of an annotation
-     *
-     * @param eAnnotation annotation
-     * @return exposed graph represented by the given annotation (or null is graph is not defined by the given annotation nor if can be resolved)
-     */
-    public Optional<EReference> getResolvedExposedGraph(final EAnnotation eAnnotation) {
-        if (Objects.equals(eAnnotation.getSource(), getAnnotationUri("exposedGraph"))) {
-            if (eAnnotation.getDetails().containsKey(EXTENDED_METADATA_DETAILS_VALUE_KEY)) {
-                final String exposedGraphFqName = eAnnotation.getDetails().get(EXTENDED_METADATA_DETAILS_VALUE_KEY);
-                final Optional<EReference> resolvedExposedGraph = getExposedGraphByFqName(exposedGraphFqName);
-                if (resolvedExposedGraph.isPresent()) {
-                    if (isGraph(resolvedExposedGraph.get())) {
-                        return resolvedExposedGraph;
-                    } else {
-                        log.error("Exposed graph is not a graph: {}", exposedGraphFqName);
-                        return Optional.empty();
-                    }
-                } else {
-                    return Optional.empty();
-                }
-            } else {
-                return Optional.empty();
-            }
-        } else {
-            return Optional.empty();
-        }
-    }
-
-    /**
-     * Get list of mapped transfer object types that are available via target links (recursively) of a given mapped transfer object  type (ie. root of graph).
-     *
-     * @param eClass class (representing a mapped transfer object type)
-     * @return list of mapped transfer object types (empty list is returned if class is not a mapped transfer object type)
-     */
-    public EList<EClass> getMappedTransferObjectGraph(final EClass eClass) {
-        return isMappedTransferObjectType(eClass) ?
-                getMappedTransferObjectGraph(eClass, new UniqueEList<>()) :
-                ECollections.emptyEList();
-    }
-
-    /**
-     * Add (and return) list of mapped transfer object types that are available via target links (recursively) of a given mapped transfer object type to visited list.
-     *
-     * @param eClass  class (representing a mapped transfer object type)
-     * @param visited list of navigable mapped transfer object types
-     * @return return visited list
-     */
-    private EList<EClass> getMappedTransferObjectGraph(final EClass eClass, final EList<EClass> visited) {
-        if (visited.contains(eClass)) {
-            return visited;
-        } else {
-            visited.add(eClass);
-            eClass.getEAllReferences().forEach(target -> getMappedTransferObjectGraph(target.getEReferenceType(), visited));
-            return visited;
-        }
-    }
-
-    /**
-     * Return list of exposed graph in which a mapped transfer object type is exposed.
-     *
-     * @param eClass class (representing a mapped transfer object type)
-     * @return list of exposed graphs (empty list is returned is class is not a mapped transfer object type)
-     */
-    public EList<EReference> getExposedGraphsOfMappedTransferObjectType(final EClass eClass) {
-        return isMappedTransferObjectType(eClass) ?
-                new BasicEList<>(eClass.getEAnnotations().stream()
-                        .map(a -> getResolvedExposedGraph(a))
-                        .filter(exposedGraph -> exposedGraph.isPresent())
-                        .map(exposedGraph -> exposedGraph.get())
-                        .collect(Collectors.toList())) :
-                ECollections.emptyEList();
-    }
-
-    /**
-     * Get all mapped transfer object types of an access point.
-     *
-     * @param eClass class (representing an access point)
-     * @return list of all mapped transfer object types exposed by exposed graphs of the given access point
-     */
-    public EList<EClass> getMappedTransferObjectTypesOfAccessPoint(final EClass eClass) {
-        return isAccessPoint(eClass) ?
-                new BasicEList<>(getGraphListOfAccessPoint(eClass).stream()
-                        .flatMap(e -> getMappedTransferObjectTypesOfGraph(e).stream())
-                        .collect(Collectors.toList())) :
-                ECollections.emptyEList();
-    }
-
-    /**
-     * Get list of mapped transfer object types that are available in the given exposed graph.
-     *
-     * @param eReference reference (representing a graph)
-     * @return list of mapped transfer object types (empty list is returned if annotation is not a graph)
-     */
-    public EList<EClass> getMappedTransferObjectTypesOfGraph(final EReference eReference) {
-        return isGraph(eReference) ?
-                new BasicEList<>(all(EClass.class)
-                        .filter(o -> o.getEAnnotations().stream()
-                                .anyMatch(a -> EcoreUtil.equals(eReference, getResolvedExposedGraph(a).orElse(null))))
-                        .collect(Collectors.toList())) :
-                ECollections.emptyEList();
-    }
-
-    /**
-     * Get all stateless operations.
-     *
-     * @return list of operations
-     */
-    public EList<EOperation> getAllStatelessOperations() {
-        return new BasicEList<>(all(EOperation.class)
-                .filter(o -> isStateless(o))
-                .collect(Collectors.toList()));
-    }
-
-    /**
-     * Get all stateful operations (including build-in operations).
-     *
-     * @return list of operations
-     */
-    public EList<EClass> getAllMappedTransferObjectTypes() {
-        return new BasicEList<>(all(EClass.class)
-                .filter(c -> isMappedTransferObjectType(c))
-                .collect(Collectors.toList()));
     }
 
     /**
@@ -1060,28 +845,6 @@ public class AsmUtils {
     }
 
     /**
-     * Get all graphs.
-     *
-     * @return graphs
-     */
-    public EList<EReference> getAllGraphs() {
-        return new BasicEList<>(all(EReference.class)
-                .filter(eReference -> isGraph(eReference))
-                .collect(Collectors.toList()));
-    }
-
-    /**
-     * Get all exposed services.
-     *
-     * @return exposed services
-     */
-    public EList<EOperation> getAllExposedServices() {
-        return new BasicEList<>(all(EOperation.class)
-                .filter(op -> isExposedService(op))
-                .collect(Collectors.toList()));
-    }
-
-    /**
      * Add exposed by annotation to (both mapped an unmapped) transfer object types.
      *
      * @param transferObjectType       transfer object type
@@ -1098,12 +861,20 @@ public class AsmUtils {
             transferObjectType.getEAllSuperTypes().forEach(superType -> addExposedByAnnotationToTransferObjectType(superType, accessPointFqName, graph, includeUnboundOperations, boundOperationsIncluded, unboundOperationsIncluded, level + 1));
         }
 
+        if (isMappedTransferObjectType(transferObjectType)) {
+            addExtensionAnnotation(getMappedEntityType(transferObjectType).get(), EXPOSED_BY_ANNOTATION_NAME, accessPointFqName);
+        }
+
         transferObjectType.getEOperations().stream()
                 .filter(o -> graph != null && isBound(o) && !boundOperationsIncluded.contains(o) ||
                         (graph != null && (!getBehaviour(o).isPresent() || EcoreUtil.equals(getOwnerOfOperationWithDefaultBehaviour(o).orElse(null), graph)) || includeUnboundOperations && !getBehaviour(o).isPresent()) && isUnbound(o) && !unboundOperationsIncluded.contains(o))
                 .forEach(operation -> {
                     if (log.isDebugEnabled()) {
                         log.debug(pad(level, "    - operation: {}"), getOperationFQName(operation));
+                    }
+
+                    if (graph != null) {
+                        addExtensionAnnotation(operation, EXPOSED_GRAPH_ANNOTATION_NAME, getReferenceFQName(graph));
                     }
 
                     if (isBound(operation)) {
@@ -1122,10 +893,8 @@ public class AsmUtils {
                         }
                         final EClassifier type = inputParameter.getEType();
                         if (type instanceof EClass) {
-                            final boolean parameterAdded = addExtensionAnnotation(inputParameter, EXPOSED_BY_ANNOTATION_NAME, accessPointFqName);
-                            if (parameterAdded) {
-                                addExposedByAnnotationToTransferObjectType((EClass) inputParameter.getEType(), accessPointFqName, graph, graph != null, boundOperationsIncluded, unboundOperationsIncluded, level + 1);
-                            }
+                            addExtensionAnnotation(inputParameter, EXPOSED_BY_ANNOTATION_NAME, accessPointFqName);
+                            addExposedByAnnotationToTransferObjectType((EClass) inputParameter.getEType(), accessPointFqName, graph, graph != null, boundOperationsIncluded, unboundOperationsIncluded, level + 1);
                         } else {
                             log.error("Input parameters must be transfer object types (EClass)");
                         }
@@ -1136,10 +905,8 @@ public class AsmUtils {
                         }
                         final EClassifier type = operation.getEType();
                         if (type instanceof EClass) {
-                            final boolean parameterAdded = addExtensionAnnotation(operation, EXPOSED_BY_ANNOTATION_NAME, accessPointFqName);
-                            if (parameterAdded) {
-                                addExposedByAnnotationToTransferObjectType((EClass) operation.getEType(), accessPointFqName, graph, graph != null, boundOperationsIncluded, unboundOperationsIncluded, level + 1);
-                            }
+                            addExtensionAnnotation(operation, EXPOSED_BY_ANNOTATION_NAME, accessPointFqName);
+                            addExposedByAnnotationToTransferObjectType((EClass) operation.getEType(), accessPointFqName, graph, graph != null, boundOperationsIncluded, unboundOperationsIncluded, level + 1);
                         } else {
                             log.error("Output parameter must be transfer object type (EClass)");
                         }
