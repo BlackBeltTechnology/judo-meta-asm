@@ -853,10 +853,16 @@ public class AsmUtils {
      * @param includeUnboundOperations include unbound operations
      */
     void addExposedByAnnotationToTransferObjectType(final EClass transferObjectType, final String accessPointFqName, final EReference graph, final boolean includeUnboundOperations, final EList<EOperation> boundOperationsIncluded, final EList<EOperation> unboundOperationsIncluded, final int level) {
-        final boolean added = addExtensionAnnotation(transferObjectType, EXPOSED_BY_ANNOTATION_NAME, accessPointFqName);
         if (log.isDebugEnabled()) {
             log.debug(pad(level, "  - transfer object type: {}"), getClassifierFQName(transferObjectType));
         }
+        final boolean added = addExtensionAnnotation(transferObjectType, EXPOSED_BY_ANNOTATION_NAME, accessPointFqName);
+        transferObjectType.getEAllContainments().stream().map(r -> r.getEReferenceType()).forEach(t -> {
+            if (log.isDebugEnabled()) {
+                log.debug(pad(level, "    - relation target type: {}"), getClassifierFQName(t));
+            }
+            addExposedByAnnotationToTransferObjectType(t, accessPointFqName, null, false, boundOperationsIncluded, unboundOperationsIncluded, level + 1);
+        });
         if (added) {
             transferObjectType.getEAllSuperTypes().forEach(superType -> addExposedByAnnotationToTransferObjectType(superType, accessPointFqName, graph, includeUnboundOperations, boundOperationsIncluded, unboundOperationsIncluded, level + 1));
         }
