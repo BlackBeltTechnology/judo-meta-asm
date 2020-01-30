@@ -1269,25 +1269,12 @@ public class AsmUtils {
      * @param operation operation
      * @return class having implementation
      */
-    public static Optional<EClass> getImplementationClassOfOperation(final EOperation operation) {
-        return getOperationImplementation(operation.getName(), ECollections.singletonEList(operation.getEContainingClass()));
+    public static Optional<EOperation> getImplementationClassOfOperation(final EOperation operation) {
+        return getOperationImplementationByName(operation.getEContainingClass(), operation.getName());
     }
 
     public static boolean isAbstract(final EOperation operation) {
         return annotatedAsTrue(operation, "abstract");
-    }
-
-    private static Optional<EClass> getOperationImplementation(final String operationName, final EList<EClass> classesToCheck) {
-        if (classesToCheck.isEmpty()) {
-            return Optional.empty();
-        }
-
-        final Optional<EClass> implementation = classesToCheck.stream().filter(c -> c.getEAllOperations().stream().anyMatch(o -> Objects.equals(o.getName(), operationName) && !isAbstract(o))).findAny();
-        if (implementation.isPresent()) {
-            return implementation;
-        }
-
-        return getOperationImplementation(operationName, ECollections.asEList(classesToCheck.stream().flatMap(c -> c.getESuperTypes().stream()).collect(Collectors.toList())));
     }
 
     final Optional<String> getOutputParameterName(final EOperation operation) {
@@ -1351,9 +1338,10 @@ public class AsmUtils {
                 .collect(Collectors.toSet());
     }
 
-    public static EList<EOperation> getOperationDeclarationsByName(final EClass clazz, final String operationName) {
+    private static EList<EOperation> getOperationsByName(final EClass clazz, final String operationName, final boolean ignoreAbstract) {
         final Optional<EOperation> operation = clazz.getEOperations().stream()
                 .filter(op -> Objects.equals(op.getName(), operationName))
+                .filter(op -> !ignoreAbstract || !AsmUtils.isAbstract(op))
                 .findAny(); // at most one operations can be found because operation overloading is denied
 
         if (operation.isPresent()) {
@@ -1361,23 +1349,33 @@ public class AsmUtils {
         } else {
             final EList<EOperation> inheritedOperations = new UniqueEList<>();
             inheritedOperations.addAll(clazz.getESuperTypes().stream()
-                    .flatMap(s -> getOperationDeclarationsByName(s, operationName).stream())
+                    .flatMap(s -> getOperationsByName(s, operationName, ignoreAbstract).stream())
                     .collect(Collectors.toSet()));
             return inheritedOperations;
         }
     }
 
-    public static EList<EOperation> getAllOperationDeclarations(final EClass clazz) {
+    public static EList<EOperation> getOperationDeclarationsByName(final EClass clazz, final String operationName) {
+        final EList<EOperation> operations = getOperationsByName(clazz, operationName, false);
+
+        return ECollections.asEList(operations.stream().filter(o -> !operations.stream().anyMatch(sup -> !EcoreUtil.equals(o, sup) && o.isOverrideOf(sup))).collect(Collectors.toList()));
+    }
+
+    public static EList<EOperation> getAllOperationDeclarations(final EClass clazz, boolean ignoreOverrides) {
         final EList<EOperation> allOperationDeclarations = new UniqueEList<>();
         allOperationDeclarations.addAll(getAllOperationNames(clazz).stream()
                 .flatMap(operationName -> getOperationDeclarationsByName(clazz, operationName).stream())
                 .collect(Collectors.toSet()));
-        return allOperationDeclarations;
+        if (ignoreOverrides) {
+            return ECollections.asEList(allOperationDeclarations.stream().filter(o -> !allOperationDeclarations.stream().anyMatch(sup -> !EcoreUtil.equals(o, sup) && o.isOverrideOf(sup))).collect(Collectors.toList()));
+        } else {
+            return allOperationDeclarations;
+        }
     }
 
     public static EList<EOperation> getOperationImplementationListByName(final EClass clazz, final String operationName) {
         final EList<EOperation> operationImplementations = new UniqueEList<>();
-        operationImplementations.addAll(getOperationDeclarationsByName(clazz, operationName).stream()
+        operationImplementations.addAll(getOperationsByName(clazz, operationName, true).stream()
                 .filter(op -> !AsmUtils.isAbstract(op))
                 .collect(Collectors.toSet()));
         return operationImplementations;

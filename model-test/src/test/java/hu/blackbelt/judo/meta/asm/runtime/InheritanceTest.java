@@ -171,11 +171,163 @@ public class InheritanceTest {
                 .withESuperTypes(Arrays.asList(a3, a4))
                 .build();
 
+        final EClass x1 = newEClassBuilder()
+                .withName("X1")
+                .withESuperTypes(Arrays.asList(a2))
+                .build();
+
+        final EClass x2 = newEClassBuilder()
+                .withName("X2")
+                .withESuperTypes(Arrays.asList(a2))
+                .build();
+
+        final EClass x3 = newEClassBuilder()
+                .withName("X3")
+                .withESuperTypes(Arrays.asList(a2))
+                .withEOperations(newEOperationBuilder()
+                        .withName(OP1_NAME)
+                        .build())
+                .build();
+
+        final EClass x4 = newEClassBuilder()
+                .withName("X4")
+                .withESuperTypes(Arrays.asList(a2))
+                .withEOperations(newEOperationBuilder()
+                        .withName(OP1_NAME)
+                        .build())
+                .build();
+
+        final EOperation x5Op = newEOperationBuilder()
+                .withName(OP1_NAME)
+                .build();
+        AsmUtils.addExtensionAnnotation(x5Op, "abstract", "true");
+        final EClass x5 = newEClassBuilder()
+                .withName("X5")
+                .withESuperTypes(Arrays.asList(a2))
+                .withEOperations(x5Op)
+                .build();
+
+        final EOperation x6Op = newEOperationBuilder()
+                .withName(OP1_NAME)
+                .build();
+        AsmUtils.addExtensionAnnotation(x6Op, "abstract", "true");
+        final EClass x6 = newEClassBuilder()
+                .withName("X6")
+                .withESuperTypes(Arrays.asList(a2))
+                .withEOperations(x6Op)
+                .build();
+
+        final EClass x7 = newEClassBuilder()
+                .withName("X7")
+                .withESuperTypes(Arrays.asList(a3))
+                .build();
+
+        final EClass x8 = newEClassBuilder()
+                .withName("X8")
+                .withESuperTypes(Arrays.asList(a3))
+                .build();
+
+        final EClass x9 = newEClassBuilder()
+                .withName("X9")
+                .withESuperTypes(Arrays.asList(a3))
+                .withEOperations(newEOperationBuilder()
+                        .withName(OP1_NAME)
+                        .build())
+                .build();
+
+        final EClass x10 = newEClassBuilder()
+                .withName("X10")
+                .withESuperTypes(Arrays.asList(a3))
+                .withEOperations(newEOperationBuilder()
+                        .withName(OP1_NAME)
+                        .build())
+                .build();
+
+        final EOperation x11Op = newEOperationBuilder()
+                .withName(OP1_NAME)
+                .build();
+        AsmUtils.addExtensionAnnotation(x11Op, "abstract", "true");
+        final EClass x11 = newEClassBuilder()
+                .withName("X11")
+                .withESuperTypes(Arrays.asList(a3))
+                .withEOperations(x11Op)
+                .build();
+
+        final EOperation x12Op = newEOperationBuilder()
+                .withName(OP1_NAME)
+                .build();
+        AsmUtils.addExtensionAnnotation(x12Op, "abstract", "true");
+        final EClass x12 = newEClassBuilder()
+                .withName("X12")
+                .withESuperTypes(Arrays.asList(a3))
+                .withEOperations(x12Op)
+                .build();
+
+        final EClass y1 = newEClassBuilder()
+                .withName("Y1")
+                .withESuperTypes(Arrays.asList(x1, x2))
+                .build();
+
+        final EClass y2 = newEClassBuilder()
+                .withName("Y2")
+                .withESuperTypes(Arrays.asList(x2, x3))
+                .build();
+
+        final EClass y3 = newEClassBuilder()
+                .withName("Y3")
+                .withESuperTypes(Arrays.asList(x3, x4))
+                .build();
+
+        final EClass y4 = newEClassBuilder()
+                .withName("Y4")
+                .withESuperTypes(Arrays.asList(x1, x5))
+                .build();
+
+        final EClass y5 = newEClassBuilder()
+                .withName("Y5")
+                .withESuperTypes(Arrays.asList(x5, x6))
+                .build();
+
+        final EClass y6 = newEClassBuilder()
+                .withName("Y6")
+                .withESuperTypes(Arrays.asList(x3, x5))
+                .build();
+
+        final EClass y7 = newEClassBuilder()
+                .withName("Y7")
+                .withESuperTypes(Arrays.asList(x7, x8))
+                .build();
+
+        final EClass y8 = newEClassBuilder()
+                .withName("Y8")
+                .withESuperTypes(Arrays.asList(x8, x9))
+                .build();
+
+        final EClass y9 = newEClassBuilder()
+                .withName("Y9")
+                .withESuperTypes(Arrays.asList(x9, x10))
+                .build();
+
+        final EClass y10 = newEClassBuilder()
+                .withName("Y10")
+                .withESuperTypes(Arrays.asList(x7, x11))
+                .build();
+
+        final EClass y11 = newEClassBuilder()
+                .withName("Y11")
+                .withESuperTypes(Arrays.asList(x11, x12))
+                .build();
+
+        final EClass y12 = newEClassBuilder()
+                .withName("Y12")
+                .withESuperTypes(Arrays.asList(x9, x11))
+                .build();
+
         final EPackage model = newEPackageBuilder()
                 .withName("Model")
                 .withNsPrefix("test")
                 .withNsURI("http:///com.example.test.ecore")
-                .withEClassifiers(Arrays.asList(a1, a2, a3, a4, b1, b2, b3, b4, b5, b6))
+                .withEClassifiers(Arrays.asList(a1, a2, a3, a4, b1, b2, b3, b4, b5, b6, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, y1, y2, y3, y4, y5, y6, y7, y8, y9, y10, y11, y12))
                 .build();
 
         asmModelResourceSupport.addContent(model);
@@ -190,11 +342,26 @@ public class InheritanceTest {
         assertOperations(b4, ImmutableSet.of(OP1_NAME), ImmutableSet.of(AsmUtils.getClassifierFQName(a2) + "#" + OP1_NAME, AsmUtils.getClassifierFQName(a3) + "#" + OP1_NAME), ImmutableSet.of(AsmUtils.getClassifierFQName(a2) + "#" + OP1_NAME), Collections.emptySet());
         assertOperations(b5, ImmutableSet.of(OP1_NAME), ImmutableSet.of(AsmUtils.getClassifierFQName(b5) + "#" + OP1_NAME), ImmutableSet.of(AsmUtils.getClassifierFQName(b5) + "#" + OP1_NAME), Collections.emptySet());
         assertOperations(b6, ImmutableSet.of(OP1_NAME), ImmutableSet.of(AsmUtils.getClassifierFQName(a3) + "#" + OP1_NAME, AsmUtils.getClassifierFQName(a4) + "#" + OP1_NAME), Collections.emptySet(), ImmutableSet.of(OP1_NAME));
+
+        assertOperations(y1, ImmutableSet.of(OP1_NAME), ImmutableSet.of(AsmUtils.getClassifierFQName(a2) + "#" + OP1_NAME), ImmutableSet.of(AsmUtils.getClassifierFQName(a2) + "#" + OP1_NAME), Collections.emptySet());
+        assertOperations(y2, ImmutableSet.of(OP1_NAME), ImmutableSet.of(AsmUtils.getClassifierFQName(a2) + "#" + OP1_NAME), Collections.emptySet(), ImmutableSet.of(OP1_NAME));
+        assertOperations(y3, ImmutableSet.of(OP1_NAME), ImmutableSet.of(AsmUtils.getClassifierFQName(a2) + "#" + OP1_NAME), Collections.emptySet(), ImmutableSet.of(OP1_NAME));
+        assertOperations(y4, ImmutableSet.of(OP1_NAME), ImmutableSet.of(AsmUtils.getClassifierFQName(a2) + "#" + OP1_NAME), ImmutableSet.of(AsmUtils.getClassifierFQName(a2) + "#" + OP1_NAME), Collections.emptySet());
+        assertOperations(y5, ImmutableSet.of(OP1_NAME), ImmutableSet.of(AsmUtils.getClassifierFQName(a2) + "#" + OP1_NAME), ImmutableSet.of(AsmUtils.getClassifierFQName(a2) + "#" + OP1_NAME), Collections.emptySet());
+        assertOperations(y6, ImmutableSet.of(OP1_NAME), ImmutableSet.of(AsmUtils.getClassifierFQName(x3) + "#" + OP1_NAME, AsmUtils.getClassifierFQName(a2) + "#" + OP1_NAME), Collections.emptySet(), ImmutableSet.of(OP1_NAME));
+
+        assertOperations(y7, ImmutableSet.of(OP1_NAME), ImmutableSet.of(AsmUtils.getClassifierFQName(a3) + "#" + OP1_NAME), Collections.emptySet(), ImmutableSet.of(OP1_NAME));
+        assertOperations(y8, ImmutableSet.of(OP1_NAME), ImmutableSet.of(AsmUtils.getClassifierFQName(a3) + "#" + OP1_NAME), ImmutableSet.of(AsmUtils.getClassifierFQName(x9) + "#" + OP1_NAME), Collections.emptySet());
+        assertOperations(y9, ImmutableSet.of(OP1_NAME), ImmutableSet.of(AsmUtils.getClassifierFQName(a3) + "#" + OP1_NAME), Collections.emptySet(), ImmutableSet.of(OP1_NAME));
+        assertOperations(y10, ImmutableSet.of(OP1_NAME), ImmutableSet.of(AsmUtils.getClassifierFQName(a3) + "#" + OP1_NAME), Collections.emptySet(), ImmutableSet.of(OP1_NAME));
+        assertOperations(y11, ImmutableSet.of(OP1_NAME), ImmutableSet.of(AsmUtils.getClassifierFQName(a3) + "#" + OP1_NAME), Collections.emptySet(), ImmutableSet.of(OP1_NAME));
+        assertOperations(y12, ImmutableSet.of(OP1_NAME), ImmutableSet.of(AsmUtils.getClassifierFQName(x9) + "#" + OP1_NAME), ImmutableSet.of(AsmUtils.getClassifierFQName(x9) + "#" + OP1_NAME), Collections.emptySet());
     }
 
     private void assertOperations(final EClass clazz, final Set<String> expectedAllOperationNames, final Set<String> expectedAllOperationDeclarations, final Set<String> expectedAllOperationImplementations, final Set<String> expectedAllAbstractOperationNames) {
         final Set<String> allOperationNames = AsmUtils.getAllOperationNames(clazz);
-        final Set<String> allOperationDeclarations = AsmUtils.getAllOperationDeclarations(clazz).stream().map(op -> AsmUtils.getOperationFQName(op)).collect(Collectors.toSet());
+        final Set<String> allOperationDeclarations = AsmUtils.getAllOperationDeclarations(clazz, false).stream().map(op -> AsmUtils.getOperationFQName(op)).collect(Collectors.toSet());
+        final Set<String> allOperationDeclarationsWithoutOverrides = AsmUtils.getAllOperationDeclarations(clazz, true).stream().map(op -> AsmUtils.getOperationFQName(op)).collect(Collectors.toSet());
         final Set<String> allOperationImplementations = AsmUtils.getAllOperationImplementations(clazz).stream().map(op -> AsmUtils.getOperationFQName(op)).collect(Collectors.toSet());
         final Set<String> allAbstractOperationNames = AsmUtils.getAllAbstractOperationNames(clazz);
 
@@ -202,11 +369,12 @@ public class InheritanceTest {
         log.debug("  - all operations of {}: {}", clazz.getName(), clazz.getEAllOperations().stream().map(op -> AsmUtils.getOperationFQName(op)).collect(Collectors.joining(", ")));
         log.debug("  - all operation names: {}", allOperationNames);
         log.debug("  - all operation declarations: {}", allOperationDeclarations);
+        log.debug("  - all operation declarations (without overrides): {}", allOperationDeclarationsWithoutOverrides);
         log.debug("  - all operation implementations: {}", allOperationImplementations);
         log.debug("  - all abstract operation names: {}", allAbstractOperationNames);
 
         assertThat(expectedAllOperationNames, equalTo(expectedAllOperationNames));
-        assertThat(allOperationDeclarations, equalTo(expectedAllOperationDeclarations));
+        assertThat(allOperationDeclarations, equalTo(allOperationDeclarationsWithoutOverrides));
         assertThat(allOperationImplementations, equalTo(expectedAllOperationImplementations));
         assertThat(allAbstractOperationNames, equalTo(expectedAllAbstractOperationNames));
     }
