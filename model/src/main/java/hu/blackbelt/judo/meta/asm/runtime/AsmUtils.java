@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -1342,6 +1343,73 @@ public class AsmUtils {
 
     public Optional<EPackage> getModel() {
         return all(EPackage.class).filter(p -> p.eContainer() == null).findAny();
+    }
+
+    public static Set<String> getAllOperationNames(final EClass clazz) {
+        return clazz.getEAllOperations().stream()
+                .map(op -> op.getName())
+                .collect(Collectors.toSet());
+    }
+
+    public static EList<EOperation> getOperationDeclarationsByName(final EClass clazz, final String operationName) {
+        final Optional<EOperation> operation = clazz.getEOperations().stream()
+                .filter(op -> Objects.equals(op.getName(), operationName))
+                .findAny(); // at most one operations can be found because operation overloading is denied
+
+        if (operation.isPresent()) {
+            return ECollections.singletonEList(operation.get());
+        } else {
+            final EList<EOperation> inheritedOperations = new UniqueEList<>();
+            inheritedOperations.addAll(clazz.getESuperTypes().stream()
+                    .flatMap(s -> getOperationDeclarationsByName(s, operationName).stream())
+                    .collect(Collectors.toSet()));
+            return inheritedOperations;
+        }
+    }
+
+    public static EList<EOperation> getAllOperationDeclarations(final EClass clazz) {
+        final EList<EOperation> allOperationDeclarations = new UniqueEList<>();
+        allOperationDeclarations.addAll(getAllOperationNames(clazz).stream()
+                .flatMap(operationName -> getOperationDeclarationsByName(clazz, operationName).stream())
+                .collect(Collectors.toSet()));
+        return allOperationDeclarations;
+    }
+
+    public static EList<EOperation> getOperationImplementationListByName(final EClass clazz, final String operationName) {
+        final EList<EOperation> operationImplementations = new UniqueEList<>();
+        operationImplementations.addAll(getOperationDeclarationsByName(clazz, operationName).stream()
+                .filter(op -> !AsmUtils.isAbstract(op))
+                .collect(Collectors.toSet()));
+        return operationImplementations;
+    }
+
+    public static Optional<EOperation> getOperationImplementationByName(final EClass clazz, final String operationName) {
+        final EList<EOperation> operationImplementations = getOperationImplementationListByName(clazz, operationName);
+        if (operationImplementations.size() > 1) {
+            log.error("Multiple operation implementations found for {}#{}: {}", new Object[]{AsmUtils.getClassifierFQName(clazz), operationName, operationImplementations.stream().map(op -> AsmUtils.getOperationFQName(op)).collect(Collectors.joining(", "))});
+            return Optional.empty();
+        } else if (operationImplementations.isEmpty()) {
+            log.warn("No operation implementation found for: {}#{}", AsmUtils.getClassifierFQName(clazz), operationName);
+            return Optional.empty();
+        } else {
+            return Optional.of(operationImplementations.get(0));
+        }
+    }
+
+    public static Set<String> getAllAbstractOperationNames(final EClass clazz) {
+        final Set<String> abstractOperationNames = getAllOperationNames(clazz);
+        abstractOperationNames.removeAll(getAllOperationImplementations(clazz).stream().map(op -> op.getName()).collect(Collectors.toSet()));
+        return abstractOperationNames;
+    }
+
+    public static EList<EOperation> getAllOperationImplementations(final EClass clazz) {
+        final EList<EOperation> allOperationImplementations = new UniqueEList<>();
+        allOperationImplementations.addAll(getAllOperationNames(clazz).stream()
+                .map(operationName -> getOperationImplementationByName(clazz, operationName))
+                .filter(implementation -> implementation.isPresent())
+                .map(implementation -> implementation.get())
+                .collect(Collectors.toSet()));
+        return allOperationImplementations;
     }
 
     public enum OperationBehaviour {
