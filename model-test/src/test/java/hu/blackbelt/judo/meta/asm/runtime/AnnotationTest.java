@@ -163,19 +163,19 @@ public class AnnotationTest {
         assertThat(asmUtils.getAccessPointsOfOperation(getAllOrders.get()), hasItems(internalAP.get()));
     }
 
-    @Test
-    public void testGetExposedServicesOfAccessPoint () {
-        Optional<EClass> internalAP = asmUtils.all(EClass.class).filter(c -> "internalAP".equals(c.getName())).findAny();
-        assertTrue(internalAP.isPresent());
-
-        //EOperations exposed by internalAP
-        Optional<EOperation> getAllOrders = asmUtils.all(EOperation.class).filter(o -> "getAllOrders".equals(o.getName())).findAny();
-        assertTrue(getAllOrders.isPresent());
-        Optional<EOperation> createOrder = asmUtils.all(EOperation.class).filter(o -> "createOrder".equals(o.getName())).findAny();
-        assertTrue(createOrder.isPresent());
-
-        assertThat(asmUtils.getExposedServicesOfAccessPoint(internalAP.get()), hasItems(getAllOrders.get(), createOrder.get()));
-    }
+//    @Test
+//    public void testGetExposedServicesOfAccessPoint () {
+//        Optional<EClass> internalAP = asmUtils.all(EClass.class).filter(c -> "internalAP".equals(c.getName())).findAny();
+//        assertTrue(internalAP.isPresent());
+//
+//        //EOperations exposed by internalAP
+//        Optional<EOperation> getAllOrders = asmUtils.all(EOperation.class).filter(o -> "getAllOrders".equals(o.getName())).findAny();
+//        assertTrue(getAllOrders.isPresent());
+//        Optional<EOperation> createOrder = asmUtils.all(EOperation.class).filter(o -> "createOrder".equals(o.getName())).findAny();
+//        assertTrue(createOrder.isPresent());
+//
+//        assertThat(asmUtils.getExposedServicesOfAccessPoint(internalAP.get()), hasItems(getAllOrders.get(), createOrder.get()));
+//    }
 
     @Test
     public void testGetMappedEntity () {
