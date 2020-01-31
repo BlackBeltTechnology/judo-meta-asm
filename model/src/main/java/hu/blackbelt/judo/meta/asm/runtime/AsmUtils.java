@@ -872,7 +872,7 @@ public class AsmUtils {
             addExtensionAnnotation(getMappedEntityType(transferObjectType).get(), EXPOSED_BY_ANNOTATION_NAME, accessPointFqName);
         }
 
-        transferObjectType.getEOperations().stream()
+        getAllOperationImplementations(transferObjectType).stream()
                 .filter(o -> graph != null && isBound(o) && !boundOperationsIncluded.contains(o) ||
                         (graph != null && (!getBehaviour(o).isPresent() || EcoreUtil.equals(getOwnerOfOperationWithDefaultBehaviour(o).orElse(null), graph)) || includeUnboundOperations && !getBehaviour(o).isPresent()) && isUnbound(o) && !unboundOperationsIncluded.contains(o))
                 .forEach(operation -> {
@@ -1221,7 +1221,7 @@ public class AsmUtils {
                     final Optional<EClassifier> classifier = resolve(parts[0]);
                     if (classifier.isPresent()) {
                         if (classifier.get() instanceof EClass) {
-                            final Optional<EOperation> owner = ((EClass) classifier.get()).getEAllOperations().stream()
+                            final Optional<EOperation> owner = getAllOperationImplementations((EClass) classifier.get()).stream()
                                     .filter(r -> Objects.equals(r.getName(), parts[1]))
                                     .findAny();
 
