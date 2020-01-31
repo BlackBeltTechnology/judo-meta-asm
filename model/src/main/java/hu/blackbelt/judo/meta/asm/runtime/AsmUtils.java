@@ -860,8 +860,10 @@ public class AsmUtils {
         final boolean added = addExtensionAnnotation(transferObjectType, EXPOSED_BY_ANNOTATION_NAME, accessPointFqName);
         transferObjectType.getEAllAttributes().stream().forEach(a -> addExtensionAnnotation(a, EXPOSED_BY_ANNOTATION_NAME, accessPointFqName));
         transferObjectType.getEAllContainments().stream().forEach(r -> {
-            addExtensionAnnotation(r, EXPOSED_BY_ANNOTATION_NAME, accessPointFqName);
-            addExposedByAnnotationToTransferObjectType(r.getEReferenceType(), accessPointFqName, null, false, boundOperationsIncluded, unboundOperationsIncluded, level + 1);
+            final boolean addedToContainment = addExtensionAnnotation(r, EXPOSED_BY_ANNOTATION_NAME, accessPointFqName);
+            if (addedToContainment) {
+                addExposedByAnnotationToTransferObjectType(r.getEReferenceType(), accessPointFqName, null, false, boundOperationsIncluded, unboundOperationsIncluded, level + 1);
+            }
         });
         if (added) {
             transferObjectType.getEAllSuperTypes().forEach(superType -> addExposedByAnnotationToTransferObjectType(superType, accessPointFqName, graph, includeUnboundOperations, boundOperationsIncluded, unboundOperationsIncluded, level + 1));
