@@ -1,3 +1,4 @@
+<?xml version='1.0' encoding='UTF-8'?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -75,9 +76,9 @@
 		<emf-genmodel-generator-version>1.0.0</emf-genmodel-generator-version>
 		<judo-genmodel-generator-version>1.0.0.20200130_232426_224b5ae_1_0_beta1</judo-genmodel-generator-version>
 
-		<judo-tatami-maven-plugin-version>1.0.0.20200109_163221_580ef03_develop</judo-tatami-maven-plugin-version>
+		<judo-tatami-maven-plugin-version>1.0.0.20200131_112210_1439c9e_develop</judo-tatami-maven-plugin-version>
 
-        <judo-meta-psm-version>1.0.0.20200131_022421_e624baf_1_0_beta1</judo-meta-psm-version>
+        <judo-meta-psm-version>1.0.0.20200131_103050_48a7a6c_1_0_beta1</judo-meta-psm-version>
         <judo-meta-psm-import-range>[1.0,1.1)</judo-meta-psm-import-range>
 
 		<!-- Xtend / Xcore -->
