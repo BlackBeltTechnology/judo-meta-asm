@@ -859,9 +859,9 @@ public class AsmUtils {
         }
         final boolean added = addExtensionAnnotation(transferObjectType, EXPOSED_BY_ANNOTATION_NAME, accessPointFqName);
         transferObjectType.getEAllAttributes().stream().forEach(a -> addExtensionAnnotation(a, EXPOSED_BY_ANNOTATION_NAME, accessPointFqName));
-        transferObjectType.getEAllContainments().stream().forEach(r -> {
+        transferObjectType.getEAllReferences().stream().forEach(r -> {
             final boolean addedToContainment = addExtensionAnnotation(r, EXPOSED_BY_ANNOTATION_NAME, accessPointFqName);
-            if (addedToContainment) {
+            if (addedToContainment && r.isContainment()) {
                 addExposedByAnnotationToTransferObjectType(r.getEReferenceType(), accessPointFqName, null, false, boundOperationsIncluded, unboundOperationsIncluded, level + 1);
             }
         });
