@@ -853,20 +853,26 @@ public class AsmUtils {
      * @param graph                    exposed by graph (not service group)
      * @param includeUnboundOperations include unbound operations
      */
-    void addExposedByAnnotationToTransferObjectType(final EClass transferObjectType, final String accessPointFqName, final EReference graph, final boolean includeUnboundOperations, final EList<EOperation> boundOperationsIncluded, final EList<EOperation> unboundOperationsIncluded, final int level) {
+    void addExposedByAnnotationToTransferObjectType(final EClass transferObjectType, final String accessPointFqName, final EReference graph, final boolean includeUnboundOperations, final int level) {
         if (log.isDebugEnabled()) {
             log.debug(pad(level, "  - transfer object type: {}"), getClassifierFQName(transferObjectType));
         }
-        final boolean added = addExtensionAnnotation(transferObjectType, EXPOSED_BY_ANNOTATION_NAME, accessPointFqName);
+        final boolean exposedByAdded = addExtensionAnnotation(transferObjectType, EXPOSED_BY_ANNOTATION_NAME, accessPointFqName);
+        final boolean exposedGraphAdded;
+        if (graph != null) {
+            exposedGraphAdded = addExtensionAnnotation(transferObjectType, EXPOSED_GRAPH_ANNOTATION_NAME, AsmUtils.getReferenceFQName(graph));
+        } else {
+            exposedGraphAdded = false;
+        }
         transferObjectType.getEAllAttributes().stream().forEach(a -> addExtensionAnnotation(a, EXPOSED_BY_ANNOTATION_NAME, accessPointFqName));
         transferObjectType.getEAllReferences().stream().forEach(r -> {
-            final boolean addedToContainment = addExtensionAnnotation(r, EXPOSED_BY_ANNOTATION_NAME, accessPointFqName);
-            if (addedToContainment && r.isContainment()) {
-                addExposedByAnnotationToTransferObjectType(r.getEReferenceType(), accessPointFqName, null, false, boundOperationsIncluded, unboundOperationsIncluded, level + 1);
+            addExtensionAnnotation(r, EXPOSED_BY_ANNOTATION_NAME, accessPointFqName);
+            if (r.isContainment()) {
+                addExposedByAnnotationToTransferObjectType(r.getEReferenceType(), accessPointFqName, null, false, level + 1);
             }
         });
-        if (added) {
-            transferObjectType.getEAllSuperTypes().forEach(superType -> addExposedByAnnotationToTransferObjectType(superType, accessPointFqName, graph, includeUnboundOperations, boundOperationsIncluded, unboundOperationsIncluded, level + 1));
+        if (exposedByAdded || exposedGraphAdded) {
+            transferObjectType.getEAllSuperTypes().forEach(superType -> addExposedByAnnotationToTransferObjectType(superType, accessPointFqName, graph, includeUnboundOperations, level + 1));
         }
 
         if (isMappedTransferObjectType(transferObjectType)) {
@@ -874,8 +880,9 @@ public class AsmUtils {
         }
 
         getAllOperationImplementations(transferObjectType).stream()
-                .filter(o -> graph != null && isBound(o) && !boundOperationsIncluded.contains(o) ||
-                        (graph != null && (!getBehaviour(o).isPresent() || EcoreUtil.equals(getOwnerOfOperationWithDefaultBehaviour(o).orElse(null), graph)) || includeUnboundOperations && !getBehaviour(o).isPresent()) && isUnbound(o) && !unboundOperationsIncluded.contains(o))
+                .filter(o -> graph != null && isBound(o) && exposedGraphAdded ||
+                        graph != null && isUnbound(o) && (!getBehaviour(o).isPresent() || EcoreUtil.equals(getOwnerOfOperationWithDefaultBehaviour(o).orElse(null), graph)) && exposedGraphAdded ||
+                        graph == null && includeUnboundOperations && !getBehaviour(o).isPresent() && exposedByAdded)
                 .forEach(operation -> {
                     if (log.isDebugEnabled()) {
                         log.debug(pad(level, "    - operation: {}"), getOperationFQName(operation));
@@ -883,14 +890,6 @@ public class AsmUtils {
 
                     if (graph != null) {
                         addExtensionAnnotation(operation, EXPOSED_GRAPH_ANNOTATION_NAME, getReferenceFQName(graph));
-                    }
-
-                    if (isBound(operation)) {
-                        boundOperationsIncluded.add(operation);
-                    }
-
-                    if (isUnbound(operation)) {
-                        unboundOperationsIncluded.add(operation);
                     }
 
                     addExtensionAnnotation(operation, EXPOSED_BY_ANNOTATION_NAME, accessPointFqName);
@@ -902,7 +901,7 @@ public class AsmUtils {
                         final EClassifier type = inputParameter.getEType();
                         if (type instanceof EClass) {
                             addExtensionAnnotation(inputParameter, EXPOSED_BY_ANNOTATION_NAME, accessPointFqName);
-                            addExposedByAnnotationToTransferObjectType((EClass) inputParameter.getEType(), accessPointFqName, graph, graph != null, boundOperationsIncluded, unboundOperationsIncluded, level + 1);
+                            addExposedByAnnotationToTransferObjectType((EClass) inputParameter.getEType(), accessPointFqName, graph, graph != null, level + 1);
                         } else {
                             log.error("Input parameters must be transfer object types (EClass)");
                         }
@@ -914,7 +913,7 @@ public class AsmUtils {
                         final EClassifier type = operation.getEType();
                         if (type instanceof EClass) {
                             addExtensionAnnotation(operation, EXPOSED_BY_ANNOTATION_NAME, accessPointFqName);
-                            addExposedByAnnotationToTransferObjectType((EClass) operation.getEType(), accessPointFqName, graph, graph != null, boundOperationsIncluded, unboundOperationsIncluded, level + 1);
+                            addExposedByAnnotationToTransferObjectType((EClass) operation.getEType(), accessPointFqName, graph, graph != null, level + 1);
                         } else {
                             log.error("Output parameter must be transfer object type (EClass)");
                         }
@@ -924,7 +923,7 @@ public class AsmUtils {
                             log.debug(pad(level, "        - fault parameter ({}): {}"), faultParameter.getName(), getClassifierFQName(faultParameter));
                         }
                         if (faultParameter instanceof EClass) {
-                            addExposedByAnnotationToTransferObjectType((EClass) faultParameter, accessPointFqName, graph, graph != null, boundOperationsIncluded, unboundOperationsIncluded, level + 1);
+                            addExposedByAnnotationToTransferObjectType((EClass) faultParameter, accessPointFqName, graph, graph != null, level + 1);
                         } else {
                             log.error("Fault parameters must be transfer object types (EClass)");
                         }
@@ -942,9 +941,6 @@ public class AsmUtils {
                 log.debug("Access point: {}", accessPointFqName);
             }
 
-            final EList<EOperation> boundOperationsIncluded = new UniqueEList<>();
-            final EList<EOperation> unboundOperationsIncluded = new UniqueEList<>();
-
             getServiceGroupListOfAccessPoint(accessPoint).forEach(exposedServiceGroup -> {
                 final String exposedServiceGroupFqName = getReferenceFQName(exposedServiceGroup);
                 final EClass operationGroup = exposedServiceGroup.getEReferenceType();
@@ -952,7 +948,7 @@ public class AsmUtils {
                     log.debug(" - exposed service group: {}, operation group: {}", exposedServiceGroupFqName, getClassifierFQName(operationGroup));
                 }
 
-                addExposedByAnnotationToTransferObjectType(exposedServiceGroup.getEReferenceType(), accessPointFqName, null, true, boundOperationsIncluded, unboundOperationsIncluded, 0);
+                addExposedByAnnotationToTransferObjectType(exposedServiceGroup.getEReferenceType(), accessPointFqName, null, true, 0);
             });
 
             getGraphListOfAccessPoint(accessPoint).forEach(exposedGraph -> {
@@ -962,7 +958,7 @@ public class AsmUtils {
                     log.debug("  - exposed graph: {}, root: {}", exposedGraphFqName, getClassifierFQName(mappedTransferObjectType));
                 }
 
-                addExposedByAnnotationToTransferObjectType(exposedGraph.getEReferenceType(), accessPointFqName, exposedGraph, true, boundOperationsIncluded, unboundOperationsIncluded, 0);
+                addExposedByAnnotationToTransferObjectType(exposedGraph.getEReferenceType(), accessPointFqName, exposedGraph, true, 0);
             });
         });
     }
