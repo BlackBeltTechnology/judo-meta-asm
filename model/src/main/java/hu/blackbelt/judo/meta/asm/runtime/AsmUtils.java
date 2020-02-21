@@ -1274,7 +1274,7 @@ public class AsmUtils {
         return annotatedAsTrue(operation, "abstract");
     }
 
-    final Optional<String> getOutputParameterName(final EOperation operation) {
+    public static Optional<String> getOutputParameterName(final EOperation operation) {
         return getExtensionAnnotationValue(operation, "outputParameterName", false);
     }
 
