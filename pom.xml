@@ -73,11 +73,11 @@
 		<eclipse-p2-base>http://download.eclipse.org/releases/2019-03</eclipse-p2-base>
 
 		<emf-genmodel-generator-version>1.0.0</emf-genmodel-generator-version>
-		<judo-genmodel-generator-version>1.0.0.20200203_171824_17e20f6_1_0_beta1</judo-genmodel-generator-version>
+		<judo-genmodel-generator-version>1.0.0.20200213_091429_17e20f6_develop</judo-genmodel-generator-version>
 
-		<judo-tatami-maven-plugin-version>1.0.0.20200220_154959_76bbe782_plugin</judo-tatami-maven-plugin-version>
+		<judo-tatami-maven-plugin-version>1.0.0.20200224_215551_ee7e960c_plugin</judo-tatami-maven-plugin-version>
 
-        <judo-meta-psm-version>1.0.0.20200214_131022_4bc065e_1_0_beta1</judo-meta-psm-version>
+        <judo-meta-psm-version>1.0.0.20200224_221736_6e65a30_develop</judo-meta-psm-version>
         <judo-meta-psm-import-range>[1.0,1.1)</judo-meta-psm-import-range>
 
 		<!-- Xtend / Xcore -->
