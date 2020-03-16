@@ -55,8 +55,8 @@
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
 
-		<epsilon-runtime-version>1.2.2.20200312_081626_3054795_develop</epsilon-runtime-version>
-		<epsilon-runtime-eclipse-version>1.2.1.20200312_082528_9c54b14_develop</epsilon-runtime-eclipse-version>
+		<epsilon-runtime-version>1.2.2</epsilon-runtime-version>
+		<epsilon-runtime-eclipse-version>1.2.2</epsilon-runtime-eclipse-version>
 
 		<src.dir>src/main</src.dir>
 
@@ -66,11 +66,11 @@
 		<eclipse-p2-base>http://download.eclipse.org/releases/2019-03</eclipse-p2-base>
 
 		<emf-genmodel-generator-version>1.0.0</emf-genmodel-generator-version>
-		<judo-genmodel-generator-version>1.0.0.20200213_091429_17e20f6_develop</judo-genmodel-generator-version>
+		<judo-genmodel-generator-version>1.0.0</judo-genmodel-generator-version>
 
 		<judo-tatami-maven-plugin-version>1.0.0.20200303_135340_0b09b0e4_plugin</judo-tatami-maven-plugin-version>
 
-        <judo-meta-psm-version>1.0.0.20200312_084108_e4d4b61_develop</judo-meta-psm-version>
+        <judo-meta-psm-version>1.0.0.20200316_201045_d95498d_develop</judo-meta-psm-version>
         <judo-meta-psm-import-range>[1.0,1.1)</judo-meta-psm-import-range>
 
 		<!-- Xtend / Xcore -->
@@ -97,10 +97,10 @@
 		<osgi-utils-version>1.0.9</osgi-utils-version>
 		<bouncycastle-karaf-features-version>1.61.2</bouncycastle-karaf-features-version>
 		<tinybundles-karaf-features-version>1.0.0</tinybundles-karaf-features-version>
-		<google-karaf-features-version>1.0.4.20200311_225448_cf03ead_develop</google-karaf-features-version>
+		<google-karaf-features-version>1.0.4</google-karaf-features-version>
 		<eclipse-emf-karaf-features-version>1.0.0</eclipse-emf-karaf-features-version>
-		<eclipse-epsilon-karaf-features-version>1.0.3.20200312_080304_ee1afd3_develop</eclipse-epsilon-karaf-features-version>
-		<eclipse-xtext-karaf-features-version>1.0.1.20200312_001107_4a287da_develop</eclipse-xtext-karaf-features-version>
+		<eclipse-epsilon-karaf-features-version>1.0.3</eclipse-epsilon-karaf-features-version>
+		<eclipse-xtext-karaf-features-version>1.0.1</eclipse-xtext-karaf-features-version>
 		<antlr-karaf-features-version>1.0.1</antlr-karaf-features-version>
 		<apache-commons-karaf-features-version>1.0.5</apache-commons-karaf-features-version>
 		<apache-poi-karaf-features-version>1.0.2</apache-poi-karaf-features-version>
