@@ -1147,6 +1147,16 @@ public class AsmUtils {
     }
 
     /**
+     * Check if a reference is embedded in a transfer object type.
+     *
+     * @param eReference transfer object relation
+     * @return <code>true</code> if relation is embedded, <code>false</code> otherwise
+     */
+    public static boolean isEmbedded(final EReference eReference) {
+        return getExtensionAnnotationByName(eReference, "embedded", false).isPresent();
+    }
+
+    /**
      * Check if a new embedded instance of a given transfer object relation can be created.
      *
      * @param eReference transfer object relation
