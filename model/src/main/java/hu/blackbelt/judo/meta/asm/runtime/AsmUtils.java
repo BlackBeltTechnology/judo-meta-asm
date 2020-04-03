@@ -882,7 +882,7 @@ public class AsmUtils {
         getAllOperationImplementations(transferObjectType).stream()
                 .filter(o -> graph != null && isBound(o) && exposedGraphAdded ||
                         graph != null && isUnbound(o) && (!getBehaviour(o).isPresent() || EcoreUtil.equals(getOwnerOfOperationWithDefaultBehaviour(o).orElse(null), graph)) && exposedGraphAdded ||
-                        graph == null && includeUnboundOperations && !getBehaviour(o).isPresent() && exposedByAdded)
+                        graph == null && includeUnboundOperations && exposedByAdded)
                 .forEach(operation -> {
                     if (log.isDebugEnabled()) {
                         log.debug(pad(level, "    - operation: {}"), getOperationFQName(operation));
@@ -941,15 +941,7 @@ public class AsmUtils {
                 log.debug("Access point: {}", accessPointFqName);
             }
 
-            getServiceGroupListOfAccessPoint(accessPoint).forEach(exposedServiceGroup -> {
-                final String exposedServiceGroupFqName = getReferenceFQName(exposedServiceGroup);
-                final EClass operationGroup = exposedServiceGroup.getEReferenceType();
-                if (log.isDebugEnabled()) {
-                    log.debug(" - exposed service group: {}, operation group: {}", exposedServiceGroupFqName, getClassifierFQName(operationGroup));
-                }
-
-                addExposedByAnnotationToTransferObjectType(exposedServiceGroup.getEReferenceType(), accessPointFqName, null, true, 0);
-            });
+            addExposedByAnnotationToTransferObjectType(accessPoint, accessPointFqName, null, true, 0);
 
             getGraphListOfAccessPoint(accessPoint).forEach(exposedGraph -> {
                 final String exposedGraphFqName = getReferenceFQName(exposedGraph);
