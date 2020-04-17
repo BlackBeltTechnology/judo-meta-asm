@@ -555,25 +555,38 @@ public class AsmUtils {
     }
     
     public boolean isAccessPointAndParameter(final EClass accessPoint) {
-		List<EOperation> exposedOperations = getAllContents(accessPoint, EOperation.class).filter(op -> getAccessPointsOfOperation(op).contains(accessPoint)).collect(Collectors.toList());
-		Stream<EClass> outputTypes = exposedOperations.stream().filter(op -> op.getEType() instanceof EClass).map(op -> (EClass)op.getEType());
-		Stream<EClass> inputTypes = exposedOperations.stream().flatMap(op -> op.getEParameters().stream()).filter(op -> op.getEType() instanceof EClass).map(p -> (EClass)p.getEType());
-		Set<EClass> directParamTypes = Stream.concat(outputTypes, inputTypes).collect(Collectors.toSet());
 		
-		List<EClass> allParamTypes = new ArrayList<>();
-		allParamTypes.addAll(directParamTypes);
-		directParamTypes.stream().forEach(t -> addReferencedTypes(t,allParamTypes));
+		List<EClass> allParameterTypes = new ArrayList<>();
+		addParameterTypes(accessPoint,allParameterTypes);
 		
-		return allParamTypes.contains(accessPoint);
+		List<EClass> allTypes = new ArrayList<>();
+		allTypes.addAll(allParameterTypes);
+		allParameterTypes.stream().forEach(t -> addEmbeddedTypes(t, allTypes));
+		
+		return allTypes.contains(accessPoint);
+		
     }
 
-    private static void addReferencedTypes(final EClass eClass, final List<EClass> foundReferencedTypes) {
+    private static void addEmbeddedTypes(final EClass eClass, final List<EClass> foundReferencedTypes) {
         final Set<EClass> newReferencedTypes = eClass.getEAllReferences().stream()
         		.filter(r -> isEmbedded(r))
                 .map(r -> r.getEReferenceType()).filter(t -> !foundReferencedTypes.contains(t))
                 .collect(Collectors.toSet());
         foundReferencedTypes.addAll(newReferencedTypes);
-        newReferencedTypes.forEach(t -> addReferencedTypes(t, foundReferencedTypes));
+        newReferencedTypes.forEach(t -> addEmbeddedTypes(t, foundReferencedTypes));
+    }
+    
+    private static void addParameterTypes(final EClass eClass, final List<EClass> foundParameterTypes) {
+    	
+    	List<EOperation> operations = eClass.getEOperations();
+    	Stream<EClass> outputTypes = operations.stream().filter(op -> op.getEType() instanceof EClass).map(op -> (EClass)op.getEType());
+		Stream<EClass> inputTypes = operations.stream().flatMap(op -> op.getEParameters().stream()).filter(op -> op.getEType() instanceof EClass).map(p -> (EClass)p.getEType());
+		
+		Set<EClass> newParameterTypes = Stream.concat(outputTypes, inputTypes)
+				.filter(t -> !foundParameterTypes.contains(t))
+				.collect(Collectors.toSet());
+        foundParameterTypes.addAll(newParameterTypes);
+        newParameterTypes.forEach(t -> addParameterTypes(t, foundParameterTypes));
     }
 
     /**
