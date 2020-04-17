@@ -554,30 +554,26 @@ public class AsmUtils {
         return annotatedAsTrue(eClass, "accessPoint");
     }
     
-    public boolean isAccessPointAndParameter(final EClassifier eClass) {
-    	if (eClass instanceof EClass && isAccessPoint((EClass)eClass)) {
-    		
-    		List<EOperation> exposedOperations = getAllContents(eClass, EOperation.class).filter(op -> getAccessPointsOfOperation(op).contains(eClass)).collect(Collectors.toList());
-    		List<EClass> outputTypes = exposedOperations.stream().filter(op -> op.getEType() instanceof EClass).map(op -> (EClass)op.getEType()).collect(Collectors.toList());
-    		List<EClass> inputTypes = exposedOperations.stream().flatMap(op -> op.getEParameters().stream()).filter(op -> op.getEType() instanceof EClass).map(p -> (EClass)p.getEType()).collect(Collectors.toList());
-    		Set<EClass> directParamTypes = Stream.concat(outputTypes.stream(), inputTypes.stream()).collect(Collectors.toSet());
-    		
-    		List<EClass> allParamTypes = new ArrayList<>();
-    		allParamTypes.addAll(directParamTypes);
-    		directParamTypes.stream().forEach(t -> addReferencedTypes(t,allParamTypes));
-    		
-    		return allParamTypes.contains(eClass);
-    	} else {
-    		return false;
-    	}
+    public boolean isAccessPointAndParameter(final EClass accessPoint) {
+		List<EOperation> exposedOperations = getAllContents(accessPoint, EOperation.class).filter(op -> getAccessPointsOfOperation(op).contains(accessPoint)).collect(Collectors.toList());
+		Stream<EClass> outputTypes = exposedOperations.stream().filter(op -> op.getEType() instanceof EClass).map(op -> (EClass)op.getEType());
+		Stream<EClass> inputTypes = exposedOperations.stream().flatMap(op -> op.getEParameters().stream()).filter(op -> op.getEType() instanceof EClass).map(p -> (EClass)p.getEType());
+		Set<EClass> directParamTypes = Stream.concat(outputTypes, inputTypes).collect(Collectors.toSet());
+		
+		List<EClass> allParamTypes = new ArrayList<>();
+		allParamTypes.addAll(directParamTypes);
+		directParamTypes.stream().forEach(t -> addReferencedTypes(t,allParamTypes));
+		
+		return allParamTypes.contains(accessPoint);
     }
 
     private static void addReferencedTypes(final EClass eClass, final List<EClass> foundReferencedTypes) {
         final Set<EClass> newReferencedTypes = eClass.getEAllReferences().stream()
-                .map(g -> (EClass) g.getEType()).filter(t -> !foundReferencedTypes.contains(t))
+        		.filter(r -> isEmbedded(r))
+                .map(r -> r.getEReferenceType()).filter(t -> !foundReferencedTypes.contains(t))
                 .collect(Collectors.toSet());
         foundReferencedTypes.addAll(newReferencedTypes);
-        newReferencedTypes.forEach(s -> addReferencedTypes(s, foundReferencedTypes));
+        newReferencedTypes.forEach(t -> addReferencedTypes(t, foundReferencedTypes));
     }
 
     /**
