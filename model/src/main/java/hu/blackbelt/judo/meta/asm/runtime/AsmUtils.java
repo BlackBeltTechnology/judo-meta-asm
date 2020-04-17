@@ -554,21 +554,14 @@ public class AsmUtils {
         return annotatedAsTrue(eClass, "accessPoint");
     }
     
-    public boolean isAccessPointAndParameter(final EClass accessPoint) {
-		
-		List<EClass> allParameterTypes = new ArrayList<>();
-		addParameterTypes(accessPoint,allParameterTypes);
-		
-		List<EClass> allTypes = new ArrayList<>();
-		allTypes.addAll(allParameterTypes);
-		allParameterTypes.stream().forEach(t -> addEmbeddedTypes(t, allTypes));
-		
-		return allTypes.contains(accessPoint);
-		
+    public boolean isCircularReferenced(final EClass clazz) {
+		List<EClass> allTypes = new ArrayList<EClass>();
+		addParameterAndEmbeddedTypes(clazz, allTypes);
+		return allTypes.contains(clazz);
     }
 
-    private static void addEmbeddedTypes(final EClass eClass, final List<EClass> foundReferencedTypes) {
-        final Set<EClass> newReferencedTypes = eClass.getEAllReferences().stream()
+    private static void addEmbeddedTypes(final EClass clazz, final List<EClass> foundReferencedTypes) {
+        final Set<EClass> newReferencedTypes = clazz.getEAllReferences().stream()
         		.filter(r -> isEmbedded(r))
                 .map(r -> r.getEReferenceType()).filter(t -> !foundReferencedTypes.contains(t))
                 .collect(Collectors.toSet());
@@ -576,19 +569,26 @@ public class AsmUtils {
         newReferencedTypes.forEach(t -> addEmbeddedTypes(t, foundReferencedTypes));
     }
     
-    private static void addParameterTypes(final EClass eClass, final List<EClass> foundParameterTypes) {
-    	
-    	List<EOperation> operations = eClass.getEOperations();
+    private static void addParameterAndEmbeddedTypes(final EClass clazz, final List<EClass> foundTypes) {
+		Set<EClass> newParameterTypes = getParameterTypes(clazz)
+				.filter(t -> !foundTypes.contains(t))
+				.collect(Collectors.toSet());
+		
+		List<EClass> newTypes = new ArrayList<EClass>();
+		newTypes.addAll(newParameterTypes);
+		newParameterTypes.stream().forEach(t -> addEmbeddedTypes(t, newTypes));
+		
+        foundTypes.addAll(newTypes);
+        newTypes.forEach(t -> addParameterAndEmbeddedTypes(t, foundTypes));
+    }
+    
+    private static Stream<EClass> getParameterTypes(final EClass clazz) {
+    	List<EOperation> operations = clazz.getEOperations();
     	Stream<EClass> outputTypes = operations.stream().filter(op -> op.getEType() instanceof EClass).map(op -> (EClass)op.getEType());
 		Stream<EClass> inputTypes = operations.stream().flatMap(op -> op.getEParameters().stream()).filter(op -> op.getEType() instanceof EClass).map(p -> (EClass)p.getEType());
-		
-		Set<EClass> newParameterTypes = Stream.concat(outputTypes, inputTypes)
-				.filter(t -> !foundParameterTypes.contains(t))
-				.collect(Collectors.toSet());
-        foundParameterTypes.addAll(newParameterTypes);
-        newParameterTypes.forEach(t -> addParameterTypes(t, foundParameterTypes));
+		return Stream.concat(outputTypes, inputTypes);
     }
-
+    
     /**
      * Get resolved exposed by annotation.
      * <p>
