@@ -555,9 +555,18 @@ public class AsmUtils {
     }
     
     public boolean isCircularReferenced(final EClass clazz) {
-		List<EClass> allTypes = new ArrayList<EClass>();
-		addParameterAndEmbeddedTypes(clazz, allTypes);
-		return allTypes.contains(clazz);
+    	List<EClass> parameterTypes = getParameterTypes(clazz).collect(Collectors.toList());
+    	List<EClass> parameterEmbeddedTypes = new ArrayList<EClass>();
+    	parameterTypes.stream().forEach(t -> addEmbeddedTypes(t, parameterEmbeddedTypes));
+    	
+    	if (parameterTypes.contains(clazz) || parameterEmbeddedTypes.contains(clazz)) {
+    		return true;
+    	} else {
+    		List<EClass> allTypes = new ArrayList<EClass>();
+    		allTypes.addAll(parameterEmbeddedTypes);
+    		parameterEmbeddedTypes.stream().forEach(t -> addParameterAndEmbeddedTypes(t, allTypes));
+    		return allTypes.contains(clazz);
+    	}
     }
 
     private static void addEmbeddedTypes(final EClass clazz, final List<EClass> foundReferencedTypes) {
@@ -586,7 +595,8 @@ public class AsmUtils {
     	List<EOperation> operations = clazz.getEOperations();
     	Stream<EClass> outputTypes = operations.stream().filter(op -> op.getEType() instanceof EClass).map(op -> (EClass)op.getEType());
 		Stream<EClass> inputTypes = operations.stream().flatMap(op -> op.getEParameters().stream()).filter(op -> op.getEType() instanceof EClass).map(p -> (EClass)p.getEType());
-		return Stream.concat(outputTypes, inputTypes);
+		Stream<EClass> faultTypes = operations.stream().flatMap(op -> op.getEExceptions().stream()).filter(ex -> ex instanceof EClass).map(ex -> (EClass)ex);
+		return Stream.concat(faultTypes, Stream.concat(outputTypes, inputTypes));
     }
     
     /**
