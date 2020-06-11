@@ -866,8 +866,8 @@ public class AsmUtils {
         }
         transferObjectType.getEAllAttributes().stream().forEach(a -> addExtensionAnnotation(a, EXPOSED_BY_ANNOTATION_NAME, accessPointFqName));
         transferObjectType.getEAllReferences().stream().forEach(r -> {
-            addExtensionAnnotation(r, EXPOSED_BY_ANNOTATION_NAME, accessPointFqName);
-            if (r.isContainment()) {
+            final boolean added = addExtensionAnnotation(r, EXPOSED_BY_ANNOTATION_NAME, accessPointFqName);
+            if (r.isContainment() && added) {
                 addExposedByAnnotationToTransferObjectType(r.getEReferenceType(), accessPointFqName, null, false, level + 1);
             }
         });
