@@ -70,7 +70,7 @@
 
 		<judo-tatami-maven-plugin-version>1.1.0.20200424_124359_3ac33fac_plugin</judo-tatami-maven-plugin-version>
 
-        <judo-meta-psm-version>1.1.0.20200619_090510_1b28b04_develop</judo-meta-psm-version>
+        <judo-meta-psm-version>1.1.0.20200619_155646_34c22b5_develop</judo-meta-psm-version>
         <judo-meta-psm-import-range>[1.0,1.1)</judo-meta-psm-import-range>
 
 		<!-- Xtend / Xcore -->
@@ -97,10 +97,10 @@
 		<osgi-utils-version>1.0.9</osgi-utils-version>
 		<bouncycastle-karaf-features-version>1.61.2</bouncycastle-karaf-features-version>
 		<tinybundles-karaf-features-version>1.0.0</tinybundles-karaf-features-version>
-		<google-karaf-features-version>1.0.4</google-karaf-features-version>
-		<eclipse-emf-karaf-features-version>1.0.0</eclipse-emf-karaf-features-version>
+		<google-karaf-features-version>1.0.5</google-karaf-features-version>
+		<eclipse-emf-karaf-features-version>1.0.1</eclipse-emf-karaf-features-version>
 		<eclipse-epsilon-karaf-features-version>1.0.3</eclipse-epsilon-karaf-features-version>
-		<eclipse-xtext-karaf-features-version>1.0.1</eclipse-xtext-karaf-features-version>
+		<eclipse-xtext-karaf-features-version>1.0.2</eclipse-xtext-karaf-features-version>
 		<antlr-karaf-features-version>1.0.1</antlr-karaf-features-version>
 		<apache-commons-karaf-features-version>1.0.5</apache-commons-karaf-features-version>
 		<apache-poi-karaf-features-version>1.0.2</apache-poi-karaf-features-version>
