@@ -88,7 +88,7 @@
         <dependency>
             <groupId>org.ops4j.pax.url</groupId>
             <artifactId>pax-url-aether</artifactId>
-            <version>2.5.2</version>
+            <version>2.6.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -123,7 +123,7 @@
         <dependency>
             <groupId>com.fasterxml.jackson.jaxrs</groupId>
             <artifactId>jackson-jaxrs-json-provider</artifactId>
-            <version>2.9.8</version>
+            <version>2.10.1</version>
             <scope>test</scope>
         </dependency>
 
@@ -281,7 +281,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>1.6.0</version>
+                <version>3.0.0</version>
                 <executions>
                     <execution>
                         <id>generate-full-demo</id>
@@ -296,6 +296,7 @@
                             </arguments>
                             <includeProjectDependencies>true</includeProjectDependencies>
                             <includePluginDependencies>true</includePluginDependencies>
+                            <cleanupDaemonThreads>false</cleanupDaemonThreads>
                         </configuration>
                     </execution>
                 </executions>
@@ -357,6 +358,7 @@
                 <configuration>
                     <!-- <skip>true</skip> -->
                     <!-- <groups>none</groups> -->
+                    <forkedProcessExitTimeoutInSeconds>1</forkedProcessExitTimeoutInSeconds>
                     <systemPropertyVariables>
                         <pax.exam.karaf.version>${karaf-version}</pax.exam.karaf.version>
                         <!--pax.exam.service.timeout>30000</pax.exam.service.timeout-->
@@ -366,7 +368,7 @@
                     <dependency>
                         <groupId>org.apache.maven.surefire</groupId>
                         <artifactId>surefire-junit47</artifactId>
-                        <version>3.0.0-M3</version>
+                        <version>3.0.0-M5</version>
                     </dependency>
                 </dependencies>
             </plugin>
