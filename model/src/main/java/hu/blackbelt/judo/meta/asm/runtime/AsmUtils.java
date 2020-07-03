@@ -1238,7 +1238,8 @@ public class AsmUtils {
                         throw new IllegalStateException("Unable to resolve owner: " + ownerString);
                     }
                 }
-                case GET_TEMPLATE: {
+                case GET_TEMPLATE:
+                case GET_PRINCIPAL: {
                     return resolve(ownerString);
                 }
                 default: {
@@ -1458,7 +1459,12 @@ public class AsmUtils {
         /**
          * Get template (a pre-instance filled with default values) of a given transfer object type.
          */
-        GET_TEMPLATE("getTemplate");
+        GET_TEMPLATE("getTemplate"),
+
+        /**
+         * Get principal of a given access point.
+         */
+        GET_PRINCIPAL("getPrincipal");
 
         private final String type;
 
