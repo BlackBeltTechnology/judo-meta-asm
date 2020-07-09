@@ -1464,7 +1464,12 @@ public class AsmUtils {
         /**
          * Get principal of a given access point.
          */
-        GET_PRINCIPAL("getPrincipal");
+        GET_PRINCIPAL("getPrincipal"),
+
+        /**
+         * Map principal of a given access token to access point.
+         */
+        MAP_PRINCIPAL("mapPrincipal");
 
         private final String type;
 
