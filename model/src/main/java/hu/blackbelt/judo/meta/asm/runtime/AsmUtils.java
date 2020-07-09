@@ -1239,7 +1239,8 @@ public class AsmUtils {
                     }
                 }
                 case GET_TEMPLATE:
-                case GET_PRINCIPAL: {
+                case GET_PRINCIPAL:
+                case MAP_PRINCIPAL: {
                     return resolve(ownerString);
                 }
                 default: {
@@ -1477,7 +1478,7 @@ public class AsmUtils {
             this.type = type;
         }
 
-        static OperationBehaviour resolve(final String type) {
+        public static OperationBehaviour resolve(final String type) {
             for (OperationBehaviour operationBehaviour : values()) {
                 if (Objects.equals(type, operationBehaviour.type)) {
                     return operationBehaviour;
@@ -1485,6 +1486,10 @@ public class AsmUtils {
             }
 
             return null;
+        }
+
+        public String getType() {
+            return type;
         }
     }
 
