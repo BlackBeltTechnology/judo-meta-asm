@@ -1,42 +1,100 @@
 package hu.blackbelt.judo.meta.asm.runtime;
 
-import com.google.common.collect.ImmutableMap;
+import static hu.blackbelt.judo.meta.asm.runtime.AsmModel.buildAsmModel;
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEAnnotationBuilder;
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEAttributeBuilder;
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEClassBuilder;
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEOperationBuilder;
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEPackageBuilder;
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEReferenceBuilder;
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.useEPackage;
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.useEReference;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Optional;
+
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAnnotation;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EOperation;
+import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
-import java.util.Optional;
-
-import static hu.blackbelt.judo.meta.asm.runtime.AsmModel.LoadArguments.asmLoadArgumentsBuilder;
-import static hu.blackbelt.judo.meta.asm.runtime.AsmModel.loadAsmModel;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEAnnotationBuilder;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEClassBuilder;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItems;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import com.google.common.collect.ImmutableMap;
 
 public class AnnotationTest {
 
     AsmModel asmModel;
     AsmUtils asmUtils;
+    private final String createdSourceModelName = "urn:asm.judo-meta-asm";
 
     @BeforeEach
     public void setUp () throws Exception {
-        asmModel = loadAsmModel(asmLoadArgumentsBuilder()
-                .uri(URI.createFileURI(new File("target/test-classes/model/northwind-asm.model").getAbsolutePath()))
-                .name("test"));
+    	asmModel = buildAsmModel()
+    			.uri(URI.createURI(createdSourceModelName))
+                .name("test")
+                .build();
         asmUtils = new AsmUtils(asmModel.getResourceSet());
+        
+        EAttribute orderDate = newEAttributeBuilder().withName("orderDate").build();
+        EAttribute orderDateAnnotated = newEAttributeBuilder().withName("orderDate").build();
+        EAttribute shipperName = newEAttributeBuilder().withName("shipperName").build();
+        EAttribute totalNumberOfOrders = newEAttributeBuilder().withName("totalNumberOfOrders").build();
+        
+    	EReference items = newEReferenceBuilder().withName("items").build();
+    	EReference orderDetails = newEReferenceBuilder().withName("orderDetails").build();
+    	EReference owner = newEReferenceBuilder().withName("owner").build();
+    	EReference ordersAssignedToEmployee = newEReferenceBuilder().withName("ordersAssignedToEmployee").build();
+    	
+    	EOperation getAllOrders = newEOperationBuilder().withName("getAllOrders").build();
+    	
+    	EClassifier category = newEClassBuilder().withName("Category").withEStructuralFeatures(owner).build();
+    	EClassifier orderInfo = newEClassBuilder().withName("OrderInfo").withEStructuralFeatures(orderDateAnnotated,items).build();
+    	EClassifier productInfo = newEClassBuilder().withName("ProductInfo").build();
+    	EClassifier order = newEClassBuilder().withName("Order").withEStructuralFeatures(orderDate,orderDetails).build();
+    	EClassifier internationalOrderInfo = newEClassBuilder().withName("InternationalOrderInfo").withEStructuralFeatures(shipperName).build();
+    	EClassifier countries = newEClassBuilder().withName("Countries").build();
+    	EClassifier __static = newEClassBuilder().withName("__Static").withEStructuralFeatures(totalNumberOfOrders).build();
+    	EClassifier unboundServices = newEClassBuilder().withName("__UnboundServices").withEOperations(getAllOrders).build();
+    	EClassifier internalAP = newEClassBuilder().withName("InternalAP").withEStructuralFeatures(ordersAssignedToEmployee).build();
+    	useEReference(items).withEType(orderInfo).build();
+    	
+        EPackage demo = newEPackageBuilder().withName("demo").build();
+    	EPackage services = newEPackageBuilder().withName("services").build();
+    	EPackage entities = newEPackageBuilder().withName("entities").build();
+    	EPackage types = newEPackageBuilder().withName("types").build();
+    	
+    	useEPackage(services).withEClassifiers(productInfo,orderInfo,internationalOrderInfo,unboundServices,__static).build();
+    	useEPackage(entities).withEClassifiers(order,category).build();
+    	useEPackage(types).withEClassifiers(countries).build();
+    	useEPackage(demo).withESubpackages(services,entities,types).withEClassifiers(internalAP).build();
+    	
+    	asmModel.addContent(demo);
+    	
+    	EAnnotation annotation = asmUtils.getExtensionAnnotationByName(orderInfo, "mappedEntityType", true).get();
+    	annotation.getDetails().put("value", asmUtils.getClassifierFQName(order));
+    	EAnnotation entityAnnotation = asmUtils.getExtensionAnnotationByName(order, "entity", true).get();
+    	entityAnnotation.getDetails().put("value", "true");
+    	EAnnotation attributeAnnotation = asmUtils.getExtensionAnnotationByName(orderDateAnnotated, "binding", true).get();
+    	attributeAnnotation.getDetails().put("value", orderDate.getName());
+    	EAnnotation referenceAnnotation = asmUtils.getExtensionAnnotationByName(items, "binding", true).get();
+    	referenceAnnotation.getDetails().put("value", orderDetails.getName());
+    	EAnnotation shipperNameAnnotation = asmUtils.getExtensionAnnotationByName(shipperName, "constraints", true).get();
+    	shipperNameAnnotation.getDetails().put("maxLength", "255");
+    	EAnnotation operationAnnotation = asmUtils.getExtensionAnnotationByName(getAllOrders, "exposedBy", true).get();
+    	operationAnnotation.getDetails().put("value", asmUtils.getClassifierFQName(internalAP));
+    	EAnnotation apAnnotation = asmUtils.getExtensionAnnotationByName(internalAP, "accessPoint", true).get();
+    	apAnnotation.getDetails().put("value", "true");
     }
 
     @Test
@@ -111,9 +169,7 @@ public class AnnotationTest {
         assertFalse(exposedGraphValue.isPresent());
     }
 
-
     @Test
-    @Disabled
     public void testGetExtensionAnnotationCustomValue () {
         Optional<EClass> internationalOrderInfo = asmUtils.all(EClass.class).filter(c -> "InternationalOrderInfo".equals(c.getName())).findAny();
         assertTrue(internationalOrderInfo.isPresent());
@@ -127,11 +183,9 @@ public class AnnotationTest {
 
         //negtest: annotation not found
         assertFalse(asmUtils.getExtensionAnnotationCustomValue(shipperName.get(), "missingAnnotation", "maxLength", false).isPresent());
-
     }
 
     @Test
-    @Disabled
     public void testGetResolvedExposedBy () {
         Optional<EAnnotation> exposedByAnnotation = asmUtils.all(EAnnotation.class).filter(a -> "http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy".equals(a.getSource())).findAny();
         Optional<EClass> internalAP = asmUtils.all(EClass.class).filter(a -> "InternalAP".equals(a.getName())).findAny();
@@ -155,7 +209,6 @@ public class AnnotationTest {
     }
 
     @Test
-    @Disabled
     public void testGetAccessPointsOfOperation () {
         Optional<EClass> unboundServices = asmUtils.all(EClass.class).filter(c -> "__UnboundServices".equals(c.getName())).findAny();
         assertTrue(unboundServices.isPresent());
@@ -166,20 +219,6 @@ public class AnnotationTest {
         assertTrue(internalAP.isPresent());
         assertThat(asmUtils.getAccessPointsOfOperation(getAllOrders.get()), hasItems(internalAP.get()));
     }
-
-//    @Test
-//    public void testGetExposedServicesOfAccessPoint () {
-//        Optional<EClass> internalAP = asmUtils.all(EClass.class).filter(c -> "InternalAP".equals(c.getName())).findAny();
-//        assertTrue(internalAP.isPresent());
-//
-//        //EOperations exposed by internalAP
-//        Optional<EOperation> getAllOrders = asmUtils.all(EOperation.class).filter(o -> "getAllOrders".equals(o.getName())).findAny();
-//        assertTrue(getAllOrders.isPresent());
-//        Optional<EOperation> createOrder = asmUtils.all(EOperation.class).filter(o -> "createOrder".equals(o.getName())).findAny();
-//        assertTrue(createOrder.isPresent());
-//
-//        assertThat(asmUtils.getExposedServicesOfAccessPoint(internalAP.get()), hasItems(getAllOrders.get(), createOrder.get()));
-//    }
 
     @Test
     public void testGetMappedEntity () {
@@ -214,7 +253,6 @@ public class AnnotationTest {
         assertThat(mappedAttribute.get(), equalTo(orderDate.get()));
     }
 
-
     @Test
     public void testGetMappedReference () {
         Optional<EClass> order = asmUtils.all(EClass.class).filter(c -> "Order".equals(c.getName())).findAny();
@@ -241,5 +279,4 @@ public class AnnotationTest {
         assertFalse(asmUtils.annotatedAsFalse(order.get(), "entity"));
         assertFalse(asmUtils.annotatedAsFalse(order.get(), "missingAnnotation"));
     }
-
 }
