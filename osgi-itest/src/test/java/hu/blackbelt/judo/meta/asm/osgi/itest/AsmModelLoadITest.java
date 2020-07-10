@@ -68,7 +68,7 @@ public class AsmModelLoadITest {
                 getAsmModelBundle()
         );
     }
-    
+
     private InputStream getAsmModelBundle() throws IOException, AsmValidationException {
     	
     	AsmModel asmModel = buildAsmModel()
