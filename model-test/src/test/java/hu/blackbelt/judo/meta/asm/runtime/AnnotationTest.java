@@ -4,18 +4,20 @@ import static hu.blackbelt.judo.meta.asm.runtime.AsmModel.buildAsmModel;
 import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEAnnotationBuilder;
 import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEAttributeBuilder;
 import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEClassBuilder;
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEDataTypeBuilder;
 import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEOperationBuilder;
 import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEPackageBuilder;
 import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEReferenceBuilder;
 import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.useEPackage;
 import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.useEReference;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.CoreMatchers.hasItems;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import org.eclipse.emf.common.util.EList;
@@ -23,20 +25,28 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAnnotation;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EClassifier;
+import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableMap;
 
+import hu.blackbelt.epsilon.runtime.execution.exceptions.EvlScriptExecutionException;
+import hu.blackbelt.epsilon.runtime.execution.impl.Slf4jLog;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class AnnotationTest {
 
     AsmModel asmModel;
     AsmUtils asmUtils;
     private final String createdSourceModelName = "urn:asm.judo-meta-asm";
+    private static final Logger logger = LoggerFactory.getLogger(AnnotationTest.class);
 
     @BeforeEach
     public void setUp () throws Exception {
@@ -46,10 +56,14 @@ public class AnnotationTest {
                 .build();
         asmUtils = new AsmUtils(asmModel.getResourceSet());
         
-        EAttribute orderDate = newEAttributeBuilder().withName("orderDate").build();
-        EAttribute orderDateAnnotated = newEAttributeBuilder().withName("orderDate").build();
-        EAttribute shipperName = newEAttributeBuilder().withName("shipperName").build();
-        EAttribute totalNumberOfOrders = newEAttributeBuilder().withName("totalNumberOfOrders").build();
+        EDataType timestamp = newEDataTypeBuilder().withName("Timestamp").withInstanceClassName("java.time.OffsetDateTime").build();
+        EDataType stringType = newEDataTypeBuilder().withName("String").withInstanceClassName("java.lang.String").build();
+        EDataType integerType = newEDataTypeBuilder().withName("Integer").withInstanceClassName("java.lang.Integer").build();
+    	
+        EAttribute orderDate = newEAttributeBuilder().withName("orderDate").withEType(timestamp).build();
+        EAttribute orderDateAnnotated = newEAttributeBuilder().withName("orderDate").withEType(timestamp).build();
+        EAttribute shipperName = newEAttributeBuilder().withName("shipperName").withEType(stringType).build();
+        EAttribute totalNumberOfOrders = newEAttributeBuilder().withName("totalNumberOfOrders").withEType(integerType).build();
         
     	EReference items = newEReferenceBuilder().withName("items").build();
     	EReference orderDetails = newEReferenceBuilder().withName("orderDetails").build();
@@ -58,25 +72,37 @@ public class AnnotationTest {
     	
     	EOperation getAllOrders = newEOperationBuilder().withName("getAllOrders").build();
     	
-    	EClassifier category = newEClassBuilder().withName("Category").withEStructuralFeatures(owner).build();
-    	EClassifier orderInfo = newEClassBuilder().withName("OrderInfo").withEStructuralFeatures(orderDateAnnotated,items).build();
-    	EClassifier productInfo = newEClassBuilder().withName("ProductInfo").build();
-    	EClassifier order = newEClassBuilder().withName("Order").withEStructuralFeatures(orderDate,orderDetails).build();
-    	EClassifier internationalOrderInfo = newEClassBuilder().withName("InternationalOrderInfo").withEStructuralFeatures(shipperName).build();
-    	EClassifier countries = newEClassBuilder().withName("Countries").build();
-    	EClassifier __static = newEClassBuilder().withName("__Static").withEStructuralFeatures(totalNumberOfOrders).build();
-    	EClassifier unboundServices = newEClassBuilder().withName("__UnboundServices").withEOperations(getAllOrders).build();
-    	EClassifier internalAP = newEClassBuilder().withName("InternalAP").withEStructuralFeatures(ordersAssignedToEmployee).build();
-    	useEReference(items).withEType(orderInfo).build();
+    	EClass category = newEClassBuilder().withName("Category").withEStructuralFeatures(owner).build();
+    	EClass orderInfo = newEClassBuilder().withName("OrderInfo").withEStructuralFeatures(orderDateAnnotated,items).build();
+    	EClass productInfo = newEClassBuilder().withName("ProductInfo").build();
+    	EClass order = newEClassBuilder().withName("Order").withEStructuralFeatures(orderDate,orderDetails).build();
+    	EClass internationalOrderInfo = newEClassBuilder().withName("InternationalOrderInfo").withEStructuralFeatures(shipperName).build();
+    	EClass countries = newEClassBuilder().withName("Countries").build();
+    	EClass __static = newEClassBuilder().withName("__Static").withEStructuralFeatures(totalNumberOfOrders).build();
+    	EClass unboundServices = newEClassBuilder().withName("__UnboundServices").withEOperations(getAllOrders).build();
+    	EClass internalAP = newEClassBuilder().withName("InternalAP").withEStructuralFeatures(ordersAssignedToEmployee).build();
+    	EClass employee = newEClassBuilder().withName("Employee").build();
+    	EClass orderDetail = newEClassBuilder().withName("OrderDetail").build();
     	
-        EPackage demo = newEPackageBuilder().withName("demo").build();
-    	EPackage services = newEPackageBuilder().withName("services").build();
-    	EPackage entities = newEPackageBuilder().withName("entities").build();
-    	EPackage types = newEPackageBuilder().withName("types").build();
+    	useEReference(items).withEType(orderInfo).build();
+    	useEReference(owner).withEType(employee).build();
+    	useEReference(ordersAssignedToEmployee).withEType(order).build();
+    	useEReference(orderDetails).withEType(orderDetail).build();
+    	
+    	//packages
+    	EPackage demo = newEPackageBuilder().withName("demo").withNsURI("http://blackbelt.hu/judo/northwind/northwind/demo")
+    			.withNsPrefix("runtimenorthwindNorthwindDemo").build();
+    	EPackage services = newEPackageBuilder().withName("services").withNsURI("http://blackbelt.hu/judo/northwind/northwind/services")
+    			.withNsPrefix("runtimenorthwindNorthwindServices").build();
+    	EPackage entities = newEPackageBuilder().withName("entities").withNsURI("http://blackbelt.hu/judo/northwind/northwind/entities")
+    			.withNsPrefix("runtimenorthwindNorthwindEntities").build();
+    	EPackage types = newEPackageBuilder().withName("types")
+    			.withNsURI("http://blackbelt.hu/judo/northwind/northwind/types")
+    			.withNsPrefix("runtimenorthwindNorthwindTypes").build();
     	
     	useEPackage(services).withEClassifiers(productInfo,orderInfo,internationalOrderInfo,unboundServices,__static).build();
-    	useEPackage(entities).withEClassifiers(order,category).build();
-    	useEPackage(types).withEClassifiers(countries).build();
+    	useEPackage(entities).withEClassifiers(order,category,employee,orderDetail).build();
+    	useEPackage(types).withEClassifiers(countries,timestamp,stringType,integerType).build();
     	useEPackage(demo).withESubpackages(services,entities,types).withEClassifiers(internalAP).build();
     	
     	asmModel.addContent(demo);
@@ -95,8 +121,31 @@ public class AnnotationTest {
     	operationAnnotation.getDetails().put("value", asmUtils.getClassifierFQName(internalAP));
     	EAnnotation apAnnotation = asmUtils.getExtensionAnnotationByName(internalAP, "accessPoint", true).get();
     	apAnnotation.getDetails().put("value", "true");
+    	EAnnotation employeeAnnotation = asmUtils.getExtensionAnnotationByName(employee, "entity", true).get();
+    	employeeAnnotation.getDetails().put("value", "true");
+    	EAnnotation orderDetailAnnotation = asmUtils.getExtensionAnnotationByName(orderDetail, "entity", true).get();
+    	orderDetailAnnotation.getDetails().put("value", "true");
+    	
+    	log.info(asmModel.getDiagnosticsAsString());
+    	assertTrue(asmModel.isValid());
+    	runEpsilonOnAsm();
     }
 
+    private void runEpsilonOnAsm() throws Exception {
+        try {
+            AsmEpsilonValidator.validateAsm(new Slf4jLog(),
+            		asmModel,
+            		AsmEpsilonValidator.calculateAsmValidationScriptURI(),
+            		Collections.emptyList(),
+            		Collections.emptyList());
+        } catch (EvlScriptExecutionException ex) {
+            logger.error("EVL failed", ex);
+            logger.error("\u001B[31m - unexpected errors: {}\u001B[0m", ex.getUnexpectedErrors());
+            logger.error("\u001B[33m - unexpected warnings: {}\u001B[0m", ex.getUnexpectedWarnings());
+            throw ex;
+        }
+    }
+    
     @Test
     public void testGetExtensionAnnotationExisting () {
         Optional<EClass> order = asmUtils.all(EClass.class).filter(c -> "Order".equals(c.getName())).findAny();

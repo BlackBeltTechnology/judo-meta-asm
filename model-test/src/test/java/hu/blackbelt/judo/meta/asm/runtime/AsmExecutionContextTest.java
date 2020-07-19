@@ -1,19 +1,16 @@
 package hu.blackbelt.judo.meta.asm.runtime;
 
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEPackageBuilder;
+
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.util.builder.EPackageBuilder;
-import org.eclipse.emf.ecore.util.builder.EcoreBuilders;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEPackageBuilder;
 
 class AsmExecutionContextTest {
 
     @Test
     @DisplayName("Create Asm model with builder pattern")
     void testAsmReflectiveCreated() throws Exception {
-
 
         AsmModel asmModel = AsmModel.buildAsmModel()
                 .name("test")

@@ -1,8 +1,21 @@
 package hu.blackbelt.judo.meta.asm.runtime;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import hu.blackbelt.judo.meta.asm.support.AsmModelResourceSupport;
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEAttributeBuilder;
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEClassBuilder;
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEOperationBuilder;
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEPackageBuilder;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EOperation;
@@ -16,18 +29,10 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Set;
-import java.util.stream.Collectors;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.*;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
+import hu.blackbelt.judo.meta.asm.support.AsmModelResourceSupport;
 
 public class InheritanceTest {
 
