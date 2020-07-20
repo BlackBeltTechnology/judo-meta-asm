@@ -41,7 +41,7 @@ import hu.blackbelt.epsilon.runtime.execution.impl.Slf4jLog;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class AnnotationTest extends AsmExecutionContextTest {
+public class AnnotationTest extends ExecutionContextOnAsmTest {
 
     @BeforeEach
     void setUp() throws Exception {
