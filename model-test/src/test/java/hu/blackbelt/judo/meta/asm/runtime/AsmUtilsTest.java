@@ -47,109 +47,11 @@ import hu.blackbelt.epsilon.runtime.execution.impl.Slf4jLog;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class AsmUtilsTest {
-
-	private AsmUtils asmUtils;
-	private AsmModel asmModel;
-    private final String createdSourceModelName = "urn:asm.judo-meta-asm";
-    private static final Logger logger = LoggerFactory.getLogger(AsmUtilsTest.class);
+public class AsmUtilsTest extends AsmExecutionContextTest {
 
     @BeforeEach
     public void setUp() throws Exception {
-    	asmModel = buildAsmModel()
-    			.uri(URI.createURI(createdSourceModelName))
-                .name("test")
-                .build();
-        asmUtils = new AsmUtils(asmModel.getResourceSet());
-        
-        EDataType timestamp = newEDataTypeBuilder().withName("Timestamp").withInstanceClassName("java.time.OffsetDateTime").build();
-        EDataType stringType = newEDataTypeBuilder().withName("String").withInstanceClassName("java.lang.String").build();
-        EDataType integerType = newEDataTypeBuilder().withName("Integer").withInstanceClassName("java.lang.Integer").build();
-    	
-        EAttribute orderDate = newEAttributeBuilder().withName("orderDate").withEType(timestamp).build();
-        EAttribute orderDateAnnotated = newEAttributeBuilder().withName("orderDate").withEType(timestamp).build();
-        EAttribute shipperName = newEAttributeBuilder().withName("shipperName").withEType(stringType).build();
-        EAttribute totalNumberOfOrders = newEAttributeBuilder().withName("totalNumberOfOrders").withEType(integerType).build();
-        
-    	EReference items = newEReferenceBuilder().withName("items").build();
-    	EReference orderDetails = newEReferenceBuilder().withName("orderDetails").build();
-    	EReference owner = newEReferenceBuilder().withName("owner").build();
-    	EReference ordersAssignedToEmployee = newEReferenceBuilder().withName("ordersAssignedToEmployee").build();
-    	
-    	EOperation getAllOrders = newEOperationBuilder().withName("getAllOrders").build();
-    	
-    	EClass category = newEClassBuilder().withName("Category").withEStructuralFeatures(owner).build();
-    	EClass orderInfo = newEClassBuilder().withName("OrderInfo").withEStructuralFeatures(orderDateAnnotated,items).build();
-    	EClass productInfo = newEClassBuilder().withName("ProductInfo").build();
-    	EClass order = newEClassBuilder().withName("Order").withEStructuralFeatures(orderDate,orderDetails).build();
-    	EClass internationalOrderInfo = newEClassBuilder().withName("InternationalOrderInfo").withEStructuralFeatures(shipperName).build();
-    	EClass countries = newEClassBuilder().withName("Countries").build();
-    	EClass __static = newEClassBuilder().withName("__Static").withEStructuralFeatures(totalNumberOfOrders).build();
-    	EClass unboundServices = newEClassBuilder().withName("__UnboundServices").withEOperations(getAllOrders).build();
-    	EClass internalAP = newEClassBuilder().withName("InternalAP").withEStructuralFeatures(ordersAssignedToEmployee).build();
-    	EClass employee = newEClassBuilder().withName("Employee").build();
-    	EClass orderDetail = newEClassBuilder().withName("OrderDetail").build();
-    	
-    	useEReference(items).withEType(orderInfo).build();
-    	useEReference(owner).withEType(employee).build();
-    	useEReference(ordersAssignedToEmployee).withEType(order).build();
-    	useEReference(orderDetails).withEType(orderDetail).build();
-    	
-    	//packages
-    	EPackage demo = newEPackageBuilder().withName("demo").withNsURI("http://blackbelt.hu/judo/northwind/northwind/demo")
-    			.withNsPrefix("runtimenorthwindNorthwindDemo").build();
-    	EPackage services = newEPackageBuilder().withName("services").withNsURI("http://blackbelt.hu/judo/northwind/northwind/services")
-    			.withNsPrefix("runtimenorthwindNorthwindServices").build();
-    	EPackage entities = newEPackageBuilder().withName("entities").withNsURI("http://blackbelt.hu/judo/northwind/northwind/entities")
-    			.withNsPrefix("runtimenorthwindNorthwindEntities").build();
-    	EPackage types = newEPackageBuilder().withName("types")
-    			.withNsURI("http://blackbelt.hu/judo/northwind/northwind/types")
-    			.withNsPrefix("runtimenorthwindNorthwindTypes").build();
-    	
-    	useEPackage(services).withEClassifiers(productInfo,orderInfo,internationalOrderInfo,unboundServices,__static).build();
-    	useEPackage(entities).withEClassifiers(order,category,employee,orderDetail).build();
-    	useEPackage(types).withEClassifiers(countries,timestamp,stringType,integerType).build();
-    	useEPackage(demo).withESubpackages(services,entities,types).withEClassifiers(internalAP).build();
-    	
-    	asmModel.addContent(demo);
-    	
-    	EAnnotation annotation = asmUtils.getExtensionAnnotationByName(orderInfo, "mappedEntityType", true).get();
-    	annotation.getDetails().put("value", asmUtils.getClassifierFQName(order));
-    	EAnnotation entityAnnotation = asmUtils.getExtensionAnnotationByName(order, "entity", true).get();
-    	entityAnnotation.getDetails().put("value", "true");
-    	EAnnotation attributeAnnotation = asmUtils.getExtensionAnnotationByName(orderDateAnnotated, "binding", true).get();
-    	attributeAnnotation.getDetails().put("value", orderDate.getName());
-    	EAnnotation referenceAnnotation = asmUtils.getExtensionAnnotationByName(items, "binding", true).get();
-    	referenceAnnotation.getDetails().put("value", orderDetails.getName());
-    	EAnnotation shipperNameAnnotation = asmUtils.getExtensionAnnotationByName(shipperName, "constraints", true).get();
-    	shipperNameAnnotation.getDetails().put("maxLength", "255");
-    	EAnnotation operationAnnotation = asmUtils.getExtensionAnnotationByName(getAllOrders, "exposedBy", true).get();
-    	operationAnnotation.getDetails().put("value", asmUtils.getClassifierFQName(internalAP));
-    	EAnnotation apAnnotation = asmUtils.getExtensionAnnotationByName(internalAP, "accessPoint", true).get();
-    	apAnnotation.getDetails().put("value", "true");
-    	EAnnotation employeeAnnotation = asmUtils.getExtensionAnnotationByName(employee, "entity", true).get();
-    	employeeAnnotation.getDetails().put("value", "true");
-    	EAnnotation orderDetailAnnotation = asmUtils.getExtensionAnnotationByName(orderDetail, "entity", true).get();
-    	orderDetailAnnotation.getDetails().put("value", "true");
-    	
-    	log.info(asmModel.getDiagnosticsAsString());
-    	assertTrue(asmModel.isValid());
-    	runEpsilonOnAsm();
-    }
-    
-    private void runEpsilonOnAsm() throws Exception {
-        try {
-            AsmEpsilonValidator.validateAsm(new Slf4jLog(),
-            		asmModel,
-            		AsmEpsilonValidator.calculateAsmValidationScriptURI(),
-            		Collections.emptyList(),
-            		Collections.emptyList());
-        } catch (EvlScriptExecutionException ex) {
-            logger.error("EVL failed", ex);
-            logger.error("\u001B[31m - unexpected errors: {}\u001B[0m", ex.getUnexpectedErrors());
-            logger.error("\u001B[33m - unexpected warnings: {}\u001B[0m", ex.getUnexpectedWarnings());
-            throw ex;
-        }
+    	super.setUp();
     }
 
     @Test
