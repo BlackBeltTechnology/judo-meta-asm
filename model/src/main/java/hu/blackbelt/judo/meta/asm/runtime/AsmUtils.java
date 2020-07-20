@@ -888,6 +888,15 @@ public class AsmUtils {
                         log.debug(pad(level, "    - operation: {}"), getOperationFQName(operation));
                     }
 
+                    if (getBehaviour(operation)
+                            .filter(b -> OperationBehaviour.GET_PRINCIPAL.equals(b) && !EcoreUtil.equals(transferObjectType, operation.getEContainingClass()))
+                            .isPresent()) {
+                        if (log.isDebugEnabled()) {
+                            log.debug(pad(level, "    - GET_PRINCIPAL operation is exposed by it container transfer object type only"));
+                        }
+                        return;
+                    }
+
                     if (graph != null) {
                         addExtensionAnnotation(operation, EXPOSED_GRAPH_ANNOTATION_NAME, getReferenceFQName(graph));
                     }
