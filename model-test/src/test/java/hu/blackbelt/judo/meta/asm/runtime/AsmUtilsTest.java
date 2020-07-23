@@ -1,6 +1,19 @@
 package hu.blackbelt.judo.meta.asm.runtime;
 
-import com.google.common.collect.ImmutableList;
+import static hu.blackbelt.judo.meta.asm.runtime.AsmUtils.getAnnotationUri;
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEAnnotationBuilder;
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEAttributeBuilder;
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEClassBuilder;
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEPackageBuilder;
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEReferenceBuilder;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.File;
+import java.util.Optional;
+
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAnnotation;
 import org.eclipse.emf.ecore.EAttribute;
@@ -16,43 +29,29 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
-import java.util.Optional;
+import com.google.common.collect.ImmutableList;
 
-import static hu.blackbelt.judo.meta.asm.runtime.AsmModel.LoadArguments.asmLoadArgumentsBuilder;
-import static hu.blackbelt.judo.meta.asm.runtime.AsmModel.loadAsmModel;
-import static hu.blackbelt.judo.meta.asm.runtime.AsmUtils.getAnnotationUri;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.*;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import lombok.extern.slf4j.Slf4j;
 
-public class AsmUtilsTest {
-
-    AsmUtils asmUtils;
-    AsmModel asmModel;
+@Slf4j
+public class AsmUtilsTest extends ExecutionContextOnAsmTest {
 
     @BeforeEach
     public void setUp() throws Exception {
-        asmModel = loadAsmModel(asmLoadArgumentsBuilder()
-                .uri(URI.createFileURI(new File("target/test-classes/model/northwind-asm.model").getAbsolutePath()))
-                .name("test"));
-        asmUtils = new AsmUtils(asmModel.getResourceSet());
+    	super.setUp();
     }
 
     @Test
     public void testGetPackageFQName() {
-        Optional<EPackage> ePackage = asmUtils.all(EPackage.class).filter(pkg -> "services".equals(pkg.getName()))
+    	Optional<EPackage> ePackage = asmUtils.all(EPackage.class).filter(pkg -> "services".equals(pkg.getName()))
                 .findAny();
 
         assertTrue(ePackage.isPresent());
         assertThat(asmUtils.getPackageFQName(ePackage.get()), is("demo.services"));
     }
-
+    
     @Test
     public void testGetClassifierFQName() {
         Optional<EClassifier> eClassifier = asmUtils.all(EClassifier.class)
@@ -63,7 +62,6 @@ public class AsmUtilsTest {
     }
 
     @Test
-    @Disabled
     public void testGetAttributeFQName() {
         Optional<EAttribute> eAttribute = asmUtils.all(EAttribute.class)
                 .filter(attr -> "totalNumberOfOrders".equals(attr.getName())).findAny();
@@ -82,7 +80,6 @@ public class AsmUtilsTest {
     }
 
     @Test
-    @Disabled
     public void testGetOperationFQName() {
         Optional<EOperation> eOperation = asmUtils.all(EOperation.class)
                 .filter(op -> "getAllOrders".equals(op.getName())).findAny();
@@ -425,7 +422,6 @@ public class AsmUtilsTest {
     }
 
     @Test
-    @Disabled
     public void testGetResolvedRoot() {
         Optional<EClass> internalAP = asmUtils.all(EClass.class).filter(c -> "InternalAP".equals(c.getName())).findAny();
         Optional<EClass> orderInfoQuery = asmUtils.all(EClass.class).filter(c -> "OrderInfoQuery".equals(c.getName())).findAny();

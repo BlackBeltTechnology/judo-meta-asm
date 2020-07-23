@@ -1,42 +1,35 @@
 package hu.blackbelt.judo.meta.asm.runtime;
 
-import com.google.common.collect.ImmutableMap;
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEAnnotationBuilder;
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEClassBuilder;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.hasItems;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.Optional;
+
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAnnotation;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EReference;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import java.io.File;
-import java.util.Optional;
+import com.google.common.collect.ImmutableMap;
 
-import static hu.blackbelt.judo.meta.asm.runtime.AsmModel.LoadArguments.asmLoadArgumentsBuilder;
-import static hu.blackbelt.judo.meta.asm.runtime.AsmModel.loadAsmModel;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEAnnotationBuilder;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEClassBuilder;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasItems;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import lombok.extern.slf4j.Slf4j;
 
-public class AnnotationTest {
-
-    AsmModel asmModel;
-    AsmUtils asmUtils;
+@Slf4j
+public class AnnotationTest extends ExecutionContextOnAsmTest {
 
     @BeforeEach
-    public void setUp () throws Exception {
-        asmModel = loadAsmModel(asmLoadArgumentsBuilder()
-                .uri(URI.createFileURI(new File("target/test-classes/model/northwind-asm.model").getAbsolutePath()))
-                .name("test"));
-        asmUtils = new AsmUtils(asmModel.getResourceSet());
+    void setUp() throws Exception {
+        super.setUp();
     }
 
     @Test
@@ -111,9 +104,7 @@ public class AnnotationTest {
         assertFalse(exposedGraphValue.isPresent());
     }
 
-
     @Test
-    @Disabled
     public void testGetExtensionAnnotationCustomValue () {
         Optional<EClass> internationalOrderInfo = asmUtils.all(EClass.class).filter(c -> "InternationalOrderInfo".equals(c.getName())).findAny();
         assertTrue(internationalOrderInfo.isPresent());
@@ -127,11 +118,9 @@ public class AnnotationTest {
 
         //negtest: annotation not found
         assertFalse(asmUtils.getExtensionAnnotationCustomValue(shipperName.get(), "missingAnnotation", "maxLength", false).isPresent());
-
     }
 
     @Test
-    @Disabled
     public void testGetResolvedExposedBy () {
         Optional<EAnnotation> exposedByAnnotation = asmUtils.all(EAnnotation.class).filter(a -> "http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy".equals(a.getSource())).findAny();
         Optional<EClass> internalAP = asmUtils.all(EClass.class).filter(a -> "InternalAP".equals(a.getName())).findAny();
@@ -145,7 +134,7 @@ public class AnnotationTest {
 
         //negtest: access point not found
         EAnnotation annotationWithInvalidValue = newEAnnotationBuilder().withSource("http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy").build();
-        annotationWithInvalidValue.getDetails().put("value", "demo.services.InternalAP");
+        annotationWithInvalidValue.getDetails().put("value", "demo.services.ExternalAP");
         assertThat(asmUtils.getResolvedExposedBy(annotationWithInvalidValue), is(Optional.empty()));
 
         //negtest: annotation not pointing to an AccessPoint
@@ -155,7 +144,6 @@ public class AnnotationTest {
     }
 
     @Test
-    @Disabled
     public void testGetAccessPointsOfOperation () {
         Optional<EClass> unboundServices = asmUtils.all(EClass.class).filter(c -> "__UnboundServices".equals(c.getName())).findAny();
         assertTrue(unboundServices.isPresent());
@@ -166,20 +154,6 @@ public class AnnotationTest {
         assertTrue(internalAP.isPresent());
         assertThat(asmUtils.getAccessPointsOfOperation(getAllOrders.get()), hasItems(internalAP.get()));
     }
-
-//    @Test
-//    public void testGetExposedServicesOfAccessPoint () {
-//        Optional<EClass> internalAP = asmUtils.all(EClass.class).filter(c -> "InternalAP".equals(c.getName())).findAny();
-//        assertTrue(internalAP.isPresent());
-//
-//        //EOperations exposed by internalAP
-//        Optional<EOperation> getAllOrders = asmUtils.all(EOperation.class).filter(o -> "getAllOrders".equals(o.getName())).findAny();
-//        assertTrue(getAllOrders.isPresent());
-//        Optional<EOperation> createOrder = asmUtils.all(EOperation.class).filter(o -> "createOrder".equals(o.getName())).findAny();
-//        assertTrue(createOrder.isPresent());
-//
-//        assertThat(asmUtils.getExposedServicesOfAccessPoint(internalAP.get()), hasItems(getAllOrders.get(), createOrder.get()));
-//    }
 
     @Test
     public void testGetMappedEntity () {
@@ -214,7 +188,6 @@ public class AnnotationTest {
         assertThat(mappedAttribute.get(), equalTo(orderDate.get()));
     }
 
-
     @Test
     public void testGetMappedReference () {
         Optional<EClass> order = asmUtils.all(EClass.class).filter(c -> "Order".equals(c.getName())).findAny();
@@ -241,5 +214,4 @@ public class AnnotationTest {
         assertFalse(asmUtils.annotatedAsFalse(order.get(), "entity"));
         assertFalse(asmUtils.annotatedAsFalse(order.get(), "missingAnnotation"));
     }
-
 }
