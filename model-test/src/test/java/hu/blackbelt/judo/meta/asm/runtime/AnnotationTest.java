@@ -1,15 +1,7 @@
 package hu.blackbelt.judo.meta.asm.runtime;
 
-import static hu.blackbelt.judo.meta.asm.runtime.AsmModel.buildAsmModel;
 import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEAnnotationBuilder;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEAttributeBuilder;
 import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEClassBuilder;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEDataTypeBuilder;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEOperationBuilder;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEPackageBuilder;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEReferenceBuilder;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.useEPackage;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.useEReference;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
@@ -17,27 +9,19 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.Collections;
 import java.util.Optional;
 
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EAnnotation;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EOperation;
-import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EReference;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableMap;
 
-import hu.blackbelt.epsilon.runtime.execution.exceptions.EvlScriptExecutionException;
-import hu.blackbelt.epsilon.runtime.execution.impl.Slf4jLog;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

@@ -1,15 +1,22 @@
 package hu.blackbelt.judo.meta.asm.osgi.itest;
 
-import hu.blackbelt.epsilon.runtime.execution.impl.StringBuilderLogger;
-import hu.blackbelt.judo.meta.asm.runtime.AsmEpsilonValidator;
-import hu.blackbelt.judo.meta.asm.runtime.AsmModel;
-import hu.blackbelt.judo.meta.asm.runtime.AsmModel.AsmValidationException;
-import hu.blackbelt.judo.meta.asm.runtime.AsmModel.SaveArguments;
-import hu.blackbelt.judo.meta.asm.runtime.AsmUtils;
-import hu.blackbelt.osgi.utils.osgi.api.BundleTrackerManager;
+import static hu.blackbelt.judo.meta.asm.osgi.itest.AsmKarafFeatureProvider.getRuntimeFeaturesForMetamodel;
+import static hu.blackbelt.judo.meta.asm.runtime.AsmModel.buildAsmModel;
+import static org.junit.Assert.assertFalse;
+import static org.ops4j.pax.exam.CoreOptions.maven;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
+import static org.ops4j.pax.exam.CoreOptions.provision;
+import static org.ops4j.pax.exam.OptionUtils.combine;
+import static org.ops4j.pax.tinybundles.core.TinyBundles.bundle;
+import static org.ops4j.pax.tinybundles.core.TinyBundles.withBnd;
 
-import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.util.builder.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
@@ -21,18 +28,12 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.osgi.service.log.LogService;
 
-import javax.inject.Inject;
-import java.io.*;
-
-import static hu.blackbelt.judo.meta.asm.osgi.itest.AsmKarafFeatureProvider.*;
-import static hu.blackbelt.judo.meta.asm.runtime.AsmModel.buildAsmModel;
-import static org.junit.Assert.assertFalse;
-import static org.ops4j.pax.exam.CoreOptions.*;
-import static org.ops4j.pax.exam.OptionUtils.combine;
-import static org.ops4j.pax.tinybundles.core.TinyBundles.bundle;
-import static org.ops4j.pax.tinybundles.core.TinyBundles.withBnd;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEClassBuilder;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.useEClass;
+import hu.blackbelt.epsilon.runtime.execution.impl.StringBuilderLogger;
+import hu.blackbelt.judo.meta.asm.runtime.AsmEpsilonValidator;
+import hu.blackbelt.judo.meta.asm.runtime.AsmModel;
+import hu.blackbelt.judo.meta.asm.runtime.AsmModel.AsmValidationException;
+import hu.blackbelt.judo.meta.asm.runtime.AsmModel.SaveArguments;
+import hu.blackbelt.osgi.utils.osgi.api.BundleTrackerManager;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
