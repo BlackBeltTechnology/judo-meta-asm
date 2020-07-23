@@ -38,7 +38,7 @@ class ExecutionContextOnAsmTest {
     AsmModel asmModel;
 	AsmUtils asmUtils;
 	
-	private static final Logger logger = LoggerFactory.getLogger(AsmExecutionContextTest.class);
+	private static final Logger logger = LoggerFactory.getLogger(ExecutionContextOnAsmTest.class);
     
     void setUp() throws Exception {
     	asmModel = buildAsmModel()
