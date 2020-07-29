@@ -502,6 +502,26 @@ public class AsmUtils {
     }
 
     /**
+     * Check if an operations is parameterized
+     *
+     * @param eOperation operation
+     * @return <code>true</code> if operation is parameterized, <code>false</code> otherwise
+     */
+    public static boolean isParameterized(final EOperation eOperation) {
+        return !eOperation.getEParameters().isEmpty();
+    }
+
+    /**
+     * Check if an operation is considered to be a GET method
+     *
+     * @param eOperation operation
+     * @return <code>true</code> if operation is is considered to be a GET method, <code>false</code> otherwise
+     */
+    public static boolean isGetMethod(final EOperation eOperation) {
+        return isStateless(eOperation) && !isParameterized(eOperation);
+    }
+
+    /**
      * Check if an operation is bound.
      *
      * @param eOperation operation
