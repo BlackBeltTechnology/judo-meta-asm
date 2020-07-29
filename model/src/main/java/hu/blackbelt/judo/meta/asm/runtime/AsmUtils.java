@@ -851,9 +851,9 @@ public class AsmUtils {
      * @param transferObjectType       transfer object type
      * @param accessPointFqName        fully qualified name of the access point
      * @param graph                    exposed by graph (not service group)
-     * @param includeUnboundOperations include unbound operations
+     * @param includeOperations        include operations
      */
-    void addExposedByAnnotationToTransferObjectType(final EClass transferObjectType, final String accessPointFqName, final EReference graph, final boolean includeUnboundOperations, final int level) {
+    void addExposedByAnnotationToTransferObjectType(final EClass transferObjectType, final String accessPointFqName, final EReference graph, final boolean includeOperations, final int level) {
         if (log.isDebugEnabled()) {
             log.debug(pad(level, "  - transfer object type: {}"), getClassifierFQName(transferObjectType));
         }
@@ -872,7 +872,7 @@ public class AsmUtils {
             }
         });
         if (exposedByAdded || exposedGraphAdded) {
-            transferObjectType.getEAllSuperTypes().forEach(superType -> addExposedByAnnotationToTransferObjectType(superType, accessPointFqName, graph, includeUnboundOperations, level + 1));
+            transferObjectType.getEAllSuperTypes().forEach(superType -> addExposedByAnnotationToTransferObjectType(superType, accessPointFqName, graph, includeOperations, level + 1));
         }
 
         if (isMappedTransferObjectType(transferObjectType)) {
@@ -880,9 +880,7 @@ public class AsmUtils {
         }
 
         getAllOperationImplementations(transferObjectType).stream()
-                .filter(o -> graph != null && isBound(o) && exposedGraphAdded ||
-                        graph != null && isUnbound(o) && (!getBehaviour(o).isPresent() || EcoreUtil.equals(getOwnerOfOperationWithDefaultBehaviour(o).orElse(null), graph)) && exposedGraphAdded ||
-                        graph == null && includeUnboundOperations && exposedByAdded)
+                .filter(o -> includeOperations && (graph != null && exposedGraphAdded || graph == null && exposedByAdded))
                 .forEach(operation -> {
                     if (log.isDebugEnabled()) {
                         log.debug(pad(level, "    - operation: {}"), getOperationFQName(operation));
@@ -910,7 +908,7 @@ public class AsmUtils {
                         final EClassifier type = inputParameter.getEType();
                         if (type instanceof EClass) {
                             addExtensionAnnotation(inputParameter, EXPOSED_BY_ANNOTATION_NAME, accessPointFqName);
-                            addExposedByAnnotationToTransferObjectType((EClass) inputParameter.getEType(), accessPointFqName, graph, graph != null, level + 1);
+                            addExposedByAnnotationToTransferObjectType((EClass) inputParameter.getEType(), accessPointFqName, graph, includeOperations, level + 1);
                         } else {
                             log.error("Input parameters must be transfer object types (EClass)");
                         }
@@ -922,7 +920,7 @@ public class AsmUtils {
                         final EClassifier type = operation.getEType();
                         if (type instanceof EClass) {
                             addExtensionAnnotation(operation, EXPOSED_BY_ANNOTATION_NAME, accessPointFqName);
-                            addExposedByAnnotationToTransferObjectType((EClass) operation.getEType(), accessPointFqName, graph, graph != null, level + 1);
+                            addExposedByAnnotationToTransferObjectType((EClass) operation.getEType(), accessPointFqName, graph, includeOperations, level + 1);
                         } else {
                             log.error("Output parameter must be transfer object type (EClass)");
                         }
@@ -932,7 +930,7 @@ public class AsmUtils {
                             log.debug(pad(level, "        - fault parameter ({}): {}"), faultParameter.getName(), getClassifierFQName(faultParameter));
                         }
                         if (faultParameter instanceof EClass) {
-                            addExposedByAnnotationToTransferObjectType((EClass) faultParameter, accessPointFqName, graph, graph != null, level + 1);
+                            addExposedByAnnotationToTransferObjectType((EClass) faultParameter, accessPointFqName, graph, includeOperations, level + 1);
                         } else {
                             log.error("Fault parameters must be transfer object types (EClass)");
                         }
