@@ -68,7 +68,7 @@
 		<emf-genmodel-generator-version>1.0.1</emf-genmodel-generator-version>
 		<judo-genmodel-generator-version>1.0.0</judo-genmodel-generator-version>
 
-		<judo-meta-psm-version>1.1.0.20200806_131029_8993f51_develop</judo-meta-psm-version>
+		<judo-meta-psm-version>1.1.0.20200827_135634_aa92921_develop</judo-meta-psm-version>
 		<judo-meta-psm-import-range>[1.0,1.1)</judo-meta-psm-import-range>
 
 		<!-- Xtend / Xcore -->
