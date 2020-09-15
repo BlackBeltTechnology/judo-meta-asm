@@ -280,8 +280,8 @@ class ExecutionContextOnAsmTest {
     	annotationInternationalOrderInfo.getDetails().put("value", asmUtils.getClassifierFQName(internationalOrder));
     	EAnnotation annotationProductInfo = asmUtils.getExtensionAnnotationByName(productInfo, "mappedEntityType", true).get();
     	annotationProductInfo.getDetails().put("value", asmUtils.getClassifierFQName(product));
-    	EAnnotation apAnnotation = asmUtils.getExtensionAnnotationByName(internalAP, "accessPoint", true).get();
-    	apAnnotation.getDetails().put("value", "true");
+    	EAnnotation actorTypeAnnotation = asmUtils.getExtensionAnnotationByName(internalAP, "actorType", true).get();
+    	actorTypeAnnotation.getDetails().put("value", "true");
     	EAnnotation operationAnnotation = asmUtils.getExtensionAnnotationByName(getAllOrders, "exposedBy", true).get();
     	operationAnnotation.getDetails().put("value", asmUtils.getClassifierFQName(internalAP));
     }

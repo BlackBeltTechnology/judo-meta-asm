@@ -137,14 +137,14 @@ public class AnnotationTest extends ExecutionContextOnAsmTest {
         annotationWithInvalidValue.getDetails().put("value", "demo.services.ExternalAP");
         assertThat(asmUtils.getResolvedExposedBy(annotationWithInvalidValue), is(Optional.empty()));
 
-        //negtest: annotation not pointing to an AccessPoint
-        EAnnotation annotationExposingInvalidAccessPoint = newEAnnotationBuilder().withSource("http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy").build();
-        annotationExposingInvalidAccessPoint.getDetails().put("value", "demo.entities.Order");
-        assertThat(asmUtils.getResolvedExposedBy(annotationExposingInvalidAccessPoint), is(Optional.empty()));
+        //negtest: annotation not pointing to an ActorType
+        EAnnotation annotationExposingInvalidActorType = newEAnnotationBuilder().withSource("http://blackbelt.hu/judo/meta/ExtendedMetadata/exposedBy").build();
+        annotationExposingInvalidActorType.getDetails().put("value", "demo.entities.Order");
+        assertThat(asmUtils.getResolvedExposedBy(annotationExposingInvalidActorType), is(Optional.empty()));
     }
 
     @Test
-    public void testGetAccessPointsOfOperation () {
+    public void testGetActorTypesOfOperation () {
         Optional<EClass> unboundServices = asmUtils.all(EClass.class).filter(c -> "__UnboundServices".equals(c.getName())).findAny();
         assertTrue(unboundServices.isPresent());
         Optional<EOperation> getAllOrders = unboundServices.get().getEOperations().stream().filter(o -> "getAllOrders".equals(o.getName())).findAny();
@@ -152,7 +152,7 @@ public class AnnotationTest extends ExecutionContextOnAsmTest {
 
         Optional<EClass> internalAP = asmUtils.all(EClass.class).filter(a -> "InternalAP".equals(a.getName())).findAny();
         assertTrue(internalAP.isPresent());
-        assertThat(asmUtils.getAccessPointsOfOperation(getAllOrders.get()), hasItems(internalAP.get()));
+        assertThat(asmUtils.getActorTypesOfOperation(getAllOrders.get()), hasItems(internalAP.get()));
     }
 
     @Test
