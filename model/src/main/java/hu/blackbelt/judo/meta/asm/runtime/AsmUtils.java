@@ -881,61 +881,63 @@ public class AsmUtils {
 
         getAllOperationImplementations(transferObjectType).stream()
                 .filter(o -> includeOperations && (graph != null && exposedGraphAdded || graph == null && exposedByAdded))
-                .forEach(operation -> {
-                    if (log.isDebugEnabled()) {
-                        log.debug(pad(level, "    - operation: {}"), getOperationFQName(operation));
-                    }
+                .forEach(operation -> addExposedByAnnotationToTransferOperation(transferObjectType, actorTypeFqName, graph, includeOperations, operation, level));
+    }
 
-                    if (getBehaviour(operation)
-                            .filter(b -> OperationBehaviour.GET_PRINCIPAL.equals(b) && !EcoreUtil.equals(transferObjectType, operation.getEContainingClass()))
-                            .isPresent()) {
-                        if (log.isDebugEnabled()) {
-                            log.debug(pad(level, "    - GET_PRINCIPAL operation is exposed by it container transfer object type only"));
-                        }
-                        return;
-                    }
+    private void addExposedByAnnotationToTransferOperation(final EClass transferObjectType, final String actorTypeFqName, final EReference graph, final boolean includeOperations, final EOperation operation, final int level) {
+        if (log.isDebugEnabled()) {
+            log.debug(pad(level, "    - operation: {}"), getOperationFQName(operation));
+        }
 
-                    if (graph != null) {
-                        addExtensionAnnotation(operation, EXPOSED_GRAPH_ANNOTATION_NAME, getReferenceFQName(graph));
-                    }
+        if (getBehaviour(operation)
+                .filter(b -> OperationBehaviour.GET_PRINCIPAL.equals(b) && !EcoreUtil.equals(transferObjectType, operation.getEContainingClass()))
+                .isPresent()) {
+            if (log.isDebugEnabled()) {
+                log.debug(pad(level, "    - GET_PRINCIPAL operation is exposed by it container transfer object type only"));
+            }
+            return;
+        }
 
-                    addExtensionAnnotation(operation, EXPOSED_BY_ANNOTATION_NAME, actorTypeFqName);
+        if (graph != null) {
+            addExtensionAnnotation(operation, EXPOSED_GRAPH_ANNOTATION_NAME, getReferenceFQName(graph));
+        }
 
-                    operation.getEParameters().forEach(inputParameter -> {
-                        if (log.isDebugEnabled()) {
-                            log.debug(pad(level, "      - input parameter ({}): {}"), inputParameter.getName(), getClassifierFQName(inputParameter.getEType()));
-                        }
-                        final EClassifier type = inputParameter.getEType();
-                        if (type instanceof EClass) {
-                            addExtensionAnnotation(inputParameter, EXPOSED_BY_ANNOTATION_NAME, actorTypeFqName);
-                            addExposedByAnnotationToTransferObjectType((EClass) inputParameter.getEType(), actorTypeFqName, graph, includeOperations, level + 1);
-                        } else {
-                            log.error("Input parameters must be transfer object types (EClass)");
-                        }
-                    });
-                    if (operation.getEType() != null) {
-                        if (log.isDebugEnabled()) {
-                            log.debug(pad(level, "        - output parameter ({}): {}"), getOutputParameterName(operation).orElse(""), getClassifierFQName(operation.getEType()));
-                        }
-                        final EClassifier type = operation.getEType();
-                        if (type instanceof EClass) {
-                            addExtensionAnnotation(operation, EXPOSED_BY_ANNOTATION_NAME, actorTypeFqName);
-                            addExposedByAnnotationToTransferObjectType((EClass) operation.getEType(), actorTypeFqName, graph, includeOperations, level + 1);
-                        } else {
-                            log.error("Output parameter must be transfer object type (EClass)");
-                        }
-                    }
-                    operation.getEExceptions().forEach(faultParameter -> {
-                        if (log.isDebugEnabled()) {
-                            log.debug(pad(level, "        - fault parameter ({}): {}"), faultParameter.getName(), getClassifierFQName(faultParameter));
-                        }
-                        if (faultParameter instanceof EClass) {
-                            addExposedByAnnotationToTransferObjectType((EClass) faultParameter, actorTypeFqName, graph, includeOperations, level + 1);
-                        } else {
-                            log.error("Fault parameters must be transfer object types (EClass)");
-                        }
-                    });
-                });
+        addExtensionAnnotation(operation, EXPOSED_BY_ANNOTATION_NAME, actorTypeFqName);
+
+        operation.getEParameters().forEach(inputParameter -> {
+            if (log.isDebugEnabled()) {
+                log.debug(pad(level, "      - input parameter ({}): {}"), inputParameter.getName(), getClassifierFQName(inputParameter.getEType()));
+            }
+            final EClassifier type = inputParameter.getEType();
+            if (type instanceof EClass) {
+                addExtensionAnnotation(inputParameter, EXPOSED_BY_ANNOTATION_NAME, actorTypeFqName);
+                addExposedByAnnotationToTransferObjectType((EClass) inputParameter.getEType(), actorTypeFqName, graph, includeOperations, level + 1);
+            } else {
+                log.error("Input parameters must be transfer object types (EClass)");
+            }
+        });
+        if (operation.getEType() != null) {
+            if (log.isDebugEnabled()) {
+                log.debug(pad(level, "        - output parameter ({}): {}"), getOutputParameterName(operation).orElse(""), getClassifierFQName(operation.getEType()));
+            }
+            final EClassifier type = operation.getEType();
+            if (type instanceof EClass) {
+                addExtensionAnnotation(operation, EXPOSED_BY_ANNOTATION_NAME, actorTypeFqName);
+                addExposedByAnnotationToTransferObjectType((EClass) operation.getEType(), actorTypeFqName, graph, includeOperations, level + 1);
+            } else {
+                log.error("Output parameter must be transfer object type (EClass)");
+            }
+        }
+        operation.getEExceptions().forEach(faultParameter -> {
+            if (log.isDebugEnabled()) {
+                log.debug(pad(level, "        - fault parameter ({}): {}"), faultParameter.getName(), getClassifierFQName(faultParameter));
+            }
+            if (faultParameter instanceof EClass) {
+                addExposedByAnnotationToTransferObjectType((EClass) faultParameter, actorTypeFqName, graph, includeOperations, level + 1);
+            } else {
+                log.error("Fault parameters must be transfer object types (EClass)");
+            }
+        });
     }
 
     /**
@@ -952,6 +954,7 @@ public class AsmUtils {
                     .filter(ap -> getExtensionAnnotationListByName(ap, "actor").stream()
                             .anyMatch(a -> a.getDetails().get("name") != null && a.getDetails().get("name").replace("::", ".").equals(getClassifierFQName(actorType))))
                     .forEach(accessPoint -> addExposedByAnnotationToTransferObjectType(accessPoint, actorTypeFqName, null, true, 0));
+            addExposedByAnnotationToTransferObjectType(actorType, actorTypeFqName, null, true, 0);
 
             getGraphListOfActorType(actorType).forEach(exposedGraph -> {
                 final String exposedGraphFqName = getReferenceFQName(exposedGraph);
