@@ -848,10 +848,10 @@ public class AsmUtils {
     /**
      * Add exposed by annotation to (both mapped an unmapped) transfer object types.
      *
-     * @param transferObjectType       transfer object type
-     * @param actorTypeFqName          fully qualified name of the actor type
-     * @param graph                    exposed by graph (not service group)
-     * @param includeOperations        include operations
+     * @param transferObjectType transfer object type
+     * @param actorTypeFqName    fully qualified name of the actor type
+     * @param graph              exposed by graph (not service group)
+     * @param includeOperations  include operations
      */
     void addExposedByAnnotationToTransferObjectType(final EClass transferObjectType, final String actorTypeFqName, final EReference graph, final boolean includeOperations, final int level) {
         if (log.isDebugEnabled()) {
@@ -865,12 +865,14 @@ public class AsmUtils {
             exposedGraphAdded = false;
         }
         transferObjectType.getEAllAttributes().stream().forEach(a -> addExtensionAnnotation(a, EXPOSED_BY_ANNOTATION_NAME, actorTypeFqName));
-        transferObjectType.getEAllReferences().stream().forEach(r -> {
-            final boolean added = addExtensionAnnotation(r, EXPOSED_BY_ANNOTATION_NAME, actorTypeFqName);
-            if (r.isContainment() && added) {
-                addExposedByAnnotationToTransferObjectType(r.getEReferenceType(), actorTypeFqName, null, false, level + 1);
-            }
-        });
+        transferObjectType.getEAllReferences().stream()
+                .filter(r -> annotatedAsTrue(r, "embedded") || isMappedTransferObjectType(r.getEContainingClass()) && !annotatedAsTrue(r, "access"))
+                .forEach(r -> {
+                    final boolean added = addExtensionAnnotation(r, EXPOSED_BY_ANNOTATION_NAME, actorTypeFqName);
+                    if (r.isContainment() && added) {
+                        addExposedByAnnotationToTransferObjectType(r.getEReferenceType(), actorTypeFqName, null, false, level + 1);
+                    }
+                });
         if (exposedByAdded || exposedGraphAdded) {
             transferObjectType.getEAllSuperTypes().forEach(superType -> addExposedByAnnotationToTransferObjectType(superType, actorTypeFqName, graph, includeOperations, level + 1));
         }
