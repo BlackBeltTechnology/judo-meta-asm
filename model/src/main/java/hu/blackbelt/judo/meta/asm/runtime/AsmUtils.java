@@ -1253,10 +1253,32 @@ public class AsmUtils {
                         throw new IllegalStateException("Unable to resolve owner: " + ownerString);
                     }
                 }
+                case REFRESH:
+                case UPDATE_INSTANCE:
+                case VALIDATE_UPDATE:
+                case DELETE_INSTANCE:
                 case GET_TEMPLATE:
                 case GET_PRINCIPAL:
                 case MAP_PRINCIPAL: {
                     return resolve(ownerString);
+                }
+                case LIST:
+                case CREATE_INSTANCE:
+                case VALIDATE_CREATE:
+                case SET_REFERENCE:
+                case UNSET_REFERENCE:
+                case ADD_REFERENCE:
+                case REMOVE_REFERENCE: {
+                    final Optional<EReference> resolvedReference = resolveReference(ownerString);
+                    final Optional<EOperation> resolvedOperation = resolveOperation(ownerString);
+
+                    if (resolvedReference.isPresent()) {
+                        return resolvedReference;
+                    } else if (resolvedOperation.isPresent()) {
+                        return resolvedOperation;
+                    } else {
+                        throw new IllegalStateException("Invalid owner: " + ownerString);
+                    }
                 }
                 default: {
                     final String[] parts = ownerString.split("#");
@@ -1427,49 +1449,82 @@ public class AsmUtils {
     }
 
     public enum OperationBehaviour {
+        LIST("list"),
+
+        CREATE_INSTANCE("createInstance"),
+
+        VALIDATE_CREATE("validateCreate"),
+
+        REFRESH("refresh"),
+
+        UPDATE_INSTANCE("updateInstance"),
+
+        VALIDATE_UPDATE("validateUpdate"),
+
+        DELETE_INSTANCE("deleteInstance"),
+
+        SET_REFERENCE("setReference"),
+
+        UNSET_REFERENCE("unsetReference"),
+
+        ADD_REFERENCE("addReference"),
+
+        REMOVE_REFERENCE("removeReference"),
+
+        GET_REFERENCE_RANGE("getReferenceRange"),
+
         /**
          * Get reference element(s) of a given relation or exposed graph.
          */
+        @Deprecated
         GET("get"),
 
         /**
          * Create a referenced element of a given relation of exposed graph.
          */
+        @Deprecated
         CREATE("create"),
 
         /**
          * Update a referenced element from a given relation or exposed graph.
          */
+        @Deprecated
         UPDATE("update"),
 
         /**
          * Delete a referenced element from a given relation or exposed graph.
          */
+        @Deprecated
         DELETE("delete"),
 
         /**
          * Set one relation in a referenced element of a given relation or exposed graph.
          */
+        @Deprecated
         SET("set"),
 
         /**
          * Unset one relation (with single cardinality) in a referenced element of a given relation or exposed graph.
          */
+        @Deprecated
         UNSET("unset"),
 
         /**
          * Add elements to one relation (with multiple cardinality) in a referenced element of a given relation or exposed graph.
          */
+        @Deprecated
         ADD_ALL("addAll"),
 
         /**
          * Remove elements from one relation (with multiple cardinality) in a referenced element of a given relation or exposed graph.
          */
+        @Deprecated
         REMOVE_ALL("removeAll"),
 
         /**
          * Get list of possible elements of one relation in a referenced element of a given relation or exposed graph.
          */
+        @Deprecated
         GET_RANGE("getRange"),
 
         /**
