@@ -892,10 +892,10 @@ public class AsmUtils {
         }
 
         if (getBehaviour(operation)
-                .filter(b -> OperationBehaviour.GET_PRINCIPAL.equals(b) && !EcoreUtil.equals(transferObjectType, operation.getEContainingClass()))
+                .filter(b -> OperationBehaviour.MAP_PRINCIPAL.equals(b) || OperationBehaviour.GET_PRINCIPAL.equals(b) && !EcoreUtil.equals(transferObjectType, operation.getEContainingClass()))
                 .isPresent()) {
             if (log.isDebugEnabled()) {
-                log.debug(pad(level, "    - GET_PRINCIPAL operation is exposed by it container transfer object type only"));
+                log.debug(pad(level, "    - GET_PRINCIPAL operation is exposed by it container transfer object type only, MAP_PRINCIPAL operation is not exposed"));
             }
             return;
         }
