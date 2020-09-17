@@ -866,7 +866,7 @@ public class AsmUtils {
         }
         transferObjectType.getEAllAttributes().stream().forEach(a -> addExtensionAnnotation(a, EXPOSED_BY_ANNOTATION_NAME, actorTypeFqName));
         transferObjectType.getEAllReferences().stream()
-                .filter(r -> annotatedAsTrue(r, "embedded") || isMappedTransferObjectType(r.getEContainingClass()) && !annotatedAsTrue(r, "access"))
+                .filter(r -> getExtensionAnnotationByName(r, "embedded", false).isPresent() || isMappedTransferObjectType(r.getEContainingClass()) && !annotatedAsTrue(r, "access"))
                 .forEach(r -> {
                     final boolean added = addExtensionAnnotation(r, EXPOSED_BY_ANNOTATION_NAME, actorTypeFqName);
                     if (r.isContainment() && added) {
