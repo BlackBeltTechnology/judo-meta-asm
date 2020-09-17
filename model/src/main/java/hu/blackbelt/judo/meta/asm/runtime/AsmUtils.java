@@ -1268,7 +1268,8 @@ public class AsmUtils {
                 case SET_REFERENCE:
                 case UNSET_REFERENCE:
                 case ADD_REFERENCE:
-                case REMOVE_REFERENCE: {
+                case REMOVE_REFERENCE:
+                case GET_REFERENCE_RANGE: {
                     final Optional<EReference> resolvedReference = resolveReference(ownerString);
                     final Optional<EOperation> resolvedOperation = resolveOperation(ownerString);
 
