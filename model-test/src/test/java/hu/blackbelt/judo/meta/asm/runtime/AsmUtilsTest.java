@@ -421,42 +421,6 @@ public class AsmUtilsTest extends ExecutionContextOnAsmTest {
         }
     }
 
-    @Test
-    public void testGetResolvedRoot() {
-        Optional<EClass> internalAP = asmUtils.all(EClass.class).filter(c -> "InternalAP".equals(c.getName())).findAny();
-        Optional<EClass> orderInfoQuery = asmUtils.all(EClass.class).filter(c -> "OrderInfoQuery".equals(c.getName())).findAny();
-        Optional<EReference> graphReference = internalAP.get().getEReferences().stream().filter(eReference -> "ordersAssignedToEmployee".equals(eReference.getName())).findAny();
-        assertTrue(graphReference.isPresent());
-        assertThat(asmUtils.getResolvedRoot(graphReference.get()), is(orderInfoQuery));
-
-        //negtest: root not found
-        final EAnnotation expressionAnnotationOfGraphReferenceWithNotExistingRoot = newEAnnotationBuilder().withSource(getAnnotationUri("expression")).build();
-        expressionAnnotationOfGraphReferenceWithNotExistingRoot.getDetails().put("getter", "northwind::entities::Employee.orders");
-        expressionAnnotationOfGraphReferenceWithNotExistingRoot.getDetails().put("getter.dialect", "JQL");
-        final EReference graphReferenceWithNotExistingRoot = newEReferenceBuilder().withName("ordersAssignedToEmployee")
-                .withEAnnotations(expressionAnnotationOfGraphReferenceWithNotExistingRoot)
-                .withDerived(true)
-                .withUpperBound(-1)
-                .build();
-        assertThat(asmUtils.getResolvedRoot(graphReferenceWithNotExistingRoot), is(Optional.empty()));
-
-        //negtest: root not a mapped transfer object
-        final EAnnotation expressionAnnotationOfGraphReferenceWithInvalidRoot = newEAnnotationBuilder().withSource(getAnnotationUri("expression")).build();
-        expressionAnnotationOfGraphReferenceWithInvalidRoot.getDetails().put("getter", "northwind::entities::Employee.orders");
-        expressionAnnotationOfGraphReferenceWithInvalidRoot.getDetails().put("getter.dialect", "JQL");
-
-        Optional<EClass> order = asmUtils.all(EClass.class).filter(c -> "Order".equals(c.getName())).findAny();
-        assertTrue(order.isPresent());
-
-        final EReference graphReferenceWithInvalidRoot = newEReferenceBuilder().withName("ordersAssignedToEmployee")
-                .withEAnnotations(expressionAnnotationOfGraphReferenceWithInvalidRoot)
-                .withDerived(true)
-                .withUpperBound(-1)
-                .withEType(order.get())
-                .build();
-        assertThat(asmUtils.getResolvedRoot(graphReferenceWithInvalidRoot), is(Optional.empty()));
-    }
-
     public File targetDir() {
         String relPath = getClass().getProtectionDomain().getCodeSource().getLocation().getFile();
         File targetDir = new File(relPath);

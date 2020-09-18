@@ -62,8 +62,6 @@ public class AsmUtils {
 
     private static final Logger log = org.slf4j.LoggerFactory.getLogger(AsmUtils.class);
 
-    private static final String EXPOSED_GRAPH_ANNOTATION_NAME = "exposedGraph";
-    private static final String EXPOSED_SERVICE_ANNOTATION_NAME = "exposedService";
     private static final String EXPOSED_BY_ANNOTATION_NAME = "exposedBy";
 
     private final ResourceSet resourceSet;
@@ -599,72 +597,6 @@ public class AsmUtils {
     }
 
     /**
-     * Get resolved root.
-     *
-     * @param eReference reference (representing an exposed graph)
-     * @return mapped transfer object type (root) of an exposed graph (or null if root is not resolved)
-     */
-    public Optional<EClass> getResolvedRoot(final EReference eReference) {
-        if (eReference.getEReferenceType() != null) {
-            final EClass root = eReference.getEReferenceType();
-            if (isMappedTransferObjectType(root)) {
-                return Optional.of(root);
-            } else {
-                log.debug("Invalid root of graph: {}", root);
-                return Optional.empty();
-            }
-        } else {
-            return Optional.empty();
-        }
-    }
-
-    /**
-     * Check if a reference represents an exposed graph.
-     *
-     * @param eReference reference
-     * @return <code>true</code> if reference represents an exposed graph, <code>false</code> otherwise
-     */
-    public boolean isGraph(final EReference eReference) {
-        return isActorType((EClass) eReference.eContainer()) && getResolvedRoot(eReference).isPresent();
-    }
-
-    /**
-     * Get actor type of a graph.
-     *
-     * @param eReference reference (representing an exposed graph)
-     * @return actor type of the exposed graph
-     */
-    public Optional<EClass> getActorTypeOfGraph(final EReference eReference) {
-        return isGraph(eReference) ?
-                Optional.of((EClass) eReference.eContainer()) :
-                Optional.empty();
-    }
-
-    /**
-     * Get list of exposed graphs of an actor type.
-     *
-     * @param eClass class (representing an actor type)
-     * @return list of exposed graphs (empty list is returned is class is not an actor type)
-     */
-    public EList<EReference> getGraphListOfActorType(final EClass eClass) {
-        return isActorType(eClass) ?
-                new BasicEList<>(eClass.getEAllReferences().stream().filter(r -> annotatedAsTrue(r, EXPOSED_GRAPH_ANNOTATION_NAME)).collect(Collectors.toList())) :
-                ECollections.emptyEList();
-    }
-
-    /**
-     * Get list of exposed graphs of an actor type.
-     *
-     * @param eClass class (representing an actor type)
-     * @return list of service groups (empty list is returned is class is not an actor type)
-     */
-    public EList<EReference> getServiceGroupListOfActorType(final EClass eClass) {
-        return isActorType(eClass) ?
-                new BasicEList<>(eClass.getEAllReferences().stream().filter(r -> annotatedAsTrue(r, EXPOSED_SERVICE_ANNOTATION_NAME)).collect(Collectors.toList())) :
-                ECollections.emptyEList();
-    }
-
-    /**
      * Returns the given attribute's mapped attribute when extension annotation is given and attribute is presented the parent's class and
      * the given attribute name also.
      *
@@ -850,31 +782,24 @@ public class AsmUtils {
      *
      * @param transferObjectType transfer object type
      * @param actorTypeFqName    fully qualified name of the actor type
-     * @param graph              exposed by graph (not service group)
      * @param includeOperations  include operations
      */
-    void addExposedByAnnotationToTransferObjectType(final EClass transferObjectType, final String actorTypeFqName, final EReference graph, final boolean includeOperations, final int level) {
+    void addExposedByAnnotationToTransferObjectType(final EClass transferObjectType, final String actorTypeFqName, final boolean includeOperations, final int level) {
         if (log.isDebugEnabled()) {
             log.debug(pad(level, "  - transfer object type: {}"), getClassifierFQName(transferObjectType));
         }
         final boolean exposedByAdded = addExtensionAnnotation(transferObjectType, EXPOSED_BY_ANNOTATION_NAME, actorTypeFqName);
-        final boolean exposedGraphAdded;
-        if (graph != null) {
-            exposedGraphAdded = addExtensionAnnotation(transferObjectType, EXPOSED_GRAPH_ANNOTATION_NAME, AsmUtils.getReferenceFQName(graph));
-        } else {
-            exposedGraphAdded = false;
-        }
         transferObjectType.getEAllAttributes().stream().forEach(a -> addExtensionAnnotation(a, EXPOSED_BY_ANNOTATION_NAME, actorTypeFqName));
         transferObjectType.getEAllReferences().stream()
                 .filter(r -> getExtensionAnnotationByName(r, "embedded", false).isPresent() || isMappedTransferObjectType(r.getEContainingClass()) && !annotatedAsTrue(r, "access"))
                 .forEach(r -> {
                     final boolean added = addExtensionAnnotation(r, EXPOSED_BY_ANNOTATION_NAME, actorTypeFqName);
                     if (r.isContainment() && added) {
-                        addExposedByAnnotationToTransferObjectType(r.getEReferenceType(), actorTypeFqName, null, false, level + 1);
+                        addExposedByAnnotationToTransferObjectType(r.getEReferenceType(), actorTypeFqName, false, level + 1);
                     }
                 });
-        if (exposedByAdded || exposedGraphAdded) {
-            transferObjectType.getEAllSuperTypes().forEach(superType -> addExposedByAnnotationToTransferObjectType(superType, actorTypeFqName, graph, includeOperations, level + 1));
+        if (exposedByAdded) {
+            transferObjectType.getEAllSuperTypes().forEach(superType -> addExposedByAnnotationToTransferObjectType(superType, actorTypeFqName, includeOperations, level + 1));
         }
 
         if (isMappedTransferObjectType(transferObjectType)) {
@@ -882,11 +807,11 @@ public class AsmUtils {
         }
 
         getAllOperationImplementations(transferObjectType).stream()
-                .filter(o -> includeOperations && (graph != null && exposedGraphAdded || graph == null && exposedByAdded))
-                .forEach(operation -> addExposedByAnnotationToTransferOperation(transferObjectType, actorTypeFqName, graph, includeOperations, operation, level));
+                .filter(o -> includeOperations && exposedByAdded)
+                .forEach(operation -> addExposedByAnnotationToTransferOperation(transferObjectType, actorTypeFqName, includeOperations, operation, level));
     }
 
-    private void addExposedByAnnotationToTransferOperation(final EClass transferObjectType, final String actorTypeFqName, final EReference graph, final boolean includeOperations, final EOperation operation, final int level) {
+    private void addExposedByAnnotationToTransferOperation(final EClass transferObjectType, final String actorTypeFqName, final boolean includeOperations, final EOperation operation, final int level) {
         if (log.isDebugEnabled()) {
             log.debug(pad(level, "    - operation: {}"), getOperationFQName(operation));
         }
@@ -900,10 +825,6 @@ public class AsmUtils {
             return;
         }
 
-        if (graph != null) {
-            addExtensionAnnotation(operation, EXPOSED_GRAPH_ANNOTATION_NAME, getReferenceFQName(graph));
-        }
-
         addExtensionAnnotation(operation, EXPOSED_BY_ANNOTATION_NAME, actorTypeFqName);
 
         operation.getEParameters().forEach(inputParameter -> {
@@ -913,7 +834,7 @@ public class AsmUtils {
             final EClassifier type = inputParameter.getEType();
             if (type instanceof EClass) {
                 addExtensionAnnotation(inputParameter, EXPOSED_BY_ANNOTATION_NAME, actorTypeFqName);
-                addExposedByAnnotationToTransferObjectType((EClass) inputParameter.getEType(), actorTypeFqName, graph, includeOperations, level + 1);
+                addExposedByAnnotationToTransferObjectType((EClass) inputParameter.getEType(), actorTypeFqName, includeOperations, level + 1);
             } else {
                 log.error("Input parameters must be transfer object types (EClass)");
             }
@@ -925,7 +846,7 @@ public class AsmUtils {
             final EClassifier type = operation.getEType();
             if (type instanceof EClass) {
                 addExtensionAnnotation(operation, EXPOSED_BY_ANNOTATION_NAME, actorTypeFqName);
-                addExposedByAnnotationToTransferObjectType((EClass) operation.getEType(), actorTypeFqName, graph, includeOperations, level + 1);
+                addExposedByAnnotationToTransferObjectType((EClass) operation.getEType(), actorTypeFqName, includeOperations, level + 1);
             } else {
                 log.error("Output parameter must be transfer object type (EClass)");
             }
@@ -935,7 +856,7 @@ public class AsmUtils {
                 log.debug(pad(level, "        - fault parameter ({}): {}"), faultParameter.getName(), getClassifierFQName(faultParameter));
             }
             if (faultParameter instanceof EClass) {
-                addExposedByAnnotationToTransferObjectType((EClass) faultParameter, actorTypeFqName, graph, includeOperations, level + 1);
+                addExposedByAnnotationToTransferObjectType((EClass) faultParameter, actorTypeFqName, includeOperations, level + 1);
             } else {
                 log.error("Fault parameters must be transfer object types (EClass)");
             }
@@ -955,18 +876,8 @@ public class AsmUtils {
             all(EClass.class)
                     .filter(ap -> getExtensionAnnotationListByName(ap, "actor").stream()
                             .anyMatch(a -> a.getDetails().get("name") != null && a.getDetails().get("name").replace("::", ".").equals(getClassifierFQName(actorType))))
-                    .forEach(accessPoint -> addExposedByAnnotationToTransferObjectType(accessPoint, actorTypeFqName, null, true, 0));
-            addExposedByAnnotationToTransferObjectType(actorType, actorTypeFqName, null, true, 0);
-
-            getGraphListOfActorType(actorType).forEach(exposedGraph -> {
-                final String exposedGraphFqName = getReferenceFQName(exposedGraph);
-                final EClass mappedTransferObjectType = exposedGraph.getEReferenceType();
-                if (log.isDebugEnabled()) {
-                    log.debug("  - exposed graph: {}, root: {}", exposedGraphFqName, getClassifierFQName(mappedTransferObjectType));
-                }
-
-                addExposedByAnnotationToTransferObjectType(exposedGraph.getEReferenceType(), actorTypeFqName, exposedGraph, true, 0);
-            });
+                    .forEach(accessPoint -> addExposedByAnnotationToTransferObjectType(accessPoint, actorTypeFqName, true, 0));
+            addExposedByAnnotationToTransferObjectType(actorType, actorTypeFqName, true, 0);
         });
     }
 
