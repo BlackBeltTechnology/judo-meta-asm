@@ -782,23 +782,25 @@ public class AsmUtils {
      *
      * @param transferObjectType transfer object type
      * @param actorTypeFqName    fully qualified name of the actor type
+     * @param includeAccess      include access relations
      */
-    void addExposedByAnnotationToTransferObjectType(final EClass transferObjectType, final String actorTypeFqName, final int level) {
+    void addExposedByAnnotationToTransferObjectType(final EClass transferObjectType, final String actorTypeFqName, final int level, final boolean includeAccess) {
         if (log.isDebugEnabled()) {
             log.debug(pad(level, "  - transfer object type: {}"), getClassifierFQName(transferObjectType));
         }
         final boolean exposedByAdded = addExtensionAnnotation(transferObjectType, EXPOSED_BY_ANNOTATION_NAME, actorTypeFqName);
         transferObjectType.getEAllAttributes().stream().forEach(a -> addExtensionAnnotation(a, EXPOSED_BY_ANNOTATION_NAME, actorTypeFqName));
         transferObjectType.getEAllReferences().stream()
-                .filter(r -> (annotatedAsTrue(r, "embedded") || isMappedTransferObjectType(r.getEContainingClass())) && !annotatedAsTrue(r, "access"))
+                .filter(r -> includeAccess && annotatedAsTrue(r, "access") ||
+                        (annotatedAsTrue(r, "embedded") || isMappedTransferObjectType(r.getEContainingClass())) && !annotatedAsTrue(r, "access"))
                 .forEach(r -> {
                     final boolean added = addExtensionAnnotation(r, EXPOSED_BY_ANNOTATION_NAME, actorTypeFqName);
                     if (r.isContainment() && added) {
-                        addExposedByAnnotationToTransferObjectType(r.getEReferenceType(), actorTypeFqName, level + 1);
+                        addExposedByAnnotationToTransferObjectType(r.getEReferenceType(), actorTypeFqName, level + 1, false);
                     }
                 });
         if (exposedByAdded) {
-            transferObjectType.getEAllSuperTypes().forEach(superType -> addExposedByAnnotationToTransferObjectType(superType, actorTypeFqName, level + 1));
+            transferObjectType.getEAllSuperTypes().forEach(superType -> addExposedByAnnotationToTransferObjectType(superType, actorTypeFqName, level + 1, false));
         }
 
         if (isMappedTransferObjectType(transferObjectType)) {
@@ -833,7 +835,7 @@ public class AsmUtils {
             final EClassifier type = inputParameter.getEType();
             if (type instanceof EClass) {
                 addExtensionAnnotation(inputParameter, EXPOSED_BY_ANNOTATION_NAME, actorTypeFqName);
-                addExposedByAnnotationToTransferObjectType((EClass) inputParameter.getEType(), actorTypeFqName, level + 1);
+                addExposedByAnnotationToTransferObjectType((EClass) inputParameter.getEType(), actorTypeFqName, level + 1, false);
             } else {
                 log.error("Input parameters must be transfer object types (EClass)");
             }
@@ -845,7 +847,7 @@ public class AsmUtils {
             final EClassifier type = operation.getEType();
             if (type instanceof EClass) {
                 addExtensionAnnotation(operation, EXPOSED_BY_ANNOTATION_NAME, actorTypeFqName);
-                addExposedByAnnotationToTransferObjectType((EClass) operation.getEType(), actorTypeFqName, level + 1);
+                addExposedByAnnotationToTransferObjectType((EClass) operation.getEType(), actorTypeFqName, level + 1, false);
             } else {
                 log.error("Output parameter must be transfer object type (EClass)");
             }
@@ -855,7 +857,7 @@ public class AsmUtils {
                 log.debug(pad(level, "        - fault parameter ({}): {}"), faultParameter.getName(), getClassifierFQName(faultParameter));
             }
             if (faultParameter instanceof EClass) {
-                addExposedByAnnotationToTransferObjectType((EClass) faultParameter, actorTypeFqName, level + 1);
+                addExposedByAnnotationToTransferObjectType((EClass) faultParameter, actorTypeFqName, level + 1, false);
             } else {
                 log.error("Fault parameters must be transfer object types (EClass)");
             }
@@ -875,8 +877,8 @@ public class AsmUtils {
             all(EClass.class)
                     .filter(ap -> getExtensionAnnotationListByName(ap, "actor").stream()
                             .anyMatch(a -> a.getDetails().get("name") != null && a.getDetails().get("name").replace("::", ".").equals(getClassifierFQName(actorType))))
-                    .forEach(accessPoint -> addExposedByAnnotationToTransferObjectType(accessPoint, actorTypeFqName, 0));
-            addExposedByAnnotationToTransferObjectType(actorType, actorTypeFqName, 0);
+                    .forEach(accessPoint -> addExposedByAnnotationToTransferObjectType(accessPoint, actorTypeFqName, 0, false));
+            addExposedByAnnotationToTransferObjectType(actorType, actorTypeFqName, 0, true);
         });
     }
 
