@@ -1142,29 +1142,6 @@ public class AsmUtils {
             final String ownerString = annotation.get().getDetails().get("owner");
 
             switch (behaviour) {
-                case GET_RANGE: {
-                    final String[] parts = ownerString.split("#");
-                    final Optional<EClassifier> classifier = resolve(parts[0]);
-                    if (classifier.isPresent()) {
-                        if (classifier.get() instanceof EClass) {
-                            final Optional<EOperation> owner = getAllOperationImplementations((EClass) classifier.get()).stream()
-                                    .filter(r -> Objects.equals(r.getName(), parts[1]))
-                                    .findAny();
-
-                            if (owner.isPresent()) {
-                                return owner.get().getEParameters().stream()
-                                        .filter(p -> Objects.equals(p.getName(), annotation.get().getDetails().get("parameterName")))
-                                        .findAny();
-                            } else {
-                                throw new IllegalStateException("Unable to resolve owner: " + ownerString);
-                            }
-                        } else {
-                            throw new IllegalStateException("Invalid owner: " + ownerString);
-                        }
-                    } else {
-                        throw new IllegalStateException("Unable to resolve owner: " + ownerString);
-                    }
-                }
                 case REFRESH:
                 case UPDATE_INSTANCE:
                 case VALIDATE_UPDATE:
@@ -1230,53 +1207,6 @@ public class AsmUtils {
 
     public static Optional<String> getOutputParameterName(final EOperation operation) {
         return getExtensionAnnotationValue(operation, "outputParameterName", false);
-    }
-
-    /**
-     * Get relation of an operation with default behaviour. Relation can be used to select which fragment of payload to
-     * use.
-     *
-     * @param operation operation
-     * @return relation of payload
-     */
-    public Optional<? extends EReference> getRelationOfOperationWithDefaultBehaviour(final EOperation operation) {
-        final Optional<EAnnotation> annotation = getExtensionAnnotationByName(operation, "behaviour", false);
-        if (annotation.isPresent()) {
-            final OperationBehaviour behaviour = OperationBehaviour.resolve(annotation.get().getDetails().get("type"));
-
-            if (behaviour == null) {
-                return Optional.empty();
-            }
-
-            final String relationString = annotation.get().getDetails().get("relation");
-
-            switch (behaviour) {
-                case SET:
-                case UNSET:
-                case ADD_ALL:
-                case REMOVE_ALL:
-                case GET_RANGE: {
-                    final String[] parts = relationString.split("#");
-                    final Optional<EClassifier> classifier = resolve(parts[0]);
-                    if (classifier.isPresent()) {
-                        if (classifier.get() instanceof EClass) {
-                            return ((EClass) classifier.get()).getEReferences().stream()
-                                    .filter(r -> Objects.equals(r.getName(), parts[1]))
-                                    .findAny();
-                        } else {
-                            throw new IllegalStateException("Invalid relation owner: " + relationString);
-                        }
-                    } else {
-                        throw new IllegalStateException("Unable to resolve relation owner: " + relationString);
-                    }
-                }
-                default: {
-                    return Optional.empty();
-                }
-            }
-        } else {
-            return Optional.empty();
-        }
     }
 
     public Optional<EPackage> getModel() {
@@ -1385,60 +1315,6 @@ public class AsmUtils {
         REMOVE_REFERENCE("removeReference"),
 
         GET_REFERENCE_RANGE("getReferenceRange"),
-
-        /**
-         * Get reference element(s) of a given relation or exposed graph.
-         */
-        @Deprecated
-        GET("get"),
-
-        /**
-         * Create a referenced element of a given relation of exposed graph.
-         */
-        @Deprecated
-        CREATE("create"),
-
-        /**
-         * Update a referenced element from a given relation or exposed graph.
-         */
-        @Deprecated
-        UPDATE("update"),
-
-        /**
-         * Delete a referenced element from a given relation or exposed graph.
-         */
-        @Deprecated
-        DELETE("delete"),
-
-        /**
-         * Set one relation in a referenced element of a given relation or exposed graph.
-         */
-        @Deprecated
-        SET("set"),
-
-        /**
-         * Unset one relation (with single cardinality) in a referenced element of a given relation or exposed graph.
-         */
-        @Deprecated
-        UNSET("unset"),
-
-        /**
-         * Add elements to one relation (with multiple cardinality) in a referenced element of a given relation or exposed graph.
-         */
-        @Deprecated
-        ADD_ALL("addAll"),
-
-        /**
-         * Remove elements from one relation (with multiple cardinality) in a referenced element of a given relation or exposed graph.
-         */
-        @Deprecated
-        REMOVE_ALL("removeAll"),
-
-        /**
-         * Get list of possible elements of one relation in a referenced element of a given relation or exposed graph.
-         */
-        @Deprecated
-        GET_RANGE("getRange"),
 
         /**
          * Get template (a pre-instance filled with default values) of a given transfer object type.
