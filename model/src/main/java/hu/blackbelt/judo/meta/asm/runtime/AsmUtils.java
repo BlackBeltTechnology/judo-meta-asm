@@ -66,6 +66,8 @@ public class AsmUtils {
 
     private final ResourceSet resourceSet;
 
+    private final AsmUtilsCache cache = new AsmUtilsCache();
+
     public AsmUtils(final ResourceSet resourceSet) {
         this.resourceSet = resourceSet;
     }
@@ -134,17 +136,24 @@ public class AsmUtils {
      * @return resolved classifier (if found)
      */
     public Optional<EClassifier> resolve(final String fqName) {
-        final Optional<EClassifier> resolved = all(EClassifier.class)
-                .filter(c -> Objects.equals(fqName, getClassifierFQName(c)))
-                .findAny();
-
-        if (resolved.isPresent()) {
-            return resolved;
+        if (cache.getClassifiersByFqName().containsKey(fqName)) {
+            return cache.getClassifiersByFqName().get(fqName);
         } else {
-            log.warn("EClassifier by fully qualified name '" + fqName + "' not found, trying to resolve by name only");
-            return all(EClassifier.class)
-                    .filter(c -> Objects.equals(fqName, c.getName()))
+            final Optional<EClassifier> resolved = all(EClassifier.class)
+                    .filter(c -> Objects.equals(fqName, getClassifierFQName(c)))
                     .findAny();
+
+            if (resolved.isPresent()) {
+                cache.getClassifiersByFqName().put(fqName, resolved);
+                return resolved;
+            } else {
+                log.warn("EClassifier by fully qualified name '" + fqName + "' not found, trying to resolve by name only");
+                final Optional<EClassifier> resolvedByNameOnly = all(EClassifier.class)
+                        .filter(c -> Objects.equals(fqName, c.getName()))
+                        .findAny();
+                cache.getClassifiersByFqName().put(fqName, resolvedByNameOnly);
+                return resolvedByNameOnly;
+            }
         }
     }
 
@@ -155,9 +164,15 @@ public class AsmUtils {
      * @return resolved reference (if found)
      */
     public Optional<EReference> resolveReference(final String fqName) {
-        return all(EReference.class)
-                .filter(r -> Objects.equals(fqName, getReferenceFQName(r)))
-                .findAny();
+        if (cache.getReferencesByFqName().containsKey(fqName)) {
+            return cache.getReferencesByFqName().get(fqName);
+        } else {
+            final Optional<EReference> result = all(EReference.class)
+                    .filter(r -> Objects.equals(fqName, getReferenceFQName(r)))
+                    .findAny();
+            cache.getReferencesByFqName().put(fqName, result);
+            return result;
+        }
     }
 
     /**
@@ -167,9 +182,15 @@ public class AsmUtils {
      * @return resolved attribute (if found)
      */
     public Optional<EAttribute> resolveAttribute(final String fqName) {
-        return all(EAttribute.class)
-                .filter(a -> Objects.equals(fqName, getAttributeFQName(a)))
-                .findAny();
+        if (cache.getAttributesByFqName().containsKey(fqName)) {
+            return cache.getAttributesByFqName().get(fqName);
+        } else {
+            final Optional<EAttribute> result = all(EAttribute.class)
+                    .filter(a -> Objects.equals(fqName, getAttributeFQName(a)))
+                    .findAny();
+            cache.getAttributesByFqName().put(fqName, result);
+            return result;
+        }
     }
 
     /**
@@ -179,9 +200,15 @@ public class AsmUtils {
      * @return resolved operation (if found)
      */
     public Optional<EOperation> resolveOperation(final String fqName) {
-        return all(EOperation.class)
-                .filter(o -> Objects.equals(fqName, getOperationFQName(o)))
-                .findAny();
+        if (cache.getOperationsByFqName().containsKey(fqName)) {
+            return cache.getOperationsByFqName().get(fqName);
+        } else {
+            final Optional<EOperation> result = all(EOperation.class)
+                    .filter(o -> Objects.equals(fqName, getOperationFQName(o)))
+                    .findAny();
+            cache.getOperationsByFqName().put(fqName, result);
+            return result;
+        }
     }
 
     /**
