@@ -5,6 +5,7 @@ import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EReference;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,11 +20,14 @@ public class AsmUtilsCache {
 
     private final Map<String, Optional<EOperation>> operationsByFqName = new ConcurrentHashMap<>();
 
+    private Map<Class, Collection> elementsByType = new ConcurrentHashMap<>();
+
     public void clear() {
         classifiersByFqName.clear();
         referencesByFqName.clear();
         attributesByFqName.clear();
         operationsByFqName.clear();
+        elementsByType.clear();
     }
 
     public Map<String, Optional<EClassifier>> getClassifiersByFqName() {
@@ -40,5 +44,9 @@ public class AsmUtilsCache {
 
     public Map<String, Optional<EOperation>> getOperationsByFqName() {
         return operationsByFqName;
+    }
+
+    public Map<Class, Collection> getElementsByType() {
+        return elementsByType;
     }
 }

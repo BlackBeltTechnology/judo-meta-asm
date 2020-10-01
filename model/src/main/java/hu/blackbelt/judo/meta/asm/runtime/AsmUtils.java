@@ -23,13 +23,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.slf4j.Logger;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -977,8 +971,15 @@ public class AsmUtils {
      * @return all elements with clazz type
      */
     public <T> Stream<T> all(final Class<T> clazz) {
-        return all().filter(e -> clazz.isAssignableFrom(e.getClass())).map(e -> (T) e);
+        if (cache.getElementsByType().containsKey(clazz)) {
+            return cache.getElementsByType().get(clazz).stream();
+        } else {
+            final Collection<T> result = all().filter(e -> clazz.isAssignableFrom(e.getClass())).map(e -> (T) e).collect(Collectors.toList());
+            cache.getElementsByType().put(clazz, result);
+            return result.stream();
+        }
     }
+
 
     /**
      * Get list of JUDO extension annotation of a given Ecore model element by annotation name.
