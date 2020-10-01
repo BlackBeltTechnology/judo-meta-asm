@@ -130,6 +130,10 @@ public class AsmUtils {
      * @return resolved classifier (if found)
      */
     public Optional<EClassifier> resolve(final String fqName) {
+        if (cache.getClassifiersByFqName().isEmpty()) {
+            cache.getClassifiersByFqName().putAll(all(EClassifier.class)
+                    .collect(Collectors.toMap(c -> getClassifierFQName(c), c -> Optional.of(c))));
+        }
         if (cache.getClassifiersByFqName().containsKey(fqName)) {
             return cache.getClassifiersByFqName().get(fqName);
         } else {
@@ -158,6 +162,10 @@ public class AsmUtils {
      * @return resolved reference (if found)
      */
     public Optional<EReference> resolveReference(final String fqName) {
+        if (cache.getReferencesByFqName().isEmpty()) {
+            cache.getReferencesByFqName().putAll(all(EReference.class)
+                    .collect(Collectors.toMap(r -> getReferenceFQName(r), r -> Optional.of(r))));
+        }
         if (cache.getReferencesByFqName().containsKey(fqName)) {
             return cache.getReferencesByFqName().get(fqName);
         } else {
@@ -176,6 +184,10 @@ public class AsmUtils {
      * @return resolved attribute (if found)
      */
     public Optional<EAttribute> resolveAttribute(final String fqName) {
+        if (cache.getAttributesByFqName().isEmpty()) {
+            cache.getAttributesByFqName().putAll(all(EAttribute.class)
+                    .collect(Collectors.toMap(a -> getAttributeFQName(a), a -> Optional.of(a))));
+        }
         if (cache.getAttributesByFqName().containsKey(fqName)) {
             return cache.getAttributesByFqName().get(fqName);
         } else {
@@ -194,6 +206,10 @@ public class AsmUtils {
      * @return resolved operation (if found)
      */
     public Optional<EOperation> resolveOperation(final String fqName) {
+        if (cache.getOperationsByFqName().isEmpty()) {
+            cache.getOperationsByFqName().putAll(all(EOperation.class)
+                    .collect(Collectors.toMap(o -> getOperationFQName(o), o -> Optional.of(o))));
+        }
         if (cache.getOperationsByFqName().containsKey(fqName)) {
             return cache.getOperationsByFqName().get(fqName);
         } else {
