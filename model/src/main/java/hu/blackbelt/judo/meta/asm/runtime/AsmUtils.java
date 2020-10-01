@@ -5,31 +5,12 @@ import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.UniqueEList;
-import org.eclipse.emf.ecore.EAnnotation;
-import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EClassifier;
-import org.eclipse.emf.ecore.EDataType;
-import org.eclipse.emf.ecore.EEnum;
-import org.eclipse.emf.ecore.EModelElement;
-import org.eclipse.emf.ecore.ENamedElement;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EOperation;
-import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.EParameter;
-import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.slf4j.Logger;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -325,86 +306,6 @@ public class AsmUtils {
     }
 
     /**
-     * Get annotated Ecore class for a given annotation.
-     *
-     * @param annotation annotation
-     * @return owner Ecore class
-     */
-    @Deprecated
-    public Optional<EClass> getAnnotatedClass(final EAnnotation annotation) {
-        final EModelElement eModelElement = annotation.getEModelElement();
-        if (eModelElement != null && eModelElement instanceof EClass) {
-            return Optional.of((EClass) eModelElement);
-        } else {
-            return Optional.empty();
-        }
-    }
-
-    /**
-     * Get annotated Ecore attribute for a given annotation.
-     *
-     * @param annotation annotation
-     * @return owner Ecore attribute
-     */
-    @Deprecated
-    public Optional<EAttribute> getAnnotatedAttribute(final EAnnotation annotation) {
-        final EModelElement eModelElement = annotation.getEModelElement();
-        if (eModelElement != null && eModelElement instanceof EAttribute) {
-            return Optional.of((EAttribute) eModelElement);
-        } else {
-            return Optional.empty();
-        }
-    }
-
-    /**
-     * Get annotated Ecore reference for a given annotation.
-     *
-     * @param annotation annotation
-     * @return owner Ecore reference
-     */
-    @Deprecated
-    public Optional<EReference> getAnnotatedReference(final EAnnotation annotation) {
-        final EModelElement eModelElement = annotation.getEModelElement();
-        if (eModelElement != null && eModelElement instanceof EReference) {
-            return Optional.of((EReference) eModelElement);
-        } else {
-            return Optional.empty();
-        }
-    }
-
-    /**
-     * Get annotated Ecore operation for a given annotation.
-     *
-     * @param annotation annotation
-     * @return owner Ecore operation
-     */
-    @Deprecated
-    public Optional<EOperation> getAnnotatedOperation(final EAnnotation annotation) {
-        final EModelElement eModelElement = annotation.getEModelElement();
-        if (eModelElement != null && eModelElement instanceof EOperation) {
-            return Optional.of((EOperation) eModelElement);
-        } else {
-            return Optional.empty();
-        }
-    }
-
-    /**
-     * Get annotated Ecore parameter for a given annotation.
-     *
-     * @param annotation annotation
-     * @return owner Ecore parameter
-     */
-    @Deprecated
-    public Optional<EParameter> getAnnotatedParameter(final EAnnotation annotation) {
-        final EModelElement eModelElement = annotation.getEModelElement();
-        if (eModelElement != null && eModelElement instanceof EParameter) {
-            return Optional.of((EParameter) eModelElement);
-        } else {
-            return Optional.empty();
-        }
-    }
-
-    /**
      * Get the the Extension annotation's given element in map. If failNotFound true it logs a warning, otherwise
      * if the extension annotation or the given name not found returns null.
      *
@@ -488,21 +389,31 @@ public class AsmUtils {
      * @return mapped entity type (or null if no mappedEntityType annotation found nor it represents a valid entity type)
      */
     public Optional<EClass> getMappedEntityType(final EClass eClass) {
-        final Optional<String> mappedEntityTypeFQName = getExtensionAnnotationValue(eClass, "mappedEntityType", false);
-        if (mappedEntityTypeFQName.isPresent()) {
-            final Optional<EClass> entityType = getClassByFQName(mappedEntityTypeFQName.get());
-            if (entityType.isPresent()) {
-                if (isEntityType(entityType.get())) {
-                    return entityType;
+        final String xmiId = EcoreUtil.getID(eClass);
+        if (xmiId != null && cache.getMappedEntityTypes().containsKey(xmiId)) {
+            return cache.getMappedEntityTypes().get(xmiId);
+        } else {
+            final Optional<String> mappedEntityTypeFQName = getExtensionAnnotationValue(eClass, "mappedEntityType", false);
+            final Optional<EClass> result;
+            if (mappedEntityTypeFQName.isPresent()) {
+                final Optional<EClass> entityType = getClassByFQName(mappedEntityTypeFQName.get());
+                if (entityType.isPresent()) {
+                    if (isEntityType(entityType.get())) {
+                        return entityType;
+                    } else {
+                        log.error("Invalid entity type: {}", mappedEntityTypeFQName.get());
+                        result = Optional.empty();
+                    }
                 } else {
-                    log.error("Invalid entity type: {}", mappedEntityTypeFQName.get());
-                    return Optional.empty();
+                    result = Optional.empty();
                 }
             } else {
-                return Optional.empty();
+                result = Optional.empty();
             }
-        } else {
-            return Optional.empty();
+            if (xmiId != null) {
+                cache.getMappedEntityTypes().put(xmiId, result);
+            }
+            return result;
         }
     }
 
@@ -587,25 +498,35 @@ public class AsmUtils {
      * @return access point (or null if no exposedBy annotation found nor it is a valid access point)
      */
     public Optional<EClass> getResolvedExposedBy(final EAnnotation eAnnotation) {
-        if (Objects.equals(eAnnotation.getSource(), getAnnotationUri(EXPOSED_BY_ANNOTATION_NAME))) {
-            if (eAnnotation.getDetails().containsKey(EXTENDED_METADATA_DETAILS_VALUE_KEY)) {
-                final String exposedByFqName = eAnnotation.getDetails().get(EXTENDED_METADATA_DETAILS_VALUE_KEY);
-                final Optional<EClass> resolvedExposedBy = getClassByFQName(exposedByFqName);
-                if (resolvedExposedBy.isPresent()) {
-                    if (isActorType(resolvedExposedBy.get())) {
-                        return resolvedExposedBy;
+        final String xmiId = EcoreUtil.getID(eAnnotation);
+        if (xmiId != null && cache.getResolvedExposedByAnnotationValues().containsKey(xmiId)) {
+            return cache.getResolvedExposedByAnnotationValues().get(xmiId);
+        } else {
+            final Optional<EClass> result;
+            if (Objects.equals(eAnnotation.getSource(), getAnnotationUri(EXPOSED_BY_ANNOTATION_NAME))) {
+                if (eAnnotation.getDetails().containsKey(EXTENDED_METADATA_DETAILS_VALUE_KEY)) {
+                    final String exposedByFqName = eAnnotation.getDetails().get(EXTENDED_METADATA_DETAILS_VALUE_KEY);
+                    final Optional<EClass> resolvedExposedBy = getClassByFQName(exposedByFqName);
+                    if (resolvedExposedBy.isPresent()) {
+                        if (isActorType(resolvedExposedBy.get())) {
+                            result = resolvedExposedBy;
+                        } else {
+                            log.error("Exposed by is not an access point: {}", exposedByFqName);
+                            result = Optional.empty();
+                        }
                     } else {
-                        log.error("Exposed by is not an access point: {}", exposedByFqName);
-                        return Optional.empty();
+                        result = Optional.empty();
                     }
                 } else {
-                    return Optional.empty();
+                    result = Optional.empty();
                 }
             } else {
-                return Optional.empty();
+                result = Optional.empty();
             }
-        } else {
-            return Optional.empty();
+            if (xmiId != null) {
+                cache.getResolvedExposedByAnnotationValues().put(xmiId, result);
+            }
+            return result;
         }
     }
 
@@ -616,11 +537,20 @@ public class AsmUtils {
      * @return list of actor types
      */
     public EList<EClass> getActorTypesOfOperation(final EOperation eOperation) {
-        return new BasicEList<>(eOperation.getEAnnotations().stream()
-                .map(a -> getResolvedExposedBy(a))
-                .filter(exposedBy -> exposedBy.isPresent())
-                .map(exposedBy -> exposedBy.get())
-                .collect(Collectors.toList()));
+        final String xmiId = EcoreUtil.getID(eOperation);
+        if (xmiId != null && cache.getActorTypesOfOperations().containsKey(xmiId)) {
+            return cache.getActorTypesOfOperations().get(xmiId);
+        } else {
+            final EList<EClass> result = new BasicEList<>(eOperation.getEAnnotations().stream()
+                    .map(a -> getResolvedExposedBy(a))
+                    .filter(exposedBy -> exposedBy.isPresent())
+                    .map(exposedBy -> exposedBy.get())
+                    .collect(Collectors.toList()));
+            if (xmiId != null) {
+                cache.getActorTypesOfOperations().put(xmiId, result);
+            }
+            return result;
+        }
     }
 
     /**
@@ -631,22 +561,32 @@ public class AsmUtils {
      * @return mapped attribute
      */
     public Optional<EAttribute> getMappedAttribute(EAttribute type) {
-        Optional<String> mappedAttributeName = getExtensionAnnotationValue(type, "binding", false);
-        Optional<EClass> mappedEntityType = getMappedEntityType(type.getEContainingClass());
-        if (mappedAttributeName.isPresent()) {
-            if (!mappedEntityType.isPresent()) {
-                log.warn("Mapped attribute container class is not mapped: " + getAttributeFQName(type));
-                return empty();
-            } else {
-                if (mappedEntityType.get().getEStructuralFeature(mappedAttributeName.get()) instanceof EAttribute) {
-                    return Optional.of((EAttribute) mappedEntityType.get().getEStructuralFeature(mappedAttributeName.get()));
-                } else {
-                    log.warn("The given mapped alias is not attribute type: " + getAttributeFQName(type));
-                    return empty();
-                }
-            }
+        final String xmiId = EcoreUtil.getID(type);
+        if (xmiId != null && cache.getMappedAttributes().containsKey(xmiId)) {
+            return cache.getMappedAttributes().get(xmiId);
         } else {
-            return empty();
+            Optional<String> mappedAttributeName = getExtensionAnnotationValue(type, "binding", false);
+            Optional<EClass> mappedEntityType = getMappedEntityType(type.getEContainingClass());
+            final Optional<EAttribute> result;
+            if (mappedAttributeName.isPresent()) {
+                if (!mappedEntityType.isPresent()) {
+                    log.warn("Mapped attribute container class is not mapped: " + getAttributeFQName(type));
+                    result = empty();
+                } else {
+                    if (mappedEntityType.get().getEStructuralFeature(mappedAttributeName.get()) instanceof EAttribute) {
+                        result = Optional.of((EAttribute) mappedEntityType.get().getEStructuralFeature(mappedAttributeName.get()));
+                    } else {
+                        log.warn("The given mapped alias is not attribute type: " + getAttributeFQName(type));
+                        result = empty();
+                    }
+                }
+            } else {
+                result = empty();
+            }
+            if (xmiId != null) {
+                cache.getMappedAttributes().put(xmiId, result);
+            }
+            return result;
         }
     }
 
@@ -658,22 +598,32 @@ public class AsmUtils {
      * @return mapped reference
      */
     public Optional<EReference> getMappedReference(EReference type) {
-        Optional<String> mappedReferenceName = getExtensionAnnotationValue(type, "binding", false);
-        Optional<EClass> mappedEntityType = getMappedEntityType(type.getEContainingClass());
-        if (mappedReferenceName.isPresent()) {
-            if (!mappedEntityType.isPresent()) {
-                log.warn("Mapped reference container class is not mapped: " + getReferenceFQName(type));
-                return empty();
-            } else {
-                if (mappedEntityType.get().getEStructuralFeature(mappedReferenceName.get()) instanceof EReference) {
-                    return Optional.of((EReference) mappedEntityType.get().getEStructuralFeature(mappedReferenceName.get()));
-                } else {
-                    log.warn("The given mapped alias is not attribute type: " + getReferenceFQName(type));
-                    return empty();
-                }
-            }
+        final String xmiId = EcoreUtil.getID(type);
+        if (xmiId != null && cache.getMappedReferences().containsKey(xmiId)) {
+            return cache.getMappedReferences().get(xmiId);
         } else {
-            return empty();
+            Optional<String> mappedReferenceName = getExtensionAnnotationValue(type, "binding", false);
+            Optional<EClass> mappedEntityType = getMappedEntityType(type.getEContainingClass());
+            final Optional<EReference> result;
+            if (mappedReferenceName.isPresent()) {
+                if (!mappedEntityType.isPresent()) {
+                    log.warn("Mapped reference container class is not mapped: " + getReferenceFQName(type));
+                    result = empty();
+                } else {
+                    if (mappedEntityType.get().getEStructuralFeature(mappedReferenceName.get()) instanceof EReference) {
+                        result = Optional.of((EReference) mappedEntityType.get().getEStructuralFeature(mappedReferenceName.get()));
+                    } else {
+                        log.warn("The given mapped alias is not attribute type: " + getReferenceFQName(type));
+                        result = empty();
+                    }
+                }
+            } else {
+                result = empty();
+            }
+            if (xmiId != null) {
+                cache.getMappedReferences().put(xmiId, result);
+            }
+            return result;
         }
     }
 
@@ -799,9 +749,14 @@ public class AsmUtils {
      * @return access points
      */
     public EList<EClass> getAllActorTypes() {
-        return new BasicEList<>(all(EClass.class)
-                .filter(c -> isActorType(c))
-                .collect(Collectors.toList()));
+        EList<EClass> result = cache.getAllActorTypes();
+        if (result == null) {
+            result = new BasicEList<>(all(EClass.class)
+                    .filter(c -> isActorType(c))
+                    .collect(Collectors.toList()));
+            cache.setAllActorTypes(result);
+        }
+        return result;
     }
 
     /**
@@ -1158,63 +1113,65 @@ public class AsmUtils {
      * @return operation owner (referencer)
      */
     public Optional<? extends ENamedElement> getOwnerOfOperationWithDefaultBehaviour(final EOperation operation) {
-        final Optional<EAnnotation> annotation = getExtensionAnnotationByName(operation, "behaviour", false);
-        if (annotation.isPresent()) {
-            final OperationBehaviour behaviour = OperationBehaviour.resolve(annotation.get().getDetails().get("type"));
+        final String xmiId = EcoreUtil.getID(operation);
+        if (xmiId != null && cache.getOperationOwners().containsKey(xmiId)) {
+            return cache.getOperationOwners().get(xmiId);
+        } else {
+            final Optional<EAnnotation> annotation = getExtensionAnnotationByName(operation, "behaviour", false);
+            final Optional<? extends ENamedElement> result;
+            if (annotation.isPresent()) {
+                final OperationBehaviour behaviour = OperationBehaviour.resolve(annotation.get().getDetails().get("type"));
 
-            if (behaviour == null) {
-                return Optional.empty();
-            }
+                if (behaviour == null) {
+                    result = Optional.empty();
+                } else {
+                    final String ownerString = annotation.get().getDetails().get("owner");
 
-            final String ownerString = annotation.get().getDetails().get("owner");
+                    switch (behaviour) {
+                        case REFRESH:
+                        case UPDATE_INSTANCE:
+                        case VALIDATE_UPDATE:
+                        case DELETE_INSTANCE:
+                        case GET_TEMPLATE:
+                        case GET_PRINCIPAL:
+                        case MAP_PRINCIPAL: {
+                            result = resolve(ownerString);
+                            break;
+                        }
+                        case LIST:
+                        case CREATE_INSTANCE:
+                        case VALIDATE_CREATE:
+                        case SET_REFERENCE:
+                        case UNSET_REFERENCE:
+                        case ADD_REFERENCE:
+                        case REMOVE_REFERENCE:
+                        case GET_REFERENCE_RANGE: {
+                            final Optional<EReference> resolvedReference = resolveReference(ownerString);
+                            final Optional<EOperation> resolvedOperation = resolveOperation(ownerString);
 
-            switch (behaviour) {
-                case REFRESH:
-                case UPDATE_INSTANCE:
-                case VALIDATE_UPDATE:
-                case DELETE_INSTANCE:
-                case GET_TEMPLATE:
-                case GET_PRINCIPAL:
-                case MAP_PRINCIPAL: {
-                    return resolve(ownerString);
-                }
-                case LIST:
-                case CREATE_INSTANCE:
-                case VALIDATE_CREATE:
-                case SET_REFERENCE:
-                case UNSET_REFERENCE:
-                case ADD_REFERENCE:
-                case REMOVE_REFERENCE:
-                case GET_REFERENCE_RANGE: {
-                    final Optional<EReference> resolvedReference = resolveReference(ownerString);
-                    final Optional<EOperation> resolvedOperation = resolveOperation(ownerString);
-
-                    if (resolvedReference.isPresent()) {
-                        return resolvedReference;
-                    } else if (resolvedOperation.isPresent()) {
-                        return resolvedOperation;
-                    } else {
-                        throw new IllegalStateException("Invalid owner: " + ownerString);
-                    }
-                }
-                default: {
-                    final String[] parts = ownerString.split("#");
-                    final Optional<EClassifier> classifier = resolve(parts[0]);
-                    if (classifier.isPresent()) {
-                        if (classifier.get() instanceof EClass) {
-                            return ((EClass) classifier.get()).getEAllReferences().stream()
-                                    .filter(r -> Objects.equals(r.getName(), parts[1]))
-                                    .findAny();
-                        } else {
+                            if (resolvedReference.isPresent()) {
+                                result = resolvedReference;
+                            } else if (resolvedOperation.isPresent()) {
+                                result = resolvedOperation;
+                            } else {
+                                throw new IllegalStateException("Invalid owner: " + ownerString);
+                            }
+                            break;
+                        }
+                        default: {
                             throw new IllegalStateException("Invalid owner: " + ownerString);
                         }
-                    } else {
-                        throw new IllegalStateException("Unable to resolve owner: " + ownerString);
                     }
+
                 }
+            } else {
+                result = Optional.empty();
             }
-        } else {
-            return Optional.empty();
+
+            if (xmiId != null) {
+                cache.getOperationOwners().put(xmiId, result);
+            }
+            return result;
         }
     }
 
@@ -1237,7 +1194,13 @@ public class AsmUtils {
     }
 
     public Optional<EPackage> getModel() {
-        return all(EPackage.class).filter(p -> p.eContainer() == null).findAny();
+        if (cache.getModel() != null) {
+            return cache.getModel();
+        } else {
+            final Optional<EPackage> result = all(EPackage.class).filter(p -> p.eContainer() == null).findAny();
+            cache.setModel(result);
+            return result;
+        }
     }
 
     public static Set<String> getAllOperationNames(final EClass clazz) {
