@@ -804,6 +804,16 @@ public class AsmUtils {
     }
 
     /**
+     * Check if a given attribute is identifier.
+     *
+     * @param eAttribute attribute
+     * @return <code>true</code> if attribute is marked as identifier, <code>false</code> otherwise
+     */
+    public static boolean isIdentifier(final EAttribute eAttribute) {
+        return annotatedAsTrue(eAttribute, "identifier");
+    }
+    
+    /**
      * Get all access points.
      *
      * @return access points
