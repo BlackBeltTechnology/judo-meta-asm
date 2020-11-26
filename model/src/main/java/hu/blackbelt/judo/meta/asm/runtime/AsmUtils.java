@@ -865,10 +865,10 @@ public class AsmUtils {
         }
 
         if (getBehaviour(operation)
-                .filter(b -> OperationBehaviour.MAP_PRINCIPAL.equals(b) || OperationBehaviour.GET_PRINCIPAL.equals(b) && !EcoreUtil.equals(transferObjectType, operation.getEContainingClass()))
+                .filter(b -> OperationBehaviour.GET_PRINCIPAL.equals(b) && !EcoreUtil.equals(transferObjectType, operation.getEContainingClass()))
                 .isPresent()) {
             if (log.isDebugEnabled()) {
-                log.debug(pad(level, "    - GET_PRINCIPAL operation is exposed by it container transfer object type only, MAP_PRINCIPAL operation is not exposed"));
+                log.debug(pad(level, "    - GET_PRINCIPAL operation is exposed by it container transfer object type only"));
             }
             return;
         }
@@ -1201,8 +1201,7 @@ public class AsmUtils {
                 case VALIDATE_UPDATE:
                 case DELETE_INSTANCE:
                 case GET_TEMPLATE:
-                case GET_PRINCIPAL:
-                case MAP_PRINCIPAL: {
+                case GET_PRINCIPAL: {
                     return resolve(ownerString);
                 }
                 case LIST:
@@ -1378,12 +1377,7 @@ public class AsmUtils {
         /**
          * Get principal of a given access point.
          */
-        GET_PRINCIPAL("getPrincipal"),
-
-        /**
-         * Map principal of a given access token to access point.
-         */
-        MAP_PRINCIPAL("mapPrincipal");
+        GET_PRINCIPAL("getPrincipal");
 
         private final String type;
 
