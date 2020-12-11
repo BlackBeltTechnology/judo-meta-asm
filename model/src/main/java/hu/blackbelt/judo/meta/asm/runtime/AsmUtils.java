@@ -865,10 +865,10 @@ public class AsmUtils {
         }
 
         if (getBehaviour(operation)
-                .filter(b -> OperationBehaviour.GET_PRINCIPAL.equals(b) && !EcoreUtil.equals(transferObjectType, operation.getEContainingClass()))
+                .filter(b -> (OperationBehaviour.GET_PRINCIPAL.equals(b) || OperationBehaviour.GET_METADATA.equals(b)) && !EcoreUtil.equals(transferObjectType, operation.getEContainingClass()))
                 .isPresent()) {
             if (log.isDebugEnabled()) {
-                log.debug(pad(level, "    - GET_PRINCIPAL operation is exposed by it container transfer object type only"));
+                log.debug(pad(level, "    - GET_PRINCIPAL/GET_METADATA operation is exposed by it container transfer object type only"));
             }
             return;
         }
@@ -1201,7 +1201,8 @@ public class AsmUtils {
                 case VALIDATE_UPDATE:
                 case DELETE_INSTANCE:
                 case GET_TEMPLATE:
-                case GET_PRINCIPAL: {
+                case GET_PRINCIPAL:
+                case GET_METADATA: {
                     return resolve(ownerString);
                 }
                 case LIST:
@@ -1375,9 +1376,14 @@ public class AsmUtils {
         GET_TEMPLATE("getTemplate"),
 
         /**
-         * Get principal of a given access point.
+         * Get principal of a given actor.
          */
-        GET_PRINCIPAL("getPrincipal");
+        GET_PRINCIPAL("getPrincipal"),
+
+        /**
+         * Get metadata for a given actor.
+         */
+        GET_METADATA("getMetadata");
 
         private final String type;
 
