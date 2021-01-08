@@ -836,9 +836,13 @@ public class AsmUtils {
             log.debug(pad(level, "  - transfer object type: {}"), getClassifierFQName(transferObjectType));
         }
         final boolean exposedByAdded = addExtensionAnnotation(transferObjectType, EXPOSED_BY_ANNOTATION_NAME, actorTypeFqName);
-        transferObjectType.getEAllAttributes().stream().forEach(a -> addExtensionAnnotation(a, EXPOSED_BY_ANNOTATION_NAME, actorTypeFqName));
+        transferObjectType.getEAllAttributes().stream()
+        		.filter(a -> !transferObjectType.getEAllAttributes().stream().anyMatch(d -> Objects.equals(a.getName(), AsmUtils.getExtensionAnnotationValue(d, "default", false).orElse("-"))))
+        		.forEach(a -> addExtensionAnnotation(a, EXPOSED_BY_ANNOTATION_NAME, actorTypeFqName));
         transferObjectType.getEAllReferences().stream()
-                .filter(r -> includeAccess && annotatedAsTrue(r, "access") ||
+        		//.filter(r -> !transferObjectType.getEAllReferences().stream().anyMatch(d -> Objects.equals(r.getName(), AsmUtils.getExtensionAnnotationValue(d, "default", false).orElse("-"))))
+        		//.filter(r -> !transferObjectType.getEAllReferences().stream().anyMatch(d -> Objects.equals(r.getName(), AsmUtils.getExtensionAnnotationValue(d, "range", false).orElse("-"))))
+    			.filter(r -> includeAccess && annotatedAsTrue(r, "access") ||
                         (annotatedAsTrue(r, "embedded") || isMappedTransferObjectType(r.getEContainingClass())) && !annotatedAsTrue(r, "access"))
                 .forEach(r -> {
                     final boolean added = addExtensionAnnotation(r, EXPOSED_BY_ANNOTATION_NAME, actorTypeFqName);
