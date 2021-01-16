@@ -56,7 +56,8 @@
 		<maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
 
 		<epsilon-runtime-version>1.2.5.20201120_160408_045ee84_develop</epsilon-runtime-version>
-		<epsilon-runtime-eclipse-version>1.2.5.20201120_160649_c9b3620_develop</epsilon-runtime-eclipse-version>
+		<epsilon-runtime-eclipse-version>1.2.5.20210115_043021_15e0c93_develop
+</epsilon-runtime-eclipse-version>
 
 		<src.dir>src/main</src.dir>
 
@@ -68,7 +69,8 @@
 		<emf-genmodel-generator-version>1.0.1</emf-genmodel-generator-version>
 		<judo-genmodel-generator-version>1.0.0</judo-genmodel-generator-version>
 
-		<judo-meta-psm-version>1.1.0.20210106_170021_4b241a4_develop</judo-meta-psm-version>
+		<judo-meta-psm-version>1.1.0.20210115_054225_188af7f_develop
+</judo-meta-psm-version>
 		<judo-meta-psm-import-range>[1.0,1.1)</judo-meta-psm-import-range>
 
 		<!-- Xtend / Xcore -->
