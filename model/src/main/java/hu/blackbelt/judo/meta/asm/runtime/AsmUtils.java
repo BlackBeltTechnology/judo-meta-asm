@@ -19,6 +19,7 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EParameter;
 import org.eclipse.emf.ecore.EReference;
 import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.slf4j.Logger;
@@ -869,7 +870,7 @@ public class AsmUtils {
         }
 
         if (getBehaviour(operation)
-                .filter(b -> (OperationBehaviour.GET_PRINCIPAL.equals(b) || OperationBehaviour.GET_METADATA.equals(b)) && !EcoreUtil.equals(transferObjectType, operation.getEContainingClass()))
+                .filter(b -> (OperationBehaviour.GET_PRINCIPAL.equals(b) || OperationBehaviour.GET_METADATA.equals(b)) && !equals(transferObjectType, operation.getEContainingClass()))
                 .isPresent()) {
             if (log.isDebugEnabled()) {
                 log.debug(pad(level, "    - GET_PRINCIPAL/GET_METADATA operation is exposed by it container transfer object type only"));
@@ -1297,7 +1298,7 @@ public class AsmUtils {
     public static EList<EOperation> getOperationDeclarationsByName(final EClass clazz, final String operationName) {
         final EList<EOperation> operations = getOperationsByName(clazz, operationName, false);
 
-        return ECollections.asEList(operations.stream().filter(o -> !operations.stream().anyMatch(sup -> !EcoreUtil.equals(o, sup) && o.isOverrideOf(sup))).collect(Collectors.toList()));
+        return ECollections.asEList(operations.stream().filter(o -> !operations.stream().anyMatch(sup -> !equals(o, sup) && o.isOverrideOf(sup))).collect(Collectors.toList()));
     }
 
     public static EList<EOperation> getAllOperationDeclarations(final EClass clazz, boolean ignoreOverrides) {
@@ -1306,7 +1307,7 @@ public class AsmUtils {
                 .flatMap(operationName -> getOperationDeclarationsByName(clazz, operationName).stream())
                 .collect(Collectors.toSet()));
         if (ignoreOverrides) {
-            return ECollections.asEList(allOperationDeclarations.stream().filter(o -> !allOperationDeclarations.stream().anyMatch(sup -> !EcoreUtil.equals(o, sup) && o.isOverrideOf(sup))).collect(Collectors.toList()));
+            return ECollections.asEList(allOperationDeclarations.stream().filter(o -> !allOperationDeclarations.stream().anyMatch(sup -> !equals(o, sup) && o.isOverrideOf(sup))).collect(Collectors.toList()));
         } else {
             return allOperationDeclarations;
         }
@@ -1417,5 +1418,23 @@ public class AsmUtils {
         }
         sb.append(message);
         return sb.toString();
+    }
+
+    public static boolean equals(EObject o1, EObject o2) {
+        final Resource resource1 = o1.eResource();
+        final Resource resource2 = o2.eResource();
+
+        if (resource1 != null && resource2 != null && Objects.equals(resource1.getURI(), resource2.getURI())) {
+            final String fragment1 = resource1.getURIFragment(o1);
+            final String fragment2 = resource2.getURIFragment(o2);
+
+            if (fragment1 != null && fragment2 != null) {
+                return Objects.equals(fragment1, fragment2);
+            } else {
+                return EcoreUtil.equals(o1, o2);
+            }
+        } else {
+            return EcoreUtil.equals(o1, o2);
+        }
     }
 }
