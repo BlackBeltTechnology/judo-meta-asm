@@ -1421,8 +1421,8 @@ public class AsmUtils {
     }
 
     public static boolean equals(EObject o1, EObject o2) {
-        final Resource resource1 = o1.eResource();
-        final Resource resource2 = o2.eResource();
+        final Resource resource1 = o1 != null ? o1.eResource() : null;
+        final Resource resource2 = o2 != null ? o2.eResource() : null;
 
         if (resource1 != null && resource2 != null && Objects.equals(resource1.getURI(), resource2.getURI())) {
             final String fragment1 = resource1.getURIFragment(o1);
