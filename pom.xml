@@ -68,8 +68,6 @@
 		<emf-genmodel-generator-version>1.0.1</emf-genmodel-generator-version>
 		<judo-genmodel-generator-version>1.0.0</judo-genmodel-generator-version>
 
-		<judo-meta-psm-version>1.1.0.20210313_002059_8af9c33_feature_JNG_2563_AddParallelExecution</judo-meta-psm-version>
-
 		<!-- Xtend / Xcore -->
 		<emf-version>2.18.0</emf-version>
 		<emf-common-version>2.16.0</emf-common-version>
