@@ -85,6 +85,23 @@ public class AsmUtils {
     }
 
     /**
+     * Get the fully qualified name of a package.
+     *
+     * @param ePackage package
+     * @return fully qualified name
+     */
+    public static String getSafePackageFQName(final EPackage ePackage) {
+        EPackage pack = ePackage.getESuperPackage();
+        String fqName = "";
+        while (pack != null) {
+            fqName = safeName(pack.getName()) + NAMESPACE_SEPARATOR + fqName;
+            pack = pack.getESuperPackage();
+        }
+
+        return fqName + safeName(ePackage.getName());
+    }
+
+    /**
      * Get fully qualified name of a classifier.
      *
      * @param eClassifier classifier
@@ -1088,7 +1105,8 @@ public class AsmUtils {
                 "long", "module", "native", "new", "package", "private", "protected",
                 "public", "requires", "return", "short", "static", "strictfp", "super",
                 "switch", "synchronized", "this", "throw", "throws", "transient", "try",
-                "void", "volatile", "while", "true", "null", "false", "var", "const", "goto", "class", "Class").contains(str)) {
+                "void", "volatile", "while", "true", "null", "false", "var", "const", "goto",
+                "class", "Class", "int", "interface").contains(str)) {
             return str + "_";
         } else {
             return str;
