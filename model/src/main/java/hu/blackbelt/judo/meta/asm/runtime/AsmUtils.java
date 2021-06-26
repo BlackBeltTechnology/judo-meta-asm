@@ -85,10 +85,10 @@ public class AsmUtils {
     }
 
     /**
-     * Get the fully qualified name of a package.
+     * Get the fully qualified name of a package with safe names using {{ @link AsmUtils#safeName(String) }}.
      *
      * @param ePackage package
-     * @return fully qualified name
+     * @return fully qualified name with safe names
      */
     public static String getSafePackageFQName(final EPackage ePackage) {
         EPackage pack = ePackage.getESuperPackage();
