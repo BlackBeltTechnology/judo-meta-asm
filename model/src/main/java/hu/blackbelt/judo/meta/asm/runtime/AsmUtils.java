@@ -5,23 +5,11 @@ import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.UniqueEList;
-import org.eclipse.emf.ecore.EAnnotation;
-import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EClassifier;
-import org.eclipse.emf.ecore.EDataType;
-import org.eclipse.emf.ecore.EEnum;
-import org.eclipse.emf.ecore.EModelElement;
-import org.eclipse.emf.ecore.ENamedElement;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EOperation;
-import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.EParameter;
-import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.slf4j.Logger;
 
 import java.util.*;
@@ -139,6 +127,34 @@ public class AsmUtils {
      */
     public static String getOperationFQName(final EOperation eOperation) {
         return getClassifierFQName(eOperation.getEContainingClass()) + OPERATION_SEPARATOR + eOperation.getName();
+    }
+
+    /**
+     * Get id of {@link EObject} in XML form
+     *
+     * @param eObject {@link EObject} with id
+     * @return eObject's id
+     */
+    public static String getId(EObject eObject) {
+        XMLResource xmlResource = (XMLResource) eObject.eResource();
+        return xmlResource == null
+               ? null
+               : xmlResource.getID(eObject);
+    }
+
+    /**
+     * Set id of {@link EObject} in XML form
+     *
+     * @param eObject {@link EObject} with id
+     * @param id      new id
+     * @throws IllegalStateException if eObject's resource is null
+     */
+    public static void setId(EObject eObject, String id) {
+        XMLResource xmlResource = (XMLResource) eObject.eResource();
+        if (xmlResource == null) {
+            throw new IllegalStateException("Resource of " + eObject + " is null");
+        }
+        xmlResource.setID(eObject, id);
     }
 
     /**
@@ -323,8 +339,14 @@ public class AsmUtils {
             final EAnnotation newAnnotation = newEAnnotationBuilder()
                     .withSource(sourceUri)
                     .build();
-            newAnnotation.getDetails().put(EXTENDED_METADATA_DETAILS_VALUE_KEY, value);
             eModelElement.getEAnnotations().add(newAnnotation);
+            try {
+                setId(newAnnotation, getId(newAnnotation.eContainer()) + "/" + annotationName);
+            } catch (Exception e) {
+                log.warn("Unable to set new id of " + newAnnotation);
+                log.debug("Unable to set new id of " + newAnnotation, e);
+            }
+            newAnnotation.getDetails().put(EXTENDED_METADATA_DETAILS_VALUE_KEY, value);
             return true;
         }
     }
