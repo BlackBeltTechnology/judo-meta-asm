@@ -341,7 +341,7 @@ public class AsmUtils {
                     .build();
             eModelElement.getEAnnotations().add(newAnnotation);
             try {
-                setId(newAnnotation, getId(newAnnotation.eContainer()) + "/" + annotationName);
+                setId(newAnnotation, getId(newAnnotation.eContainer()) + "/" + upperFirst(annotationName) + "/" + upperFirst(value));
             } catch (Exception e) {
                 log.warn("Unable to set new id of " + newAnnotation);
                 log.debug("Unable to set new id of " + newAnnotation, e);
@@ -349,6 +349,11 @@ public class AsmUtils {
             newAnnotation.getDetails().put(EXTENDED_METADATA_DETAILS_VALUE_KEY, value);
             return true;
         }
+    }
+
+    private static String upperFirst(String s) {
+        if (s == null || s.isEmpty()) return s;
+        return s.substring(0, 1).toUpperCase() + s.substring(1);
     }
 
     /**
