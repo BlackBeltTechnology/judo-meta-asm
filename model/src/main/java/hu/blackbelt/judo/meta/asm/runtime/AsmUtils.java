@@ -130,10 +130,10 @@ public class AsmUtils {
     }
 
     /**
-     * Get id of {@link EObject} in XML form
+     * Get id of {@link EObject} in XML if it has a resource
      *
      * @param eObject {@link EObject} with id
-     * @return eObject's id
+     * @return eObject's id if it has a resource, null otherwise
      */
     public static String getId(EObject eObject) {
         XMLResource xmlResource = (XMLResource) eObject.eResource();
@@ -143,18 +143,18 @@ public class AsmUtils {
     }
 
     /**
-     * Set id of {@link EObject} in XML form
+     * Set id of {@link EObject} in XML if it has a resource
      *
      * @param eObject {@link EObject} with id
      * @param id      new id
-     * @throws IllegalStateException if eObject's resource is null
      */
     public static void setId(EObject eObject, String id) {
         XMLResource xmlResource = (XMLResource) eObject.eResource();
         if (xmlResource == null) {
-            throw new IllegalStateException("Resource of " + eObject + " is null");
+            log.warn("Id of {} cannot be set: resource is null", eObject);
+        } else {
+            xmlResource.setID(eObject, id);
         }
-        xmlResource.setID(eObject, id);
     }
 
     /**
@@ -340,12 +340,7 @@ public class AsmUtils {
                     .withSource(sourceUri)
                     .build();
             eModelElement.getEAnnotations().add(newAnnotation);
-            try {
-                setId(newAnnotation, getId(newAnnotation.eContainer()) + "/" + upperFirst(annotationName) + "/" + upperFirst(value));
-            } catch (Exception e) {
-                log.warn("Unable to set new id of " + newAnnotation);
-                log.debug("Unable to set new id of " + newAnnotation, e);
-            }
+            setId(newAnnotation, getId(newAnnotation.eContainer()) + "/" + upperFirst(annotationName) + "/" + upperFirst(value));
             newAnnotation.getDetails().put(EXTENDED_METADATA_DETAILS_VALUE_KEY, value);
             return true;
         }
