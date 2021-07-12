@@ -103,12 +103,21 @@ public class InheritanceTest {
 
         final String OP1_NAME = "op1";
 
+        final EPackage model = newEPackageBuilder()
+                .withName("Model")
+                .withNsPrefix("test")
+                .withNsURI("http:///com.example.test.ecore")
+                .build();
+
+        asmModelResourceSupport.addContent(model);
+
         final EClass a1 = newEClassBuilder()
                 .withName("A1")
                 .withEOperations(newEOperationBuilder()
                         .withName(OP1_NAME)
                         .build())
                 .build();
+        model.getEClassifiers().add(a1);
 
         final EClass a2 = newEClassBuilder()
                 .withName("A2")
@@ -116,26 +125,29 @@ public class InheritanceTest {
                         .withName(OP1_NAME)
                         .build())
                 .build();
+        model.getEClassifiers().add(a2);
 
         final EOperation a3Op = newEOperationBuilder()
                 .withName(OP1_NAME)
                 .build();
-        AsmUtils.addExtensionAnnotation(a3Op, "abstract", "true");
         final EClass a3 = newEClassBuilder()
                 .withName("A3")
                 .withAbstract_(true)
                 .withEOperations(a3Op)
                 .build();
+        model.getEClassifiers().add(a3);
+        AsmUtils.addExtensionAnnotation(a3Op, "abstract", "true");
 
         final EOperation a4Op = newEOperationBuilder()
                 .withName(OP1_NAME)
                 .build();
-        AsmUtils.addExtensionAnnotation(a4Op, "abstract", "true");
         final EClass a4 = newEClassBuilder()
                 .withName("A4")
                 .withAbstract_(true)
                 .withEOperations(a4Op)
                 .build();
+        model.getEClassifiers().add(a4);
+        AsmUtils.addExtensionAnnotation(a4Op, "abstract", "true");
 
         final EClass b1 = newEClassBuilder()
                 .withName("B1")
@@ -144,11 +156,13 @@ public class InheritanceTest {
                         .withName(OP1_NAME)
                         .build())
                 .build();
+        model.getEClassifiers().add(b1);
 
         final EClass b2 = newEClassBuilder()
                 .withName("B2")
                 .withESuperTypes(Arrays.asList(a1, a2))
                 .build();
+        model.getEClassifiers().add(b2);
 
         final EClass b3 = newEClassBuilder()
                 .withName("B3")
@@ -157,11 +171,13 @@ public class InheritanceTest {
                         .withName(OP1_NAME)
                         .build())
                 .build();
+        model.getEClassifiers().add(b3);
 
         final EClass b4 = newEClassBuilder()
                 .withName("B4")
                 .withESuperTypes(Arrays.asList(a2, a3))
                 .build();
+        model.getEClassifiers().add(b4);
 
         final EClass b5 = newEClassBuilder()
                 .withName("B5")
@@ -170,21 +186,25 @@ public class InheritanceTest {
                         .withName(OP1_NAME)
                         .build())
                 .build();
+        model.getEClassifiers().add(b5);
 
         final EClass b6 = newEClassBuilder()
                 .withName("B6")
                 .withESuperTypes(Arrays.asList(a3, a4))
                 .build();
+        model.getEClassifiers().add(b6);
 
         final EClass x1 = newEClassBuilder()
                 .withName("X1")
                 .withESuperTypes(Arrays.asList(a2))
                 .build();
+        model.getEClassifiers().add(x1);
 
         final EClass x2 = newEClassBuilder()
                 .withName("X2")
                 .withESuperTypes(Arrays.asList(a2))
                 .build();
+        model.getEClassifiers().add(x2);
 
         final EClass x3 = newEClassBuilder()
                 .withName("X3")
@@ -193,6 +213,7 @@ public class InheritanceTest {
                         .withName(OP1_NAME)
                         .build())
                 .build();
+        model.getEClassifiers().add(x3);
 
         final EClass x4 = newEClassBuilder()
                 .withName("X4")
@@ -201,36 +222,41 @@ public class InheritanceTest {
                         .withName(OP1_NAME)
                         .build())
                 .build();
+        model.getEClassifiers().add(x4);
 
         final EOperation x5Op = newEOperationBuilder()
                 .withName(OP1_NAME)
                 .build();
-        AsmUtils.addExtensionAnnotation(x5Op, "abstract", "true");
         final EClass x5 = newEClassBuilder()
                 .withName("X5")
                 .withESuperTypes(Arrays.asList(a2))
                 .withEOperations(x5Op)
                 .build();
+        model.getEClassifiers().add(x5);
+        AsmUtils.addExtensionAnnotation(x5Op, "abstract", "true");
 
         final EOperation x6Op = newEOperationBuilder()
                 .withName(OP1_NAME)
                 .build();
-        AsmUtils.addExtensionAnnotation(x6Op, "abstract", "true");
         final EClass x6 = newEClassBuilder()
                 .withName("X6")
                 .withESuperTypes(Arrays.asList(a2))
                 .withEOperations(x6Op)
                 .build();
+        model.getEClassifiers().add(x6);
+        AsmUtils.addExtensionAnnotation(x6Op, "abstract", "true");
 
         final EClass x7 = newEClassBuilder()
                 .withName("X7")
                 .withESuperTypes(Arrays.asList(a3))
                 .build();
+        model.getEClassifiers().add(x7);
 
         final EClass x8 = newEClassBuilder()
                 .withName("X8")
                 .withESuperTypes(Arrays.asList(a3))
                 .build();
+        model.getEClassifiers().add(x8);
 
         final EClass x9 = newEClassBuilder()
                 .withName("X9")
@@ -239,6 +265,7 @@ public class InheritanceTest {
                         .withName(OP1_NAME)
                         .build())
                 .build();
+        model.getEClassifiers().add(x9);
 
         final EClass x10 = newEClassBuilder()
                 .withName("X10")
@@ -247,95 +274,102 @@ public class InheritanceTest {
                         .withName(OP1_NAME)
                         .build())
                 .build();
+        model.getEClassifiers().add(x10);
 
         final EOperation x11Op = newEOperationBuilder()
                 .withName(OP1_NAME)
                 .build();
-        AsmUtils.addExtensionAnnotation(x11Op, "abstract", "true");
         final EClass x11 = newEClassBuilder()
                 .withName("X11")
                 .withESuperTypes(Arrays.asList(a3))
                 .withEOperations(x11Op)
                 .build();
+        model.getEClassifiers().add(x11);
+        AsmUtils.addExtensionAnnotation(x11Op, "abstract", "true");
 
         final EOperation x12Op = newEOperationBuilder()
                 .withName(OP1_NAME)
                 .build();
-        AsmUtils.addExtensionAnnotation(x12Op, "abstract", "true");
         final EClass x12 = newEClassBuilder()
                 .withName("X12")
                 .withESuperTypes(Arrays.asList(a3))
                 .withEOperations(x12Op)
                 .build();
+        model.getEClassifiers().add(x12);
+        AsmUtils.addExtensionAnnotation(x12Op, "abstract", "true");
 
         final EClass y1 = newEClassBuilder()
                 .withName("Y1")
                 .withESuperTypes(Arrays.asList(x1, x2))
                 .build();
+        model.getEClassifiers().add(y1);
 
         final EClass y2 = newEClassBuilder()
                 .withName("Y2")
                 .withESuperTypes(Arrays.asList(x2, x3))
                 .build();
+        model.getEClassifiers().add(y2);
 
         final EClass y3 = newEClassBuilder()
                 .withName("Y3")
                 .withESuperTypes(Arrays.asList(x3, x4))
                 .build();
+        model.getEClassifiers().add(y3);
 
         final EClass y4 = newEClassBuilder()
                 .withName("Y4")
                 .withESuperTypes(Arrays.asList(x1, x5))
                 .build();
+        model.getEClassifiers().add(y4);
 
         final EClass y5 = newEClassBuilder()
                 .withName("Y5")
                 .withESuperTypes(Arrays.asList(x5, x6))
                 .build();
+        model.getEClassifiers().add(y5);
 
         final EClass y6 = newEClassBuilder()
                 .withName("Y6")
                 .withESuperTypes(Arrays.asList(x3, x5))
                 .build();
+        model.getEClassifiers().add(y6);
 
         final EClass y7 = newEClassBuilder()
                 .withName("Y7")
                 .withESuperTypes(Arrays.asList(x7, x8))
                 .build();
+        model.getEClassifiers().add(y7);
 
         final EClass y8 = newEClassBuilder()
                 .withName("Y8")
                 .withESuperTypes(Arrays.asList(x8, x9))
                 .build();
+        model.getEClassifiers().add(y8);
 
         final EClass y9 = newEClassBuilder()
                 .withName("Y9")
                 .withESuperTypes(Arrays.asList(x9, x10))
                 .build();
+        model.getEClassifiers().add(y9);
 
         final EClass y10 = newEClassBuilder()
                 .withName("Y10")
                 .withESuperTypes(Arrays.asList(x7, x11))
                 .build();
+        model.getEClassifiers().add(y10);
 
         final EClass y11 = newEClassBuilder()
                 .withName("Y11")
                 .withESuperTypes(Arrays.asList(x11, x12))
                 .build();
+        model.getEClassifiers().add(y11);
 
         final EClass y12 = newEClassBuilder()
                 .withName("Y12")
                 .withESuperTypes(Arrays.asList(x9, x11))
                 .build();
+        model.getEClassifiers().add(y12);
 
-        final EPackage model = newEPackageBuilder()
-                .withName("Model")
-                .withNsPrefix("test")
-                .withNsURI("http:///com.example.test.ecore")
-                .withEClassifiers(Arrays.asList(a1, a2, a3, a4, b1, b2, b3, b4, b5, b6, x1, x2, x3, x4, x5, x6, x7, x8, x9, x10, x11, x12, y1, y2, y3, y4, y5, y6, y7, y8, y9, y10, y11, y12))
-                .build();
-
-        asmModelResourceSupport.addContent(model);
 
         assertOperations(a1, ImmutableSet.of(OP1_NAME), ImmutableSet.of(AsmUtils.getClassifierFQName(a1) + "#" + OP1_NAME), ImmutableSet.of(AsmUtils.getClassifierFQName(a1) + "#" + OP1_NAME), Collections.emptySet());
         assertOperations(a2, ImmutableSet.of(OP1_NAME), ImmutableSet.of(AsmUtils.getClassifierFQName(a2) + "#" + OP1_NAME), ImmutableSet.of(AsmUtils.getClassifierFQName(a2) + "#" + OP1_NAME), Collections.emptySet());

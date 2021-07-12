@@ -133,7 +133,7 @@ public class AsmUtils {
      * Get id of {@link EObject} in XML if it has a resource
      *
      * @param eObject {@link EObject} with id
-     * @return eObject's id if it has a resource, null otherwise
+     * @return <i>eObject's</i> id if it has a resource, null otherwise
      */
     public static String getId(EObject eObject) {
         XMLResource xmlResource = (XMLResource) eObject.eResource();
@@ -147,14 +147,14 @@ public class AsmUtils {
      *
      * @param eObject {@link EObject} with id
      * @param id      new id
+     * @throws IllegalStateException if <i>eObject</i> does not have a resource
      */
     public static void setId(EObject eObject, String id) {
         XMLResource xmlResource = (XMLResource) eObject.eResource();
         if (xmlResource == null) {
-            log.warn("Id of {} cannot be set: resource is null", eObject);
-        } else {
-            xmlResource.setID(eObject, id);
+            throw new IllegalStateException("Id " + id + " cannot be set: target object " + eObject + " does not have a resource");
         }
+        xmlResource.setID(eObject, id);
     }
 
     /**
