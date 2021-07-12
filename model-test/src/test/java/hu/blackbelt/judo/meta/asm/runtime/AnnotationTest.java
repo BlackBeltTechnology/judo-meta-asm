@@ -65,31 +65,30 @@ public class AnnotationTest extends ExecutionContextOnAsmTest {
     public void testAddExtensionAnnotation() {
         Optional<EClass> optionalOrder = asmUtils.all(EClass.class).filter(c -> "Order".equals(c.getName())).findAny();
         assertTrue(optionalOrder.isPresent());
-        final EClass order = optionalOrder.get();
+        EClass order = optionalOrder.get();
 
-        final String orderId = getId(order);
+        String orderId = getId(order);
         assertNotNull(orderId);
 
-        // new annotation
+        long targetAnnotationCount = order.getEAnnotations().stream()
+                .filter(a -> getId(a) != null && getId(a).equals(orderId + "/NewAnnotation/Value"))
+                .count();
+        assertEquals(0, targetAnnotationCount);
+
         assertTrue(addExtensionAnnotation(order, "NewAnnotation", "value"));
         assertTrue(getExtensionAnnotationByName(order, "NewAnnotation", false).isPresent());
 
-        // assert with custom xmiid
-        long filteredAnnotationCount = order.getEAnnotations().stream()
-                .map(AsmUtils::getId)
-                .filter(id -> id != null && id.equals(orderId + "/NewAnnotation/Value"))
+        targetAnnotationCount = order.getEAnnotations().stream()
+                .filter(a -> getId(a) != null && getId(a).equals(orderId + "/NewAnnotation/Value"))
                 .count();
-        assertEquals(1, filteredAnnotationCount);
+        assertEquals(1, targetAnnotationCount);
 
-        // annotation already exists
         assertFalse(addExtensionAnnotation(order, "NewAnnotation", "value"));
 
-        // assert with custom xmiid
-        filteredAnnotationCount = order.getEAnnotations().stream()
-                .map(AsmUtils::getId)
-                .filter(id -> id != null && id.equals(orderId + "/NewAnnotation/Value"))
+        targetAnnotationCount = order.getEAnnotations().stream()
+                .filter(a -> getId(a) != null && getId(a).equals(orderId + "/NewAnnotation/Value"))
                 .count();
-        assertEquals(1, filteredAnnotationCount);
+        assertEquals(1, targetAnnotationCount);
     }
 
     @Test
