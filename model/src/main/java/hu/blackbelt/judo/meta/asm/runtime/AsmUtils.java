@@ -1390,6 +1390,32 @@ public class AsmUtils {
         return allOperationImplementations;
     }
 
+    /**
+     * Check if all {@link EObject}s' xmiid-s are unique
+     *
+     * @throws IllegalStateException if duplicates were found
+     */
+    public void validateUniqueXmiids() {
+        log.debug("Xmiid validation started...");
+        final List<String> ids = all()
+                .filter(o -> o instanceof EObject)
+                .map(o -> getId((EObject) o))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        final Set<String> nonUniqueXmiids = ids.stream()
+                .filter(id -> {
+                    log.debug("Checking id: " + id);
+                    return ids.stream().filter(id::equals).count() > 1;
+                })
+                .collect(Collectors.toSet());
+
+        if (nonUniqueXmiids.size() != 0) {
+            final StringBuilder builder = new StringBuilder();
+            nonUniqueXmiids.forEach(id -> builder.append("Xmiid ").append(id).append(" must be unique\n"));
+            throw new IllegalStateException("There are non-unique xmiid-s\n" + builder.toString());
+        }
+    }
+
     public enum OperationBehaviour {
         LIST("list"),
 
