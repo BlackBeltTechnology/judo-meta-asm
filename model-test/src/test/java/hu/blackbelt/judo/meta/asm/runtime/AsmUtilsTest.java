@@ -1,29 +1,9 @@
 package hu.blackbelt.judo.meta.asm.runtime;
 
-import static hu.blackbelt.judo.meta.asm.runtime.AsmUtils.getAnnotationUri;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEAnnotationBuilder;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEAttributeBuilder;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEClassBuilder;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEPackageBuilder;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEReferenceBuilder;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.io.File;
-import java.util.Optional;
-
+import com.google.common.collect.ImmutableList;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EAnnotation;
-import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EClassifier;
-import org.eclipse.emf.ecore.EOperation;
-import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.EStructuralFeature;
-import org.eclipse.emf.ecore.EcorePackage;
+import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
@@ -31,9 +11,14 @@ import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.google.common.collect.ImmutableList;
+import java.io.File;
+import java.util.Optional;
 
-import lombok.extern.slf4j.Slf4j;
+import static hu.blackbelt.judo.meta.asm.runtime.AsmUtils.setId;
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.*;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 public class AsmUtilsTest extends ExecutionContextOnAsmTest {
@@ -419,6 +404,56 @@ public class AsmUtilsTest extends ExecutionContextOnAsmTest {
         for (EStructuralFeature estructuralfeature : categoryClass.getEAllStructuralFeatures()) {
             assertTrue(asmUtils.getExtensionAnnotationByName(estructuralfeature, "binding", false).isPresent());
         }
+    }
+
+    @Test
+    public void testValidateUniqueXmiids() {
+        final EcorePackage ecore = EcorePackage.eINSTANCE;
+
+        final EPackage epackage = newEPackageBuilder()
+                .withName("test")
+                .withNsPrefix("test")
+                .withNsURI("http://com.example.test.ecore")
+                .build();
+
+        EAnnotation eannotation = newEAnnotationBuilder()
+                .withSource("http://blackbelt.hu/judo/meta/ExtendedMetadata/entity").build();
+
+        EAnnotation eannotation2 = newEAnnotationBuilder()
+                .withSource("http://blackbelt.hu/judo/meta/ExtendedMetadata/entity").build();
+
+        eannotation.getDetails().put("value", "true");
+        eannotation2.getDetails().put("value", "true");
+
+        final EClass eClass1 = newEClassBuilder().withName("C1")
+                .withEAnnotations(ImmutableList.of(eannotation))
+                .build();
+        epackage.getEClassifiers().add(eClass1);
+
+        final EClass eClass2 = newEClassBuilder().withName("C2")
+                .withEAnnotations(ImmutableList.of(eannotation2))
+                .build();
+        epackage.getEClassifiers().add(eClass2);
+
+        final ResourceSet resourceSet = new ResourceSetImpl();
+        resourceSet.getResourceFactoryRegistry().getExtensionToFactoryMap().put("*", new EcoreResourceFactoryImpl());
+        final File testEcoreFile = new File(targetDir(), "test7.ecore");
+
+        final Resource resource = resourceSet.createResource(URI.createFileURI(testEcoreFile.getAbsolutePath()));
+        resource.getContents().add(epackage);
+
+        AsmUtils asmUtils = new AsmUtils(resourceSet);
+
+        // #1 - unique xmiid
+        setId(eClass1, "EClass1Xmiid");
+        setId(eClass2, "EClass2Xmiid");
+
+        asmUtils.validateUniqueXmiids();
+
+        // #2 - non-unique xmiid
+        setId(eClass2, "EClass1Xmiid");
+
+        assertThrows(IllegalStateException.class, asmUtils::validateUniqueXmiids);
     }
 
     public File targetDir() {

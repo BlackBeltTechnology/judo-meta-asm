@@ -1,28 +1,20 @@
 package hu.blackbelt.judo.meta.asm.runtime;
 
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEAnnotationBuilder;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEClassBuilder;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.hasItems;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Optional;
-
+import com.google.common.collect.ImmutableMap;
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.ecore.EAnnotation;
-import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EOperation;
-import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.google.common.collect.ImmutableMap;
+import java.util.Optional;
 
-import lombok.extern.slf4j.Slf4j;
+import static hu.blackbelt.judo.meta.asm.runtime.AsmUtils.*;
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEAnnotationBuilder;
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEClassBuilder;
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 @Slf4j
 public class AnnotationTest extends ExecutionContextOnAsmTest {
@@ -70,14 +62,33 @@ public class AnnotationTest extends ExecutionContextOnAsmTest {
     }
 
     @Test
-    public void testAddExtensionAnnotation () {
-        Optional<EClass> order = asmUtils.all(EClass.class).filter(c -> "Order".equals(c.getName())).findAny();
-        assertTrue(order.isPresent());
-        //annotation not already present
-        assertTrue(asmUtils.addExtensionAnnotation(order.get(), "NewAnnotation", "value"));
-        assertTrue(asmUtils.getExtensionAnnotationByName(order.get(), "NewAnnotation", false).isPresent());
-        //negtest: annotation already present
-        assertFalse(asmUtils.addExtensionAnnotation(order.get(), "NewAnnotation", "value"));
+    public void testAddExtensionAnnotation() {
+        Optional<EClass> optionalOrder = asmUtils.all(EClass.class).filter(c -> "Order".equals(c.getName())).findAny();
+        assertTrue(optionalOrder.isPresent());
+        EClass order = optionalOrder.get();
+
+        String orderId = getId(order);
+        assertNotNull(orderId);
+
+        long targetAnnotationCount = order.getEAnnotations().stream()
+                .filter(a -> getId(a) != null && getId(a).equals(orderId + "/NewAnnotation/Value"))
+                .count();
+        assertEquals(0, targetAnnotationCount);
+
+        assertTrue(addExtensionAnnotation(order, "NewAnnotation", "value"));
+        assertTrue(getExtensionAnnotationByName(order, "NewAnnotation", false).isPresent());
+
+        targetAnnotationCount = order.getEAnnotations().stream()
+                .filter(a -> getId(a) != null && getId(a).equals(orderId + "/NewAnnotation/Value"))
+                .count();
+        assertEquals(1, targetAnnotationCount);
+
+        assertFalse(addExtensionAnnotation(order, "NewAnnotation", "value"));
+
+        targetAnnotationCount = order.getEAnnotations().stream()
+                .filter(a -> getId(a) != null && getId(a).equals(orderId + "/NewAnnotation/Value"))
+                .count();
+        assertEquals(1, targetAnnotationCount);
     }
 
     @Test

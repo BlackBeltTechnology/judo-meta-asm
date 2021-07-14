@@ -5,23 +5,11 @@ import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.UniqueEList;
-import org.eclipse.emf.ecore.EAnnotation;
-import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EClassifier;
-import org.eclipse.emf.ecore.EDataType;
-import org.eclipse.emf.ecore.EEnum;
-import org.eclipse.emf.ecore.EModelElement;
-import org.eclipse.emf.ecore.ENamedElement;
-import org.eclipse.emf.ecore.EObject;
-import org.eclipse.emf.ecore.EOperation;
-import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.EParameter;
-import org.eclipse.emf.ecore.EReference;
-import org.eclipse.emf.ecore.EStructuralFeature;
+import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
+import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.slf4j.Logger;
 
 import java.util.*;
@@ -139,6 +127,34 @@ public class AsmUtils {
      */
     public static String getOperationFQName(final EOperation eOperation) {
         return getClassifierFQName(eOperation.getEContainingClass()) + OPERATION_SEPARATOR + eOperation.getName();
+    }
+
+    /**
+     * Get id of {@link EObject} in XML if it has a resource
+     *
+     * @param eObject {@link EObject} with id
+     * @return <i>eObject's</i> id if it has a resource, null otherwise
+     */
+    public static String getId(EObject eObject) {
+        XMLResource xmlResource = (XMLResource) eObject.eResource();
+        return xmlResource == null
+               ? null
+               : xmlResource.getID(eObject);
+    }
+
+    /**
+     * Set id of {@link EObject} in XML if it has a resource
+     *
+     * @param eObject {@link EObject} with id
+     * @param id      new id
+     * @throws IllegalStateException if <i>eObject</i> does not have a resource
+     */
+    public static void setId(EObject eObject, String id) {
+        XMLResource xmlResource = (XMLResource) eObject.eResource();
+        if (xmlResource == null) {
+            throw new IllegalStateException("Id " + id + " cannot be set: target object " + eObject + " does not have a resource");
+        }
+        xmlResource.setID(eObject, id);
     }
 
     /**
@@ -323,10 +339,16 @@ public class AsmUtils {
             final EAnnotation newAnnotation = newEAnnotationBuilder()
                     .withSource(sourceUri)
                     .build();
-            newAnnotation.getDetails().put(EXTENDED_METADATA_DETAILS_VALUE_KEY, value);
             eModelElement.getEAnnotations().add(newAnnotation);
+            setId(newAnnotation, getId(newAnnotation.eContainer()) + "/" + upperFirst(annotationName) + "/" + upperFirst(value));
+            newAnnotation.getDetails().put(EXTENDED_METADATA_DETAILS_VALUE_KEY, value);
             return true;
         }
+    }
+
+    private static String upperFirst(String s) {
+        if (s == null || s.isEmpty()) return s;
+        return s.substring(0, 1).toUpperCase() + s.substring(1);
     }
 
     /**
@@ -1366,6 +1388,32 @@ public class AsmUtils {
                 .map(implementation -> implementation.get())
                 .collect(Collectors.toSet()));
         return allOperationImplementations;
+    }
+
+    /**
+     * Check if all {@link EObject}s' xmiid-s are unique
+     *
+     * @throws IllegalStateException if duplicates were found
+     */
+    public void validateUniqueXmiids() {
+        log.debug("Xmiid validation started...");
+        final List<String> ids = all()
+                .filter(o -> o instanceof EObject)
+                .map(o -> getId((EObject) o))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        final Set<String> nonUniqueXmiids = ids.stream()
+                .filter(id -> {
+                    log.debug("Checking id: " + id);
+                    return ids.stream().filter(id::equals).count() > 1;
+                })
+                .collect(Collectors.toSet());
+
+        if (nonUniqueXmiids.size() != 0) {
+            final StringBuilder builder = new StringBuilder();
+            nonUniqueXmiids.forEach(id -> builder.append("Xmiid ").append(id).append(" must be unique\n"));
+            throw new IllegalStateException("There are non-unique xmiid-s\n" + builder.toString());
+        }
     }
 
     public enum OperationBehaviour {
