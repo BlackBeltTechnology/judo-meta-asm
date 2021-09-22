@@ -1269,6 +1269,18 @@ public class AsmUtils {
                         throw new IllegalStateException("Invalid owner: " + ownerString);
                     }
                 }
+                case GET_UPLOAD_TOKEN: {
+                    final Optional<EAttribute> resolvedAttribute = resolveAttribute(ownerString);
+                    final Optional<EOperation> resolvedOperation = resolveOperation(ownerString);
+
+                    if (resolvedAttribute.isPresent()) {
+                        return resolvedAttribute;
+                    } else if (resolvedOperation.isPresent()) {
+                        return resolvedOperation;
+                    } else {
+                        throw new IllegalStateException("Invalid owner: " + ownerString);
+                    }
+                }
                 default: {
                     final String[] parts = ownerString.split("#");
                     final Optional<EClassifier> classifier = resolve(parts[0]);
@@ -1454,7 +1466,12 @@ public class AsmUtils {
         /**
          * Get metadata for a given actor.
          */
-        GET_METADATA("getMetadata");
+        GET_METADATA("getMetadata"),
+
+        /**
+         * Get upload token for binary data represented by attribute.
+         */
+        GET_UPLOAD_TOKEN("getUploadToken");
 
         private final String type;
 
