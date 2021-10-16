@@ -1,6 +1,6 @@
 package hu.blackbelt.judo.meta.asm.osgi.itest;
 
-import static hu.blackbelt.judo.meta.asm.osgi.itest.AsmKarafFeatureProvider.getRuntimeFeaturesForMetamodel;
+import static hu.blackbelt.judo.meta.asm.osgi.itest.KarafFeatureProvider.*;
 import static hu.blackbelt.judo.meta.asm.runtime.AsmModel.buildAsmModel;
 import static org.junit.Assert.assertFalse;
 import static org.ops4j.pax.exam.CoreOptions.maven;
@@ -56,7 +56,7 @@ public class AsmModelLoadITest {
     @Configuration
     public Option[] config() throws IOException, AsmValidationException {
 
-        return combine(getRuntimeFeaturesForMetamodel(this.getClass()),
+        return combine(karafConfig(this.getClass()),
                 mavenBundle(maven()
                         .groupId("hu.blackbelt.judo.meta")
                         .artifactId("hu.blackbelt.judo.meta.asm.osgi")
