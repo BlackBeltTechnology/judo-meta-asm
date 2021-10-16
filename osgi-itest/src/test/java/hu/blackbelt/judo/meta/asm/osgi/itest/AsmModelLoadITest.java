@@ -26,7 +26,7 @@ import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
-import org.osgi.service.log.LogService;
+import org.osgi.service.log.LoggerFactory;
 
 import hu.blackbelt.epsilon.runtime.execution.impl.StringBuilderLogger;
 import hu.blackbelt.judo.meta.asm.runtime.AsmEpsilonValidator;
@@ -42,7 +42,7 @@ public class AsmModelLoadITest {
     private static final String DEMO = "northwind-asm";
 
     @Inject
-    LogService log;
+    LoggerFactory log;
 
     @Inject
     protected BundleTrackerManager bundleTrackerManager;
@@ -99,7 +99,7 @@ public class AsmModelLoadITest {
                     AsmEpsilonValidator.calculateAsmValidationScriptURI());
 
         } catch (Exception e) {
-            log.log(LogService.LOG_ERROR, logger.getBuffer());
+            log.getLogger(AsmModelLoadITest.class).error(logger.getBuffer());
             assertFalse(true);
         }
     }

@@ -392,6 +392,116 @@
 				<artifactId>hu.blackbelt.judo.meta.asm.model</artifactId>
 				<version>${project.version}</version>
 			</dependency>
+
+			<dependency>
+				<groupId>hu.blackbelt.osgi.utils</groupId>
+				<artifactId>osgi-api</artifactId>
+				<version>${osgi-utils-version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>hu.blackbelt.epsilon</groupId>
+				<artifactId>epsilon-runtime-osgi</artifactId>
+				<version>${epsilon-runtime-version}</version>
+			</dependency>
+
+	        <dependency>
+	            <groupId>org.eclipse.platform</groupId>
+	            <artifactId>org.eclipse.ui.workbench</artifactId>
+	            <version>3.122.200</version>
+	            <scope>provided</scope>
+	            <exclusions>
+	                <exclusion>
+	                    <groupId>com.sun.jna</groupId>
+	                    <artifactId>com.sun.jna</artifactId>
+	                </exclusion>
+	                <exclusion>
+	                    <groupId>com.sun.jna</groupId>
+	                    <artifactId>com.sun.jna.platform</artifactId>
+	                </exclusion>
+	                <exclusion>
+	                    <groupId>javax.annotation</groupId>
+	                    <artifactId>javax.annotation-api</artifactId>
+	                </exclusion>
+	                <exclusion>
+	                    <groupId>org.eclipse.platform</groupId>
+	                    <artifactId>org.eclipse.swt</artifactId>
+	                </exclusion>
+	                <exclusion>
+	                    <groupId>org.eclipse.birt.runtime</groupId>
+	                    <artifactId>org.w3c.css.sac</artifactId>
+	                </exclusion>
+	                <exclusion>
+	                    <groupId>org.apache.xmlgraphics</groupId>
+	                    <artifactId>batik-css</artifactId>
+	                </exclusion>
+	                <exclusion>
+	                    <groupId>org.apache.felix</groupId>
+	                    <artifactId>org.apache.felix.scr</artifactId>
+	                </exclusion>
+	                <exclusion>
+	                    <groupId>org.eclipse.emf</groupId>
+	                    <artifactId>org.eclipse.emf.ecore.xmi</artifactId>
+	                </exclusion>
+	                <exclusion>
+	                    <groupId>org.eclipse.emf</groupId>
+	                    <artifactId>org.eclipse.emf.ecore</artifactId>
+	                </exclusion>
+	                <exclusion>
+	                    <groupId>commons-jxpath</groupId>
+	                    <artifactId>commons-jxpath</artifactId>
+	                </exclusion>
+	            </exclusions>
+	        </dependency>
+
+	        <dependency>
+	            <groupId>org.eclipse.platform</groupId>
+	            <artifactId>org.eclipse.core.runtime</artifactId>
+	            <version>3.12.0</version>
+	            <scope>provided</scope>
+	        </dependency>
+
+	        <dependency>
+	            <groupId>org.eclipse.emf</groupId>
+	            <artifactId>org.eclipse.emf.common</artifactId>
+	            <version>${emf-common-version}</version>
+	            <scope>provided</scope>
+	        </dependency>
+
+	        <dependency>
+	            <groupId>org.eclipse.emf</groupId>
+	            <artifactId>org.eclipse.emf.ecore</artifactId>
+	            <version>${emf-version}</version>
+	            <scope>provided</scope>
+	        </dependency>
+
+	        <dependency>
+	            <groupId>org.eclipse.emf</groupId>
+	            <artifactId>org.eclipse.emf.ecore.xmi</artifactId>
+	            <version>${emf-ecore-xmi-version}</version>
+	            <scope>provided</scope>
+	        </dependency>
+
+	        <dependency>
+	            <groupId>hu.blackbelt.epsilon</groupId>
+	            <artifactId>epsilon-runtime-execution</artifactId>
+	            <version>${epsilon-runtime-version}</version>
+				<scope>provided</scope>
+	        </dependency>
+	
+	        <dependency>
+	            <groupId>org.slf4j</groupId>
+	            <artifactId>slf4j-api</artifactId>
+	            <version>${slf4j-version}</version>
+				<scope>provided</scope>
+	        </dependency>
+
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-log4j12</artifactId>
+				<version>${slf4j-version}</version>
+				<scope>test</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
@@ -436,6 +546,12 @@
 			<groupId>com.jcabi</groupId>
 			<artifactId>jcabi-log</artifactId>
 			<version>0.18</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-library</artifactId>
+			<version>2.1</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
