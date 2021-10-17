@@ -62,15 +62,6 @@
             <version>${pax-exam-version}</version>
             <scope>test</scope>
         </dependency>
-
-        <!--
-        <dependency>
-            <groupId>org.ops4j.pax.exam</groupId>
-            <artifactId>pax-exam-link-mvn</artifactId>
-            <version>${pax-exam-version}</version>
-            <scope>test</scope>
-        </dependency>
--->
         <dependency>
             <groupId>org.ops4j.pax.exam</groupId>
             <artifactId>pax-exam-inject</artifactId>
@@ -107,7 +98,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>${slf4j-version}</version>
             <scope>test</scope>
         </dependency>
 

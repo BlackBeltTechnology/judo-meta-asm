@@ -14,33 +14,24 @@
 	<name>Judo :: Asm :: Model :: Test</name>
 	<description>Judo Asm Model Test</description>
 
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.eclipse.xtext</groupId>
+				<artifactId>xtext-dev-bom</artifactId>
+				<version>${xtext-version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<dependencies>
 		<dependency>
 			<groupId>hu.blackbelt.judo.meta</groupId>
 			<artifactId>hu.blackbelt.judo.meta.asm.model</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>27.1-jre</version>
-			<scope>test</scope>
-		</dependency>
-        <dependency>
-            <groupId>org.eclipse.emf</groupId>
-            <artifactId>org.eclipse.emf.common</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.emf</groupId>
-            <artifactId>org.eclipse.emf.ecore</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.emf</groupId>
-            <artifactId>org.eclipse.emf.ecore.xmi</artifactId>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>hu.blackbelt.epsilon</groupId>
             <artifactId>epsilon-runtime-execution</artifactId>
@@ -56,5 +47,12 @@
             <artifactId>slf4j-log4j12</artifactId>
             <scope>provided</scope>
         </dependency>
+
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<scope>test</scope>
+		</dependency>
+
     </dependencies>
 </project>

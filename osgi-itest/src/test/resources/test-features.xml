@@ -14,7 +14,6 @@
     <repository>mvn:hu.blackbelt.karaf.features/apache-poi-features/${apache-poi-karaf-features-version}/xml/features</repository>
     <repository>mvn:hu.blackbelt.karaf.features/eclipse-emf-features/${eclipse-emf-karaf-features-version}/xml/features</repository>
     <repository>mvn:hu.blackbelt.karaf.features/eclipse-epsilon-features/${eclipse-epsilon-karaf-features-version}/xml/features</repository>
-    <repository>mvn:hu.blackbelt.epsilon/features/${epsilon-runtime-version}/xml/features</repository>
 
     <repository>mvn:hu.blackbelt.karaf.features/tinybundles-features/${tinybundles-karaf-features-version}/xml/features</repository>
     <repository>mvn:hu.blackbelt.karaf.features/antlr-features/${antlr-karaf-features-version}/xml/features</repository>
