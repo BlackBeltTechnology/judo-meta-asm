@@ -38,6 +38,9 @@ public class AsmUtils {
     private static final List<String> TIMESTAMP_TYPES = Arrays.asList("java.sql.Timestamp",
             "java.time.LocalDateTime", "java.time.OffsetDateTime", "java.time.ZonedDateTime",
             "org.joda.time.DateTime", "org.joda.time.LocalDateTime", "org.joda.time.MutableDateTime");
+    private static final List<String> TIME_TYPES = Arrays.asList("java.sql.Time", "java.time.LocalTime",
+            "org.joda.time.LocalTime");
+
     private static final List<String> STRING_TYPES = Arrays.asList("java.lang.String");
     private static final List<String> BOOLEAN_TYPES = Arrays.asList("boolean", "java.lang.Boolean");
     private static final List<String> BYTE_ARRAY_TYPES = Arrays.asList("byte[]", "java.sql.Blob");
@@ -831,6 +834,17 @@ public class AsmUtils {
         } else {
             return instanceClassName != null && TIMESTAMP_TYPES.contains(instanceClassName);
         }
+    }
+
+    /**
+     * Check if a given data type is time.
+     *
+     * @param eDataType data type
+     * @return <code>true</code> in case of time data type, <code>false</code> otherwise
+     */
+    public static boolean isTime(final EDataType eDataType) {
+        final String instanceClassName = eDataType.getInstanceClassName();
+        return instanceClassName != null && TIME_TYPES.contains(instanceClassName);
     }
 
     /**
