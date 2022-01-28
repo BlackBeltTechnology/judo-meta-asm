@@ -1273,23 +1273,17 @@ public class AsmUtils {
                 case REMOVE_REFERENCE:
                 case GET_REFERENCE_RANGE: {
                     final Optional<EReference> resolvedReference = resolveReference(ownerString);
-                    final Optional<EOperation> resolvedOperation = resolveOperation(ownerString);
 
                     if (resolvedReference.isPresent()) {
                         return resolvedReference;
-                    } else if (resolvedOperation.isPresent()) {
-                        return resolvedOperation;
                     } else {
                         throw new IllegalStateException("Invalid owner: " + ownerString);
                     }
                 }
                 case GET_INPUT_RANGE: {
-                    final Optional<EReference> resolvedReference = resolveReference(ownerString);
                     final Optional<EOperation> resolvedOperation = resolveOperation(ownerString);
 
-                    if (resolvedReference.isPresent()) {
-                        return resolvedReference;
-                    } else if (resolvedOperation.isPresent()) {
+                    if (resolvedOperation.isPresent()) {
                         return resolvedOperation;
                     } else {
                         throw new IllegalStateException("Invalid owner: " + ownerString);
