@@ -1283,6 +1283,18 @@ public class AsmUtils {
                         throw new IllegalStateException("Invalid owner: " + ownerString);
                     }
                 }
+                case GET_INPUT_RANGE: {
+                    final Optional<EReference> resolvedReference = resolveReference(ownerString);
+                    final Optional<EOperation> resolvedOperation = resolveOperation(ownerString);
+
+                    if (resolvedReference.isPresent()) {
+                        return resolvedReference;
+                    } else if (resolvedOperation.isPresent()) {
+                        return resolvedOperation;
+                    } else {
+                        throw new IllegalStateException("Invalid owner: " + ownerString);
+                    }
+                }
                 case GET_UPLOAD_TOKEN: {
                     final Optional<EAttribute> resolvedAttribute = resolveAttribute(ownerString);
                     final Optional<EOperation> resolvedOperation = resolveOperation(ownerString);
@@ -1466,6 +1478,8 @@ public class AsmUtils {
         REMOVE_REFERENCE("removeReference"),
 
         GET_REFERENCE_RANGE("getReferenceRange"),
+        
+        GET_INPUT_RANGE("getInputRange"),
 
         /**
          * Get template (a pre-instance filled with default values) of a given transfer object type.
