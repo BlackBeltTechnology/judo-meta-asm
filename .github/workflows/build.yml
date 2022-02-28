@@ -166,11 +166,9 @@ jobs:
           tag: v${{ steps.version.outputs.version }}
 
       - name: Send message to discord
-          uses: sarisia/actions-status-discord@v1
-          if: always()
-          with:
-            webhook: ${{ secrets.JUDONG_DISCORD_WEBHOOK }}
-            title: "Gitub action"
-            description: "${{ steps.message.outputs.message }}"
-
-      
+        uses: sarisia/actions-status-discord@v1
+        if: always()
+        with:
+          webhook: ${{ secrets.JUDONG_DISCORD_WEBHOOK }}
+          title: "Gitub action"
+          description: "${{ steps.message.outputs.message }}"
