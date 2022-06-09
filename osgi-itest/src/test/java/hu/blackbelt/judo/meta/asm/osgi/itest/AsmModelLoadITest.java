@@ -1,22 +1,13 @@
 package hu.blackbelt.judo.meta.asm.osgi.itest;
 
-import static hu.blackbelt.judo.meta.asm.osgi.itest.KarafFeatureProvider.*;
-import static hu.blackbelt.judo.meta.asm.runtime.AsmModel.buildAsmModel;
-import static org.junit.Assert.assertFalse;
-import static org.ops4j.pax.exam.CoreOptions.maven;
-import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
-import static org.ops4j.pax.exam.CoreOptions.provision;
-import static org.ops4j.pax.exam.OptionUtils.combine;
-import static org.ops4j.pax.tinybundles.core.TinyBundles.bundle;
-import static org.ops4j.pax.tinybundles.core.TinyBundles.withBnd;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
-import javax.inject.Inject;
-
+import hu.blackbelt.epsilon.runtime.execution.api.Log;
+import hu.blackbelt.epsilon.runtime.execution.impl.BufferedSlf4jLogger;
+import hu.blackbelt.judo.meta.asm.runtime.AsmEpsilonValidator;
+import hu.blackbelt.judo.meta.asm.runtime.AsmModel;
+import hu.blackbelt.judo.meta.asm.runtime.AsmModel.AsmValidationException;
+import hu.blackbelt.judo.meta.asm.runtime.AsmModel.SaveArguments;
+import hu.blackbelt.osgi.utils.osgi.api.BundleTrackerManager;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
@@ -26,23 +17,23 @@ import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
-import org.osgi.service.log.LoggerFactory;
 
-import hu.blackbelt.epsilon.runtime.execution.impl.StringBuilderLogger;
-import hu.blackbelt.judo.meta.asm.runtime.AsmEpsilonValidator;
-import hu.blackbelt.judo.meta.asm.runtime.AsmModel;
-import hu.blackbelt.judo.meta.asm.runtime.AsmModel.AsmValidationException;
-import hu.blackbelt.judo.meta.asm.runtime.AsmModel.SaveArguments;
-import hu.blackbelt.osgi.utils.osgi.api.BundleTrackerManager;
+import javax.inject.Inject;
+import java.io.*;
+
+import static hu.blackbelt.judo.meta.asm.osgi.itest.KarafFeatureProvider.karafConfig;
+import static hu.blackbelt.judo.meta.asm.runtime.AsmModel.buildAsmModel;
+import static org.ops4j.pax.exam.CoreOptions.*;
+import static org.ops4j.pax.exam.OptionUtils.combine;
+import static org.ops4j.pax.tinybundles.core.TinyBundles.bundle;
+import static org.ops4j.pax.tinybundles.core.TinyBundles.withBnd;
 
 @RunWith(PaxExam.class)
 @ExamReactorStrategy(PerClass.class)
+@Slf4j
 public class AsmModelLoadITest {
 
     private static final String DEMO = "northwind-asm";
-
-    @Inject
-    LoggerFactory log;
 
     @Inject
     protected BundleTrackerManager bundleTrackerManager;
@@ -91,16 +82,9 @@ public class AsmModelLoadITest {
     }
 
     @Test
-    public void testModelValidation() {
-        StringBuilderLogger logger = new StringBuilderLogger(StringBuilderLogger.LogLevel.DEBUG);
-        try {
-            AsmEpsilonValidator.validateAsm(logger,
-                    asmModel,
-                    AsmEpsilonValidator.calculateAsmValidationScriptURI());
-
-        } catch (Exception e) {
-            log.getLogger(AsmModelLoadITest.class).error(logger.getBuffer());
-            assertFalse(true);
+    public void testModelValidation() throws Exception {
+        try (Log bufferedLog = new BufferedSlf4jLogger(log)) {
+            AsmEpsilonValidator.validateAsm(bufferedLog, asmModel, AsmEpsilonValidator.calculateAsmValidationScriptURI());
         }
     }
 }
