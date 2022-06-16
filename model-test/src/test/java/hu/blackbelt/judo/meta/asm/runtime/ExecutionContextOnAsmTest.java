@@ -1,45 +1,23 @@
 package hu.blackbelt.judo.meta.asm.runtime;
 
-import static hu.blackbelt.judo.meta.asm.runtime.AsmModel.buildAsmModel;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEAttributeBuilder;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEClassBuilder;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEDataTypeBuilder;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEEnumBuilder;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEEnumLiteralBuilder;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEOperationBuilder;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEPackageBuilder;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.newEReferenceBuilder;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.useEPackage;
-import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.useEReference;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import hu.blackbelt.epsilon.runtime.execution.api.Log;
+import hu.blackbelt.epsilon.runtime.execution.exceptions.EvlScriptExecutionException;
+import hu.blackbelt.epsilon.runtime.execution.impl.BufferedSlf4jLogger;
+import lombok.extern.slf4j.Slf4j;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.*;
 
 import java.util.Collections;
 
-import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EAnnotation;
-import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EDataType;
-import org.eclipse.emf.ecore.EEnum;
-import org.eclipse.emf.ecore.EOperation;
-import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.EReference;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static hu.blackbelt.judo.meta.asm.runtime.AsmModel.buildAsmModel;
+import static org.eclipse.emf.ecore.util.builder.EcoreBuilders.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import hu.blackbelt.epsilon.runtime.execution.api.Log;
-import hu.blackbelt.epsilon.runtime.execution.exceptions.EvlScriptExecutionException;
-import hu.blackbelt.epsilon.runtime.execution.impl.Slf4jLog;
-
+@Slf4j
 class ExecutionContextOnAsmTest {
-	Log log = new Slf4jLog();
     AsmModel asmModel;
 	AsmUtils asmUtils;
-	
-	private static final Logger logger = LoggerFactory.getLogger(ExecutionContextOnAsmTest.class);
-    
+
     void setUp() throws Exception {
     	asmModel = buildAsmModel()
     			.uri(URI.createURI("urn:asm.judo-meta-asm"))
@@ -55,16 +33,16 @@ class ExecutionContextOnAsmTest {
     }
     
     private void runEpsilon() throws Exception {
-        try {
-            AsmEpsilonValidator.validateAsm(new Slf4jLog(),
+        try (Log bufferedLog = new BufferedSlf4jLogger(log)) {
+            AsmEpsilonValidator.validateAsm(bufferedLog,
             		asmModel,
             		AsmEpsilonValidator.calculateAsmValidationScriptURI(),
             		Collections.emptyList(),
             		Collections.emptyList());
         } catch (EvlScriptExecutionException ex) {
-            logger.error("EVL failed", ex);
-            logger.error("\u001B[31m - unexpected errors: {}\u001B[0m", ex.getUnexpectedErrors());
-            logger.error("\u001B[33m - unexpected warnings: {}\u001B[0m", ex.getUnexpectedWarnings());
+            log.error("EVL failed", ex);
+            log.error("\u001B[31m - unexpected errors: {}\u001B[0m", ex.getUnexpectedErrors());
+            log.error("\u001B[33m - unexpected warnings: {}\u001B[0m", ex.getUnexpectedWarnings());
             throw ex;
         }
     }
