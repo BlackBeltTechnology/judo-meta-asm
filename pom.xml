@@ -59,22 +59,23 @@
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
 
-		<epsilon-runtime-version>1.4.0.20220608_125416_42b1cd6e_develop</epsilon-runtime-version>
+		<epsilon-runtime-version>1.4.0.20220616_093846_72efef9e_develop</epsilon-runtime-version>
 		<epsilon-runtime-eclipse-version>1.4.0.20220608_130119_180c71c5_develop</epsilon-runtime-eclipse-version>
 
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
-		<tycho-version>2.6.0</tycho-version>
+		<tycho-version>2.7.3</tycho-version>
 
 		<emf-genmodel-generator-version>1.0.2.20220330_082302_0cadb6da_develop</emf-genmodel-generator-version>
 		<judo-genmodel-generator-version>1.0.1.20220405_155701_8eaa7eb0_develop</judo-genmodel-generator-version>
 		<judo-epp-common-version>4.22.0.20220316_195019_68b6d470_develop</judo-epp-common-version>
 
-		<xtext-version>2.22.0</xtext-version>
+		<xtext-version>2.27.0</xtext-version>
 		<emf-mwe2-launch-version>2.12.1</emf-mwe2-launch-version>
 
 		<slf4j-version>1.7.36</slf4j-version>
 		<surefire-version>3.0.0-M5</surefire-version>
+		<!--suppress UnresolvedMavenProperty -->
 		<logback-test-config>${maven.multiModuleProjectDirectory}/logback-test.xml</logback-test-config>
 
         <!-- Pax exam dependencies -->
@@ -385,6 +386,14 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
+				<groupId>fr.jmini.ecentral</groupId>
+				<artifactId>eclipse-platform-dependencies</artifactId>
+				<version>4.18</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+			<dependency>
 				<groupId>hu.blackbelt.judo.meta</groupId>
 				<artifactId>hu.blackbelt.judo.meta.asm.model</artifactId>
 				<version>${project.version}</version>
@@ -429,14 +438,17 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.eclipse.emf</groupId>
 			<artifactId>org.eclipse.emf.ecore</artifactId>
-			<version>2.18.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.eclipse.emf</groupId>
 			<artifactId>org.eclipse.emf.common</artifactId>
-			<version>2.16.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.osgi</groupId>
