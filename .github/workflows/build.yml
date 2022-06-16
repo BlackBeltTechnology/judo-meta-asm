@@ -109,14 +109,14 @@ jobs:
           -Dtycho.mode=maven  \
           -P update-target-versions \
           -f ./targetdefinition/pom.xml \
-          validate
+          install
 
       - name: Update category
         run: |-
           ./mvnw -B -Dstyle.color=always \
           -Dtycho.mode=maven \
+          -DskipModules \
           -P update-category-versions \
-          -f ./site/pom.xml \
           validate
 
       - name: Set tycho version
