@@ -46,6 +46,13 @@ it in transformation pipelines in other platforms.
 - epsilon
 - modeling tools
 
+### Installation
+
+In Eclipse, we can install the plugin via P2 sites.
+
+Go to "Install new software" and add the URL of the site listed on github or the uncompressed ZIP folder. The plugin
+contains the metamodel and UI provided for the default editor.
+
 ### Code generation in Eclipse
 To run code generation inside Eclipse, run the MWE2 Workflow: `hu.blackbelt.judo.meta.asm.model project src/workflow/generateModel.mwe2`
 
