@@ -9,12 +9,12 @@ project's https://github.com/BlackBeltTechnology/judo-community/blob/develop/CON
 
 This project follows a standard Java project structure, governed by Maven, with potential Maven submodules.
 
-Eclipse-related submodules:
+**Eclipse-related submodules:**
 
 * `/feature`: Eclipse feature repository - allows us to use this as a feature for eclipse installation
 * `/site`: Eclipse Update Site - all built versions are compiled as an update site.
 The site definition contains the required referenced repositories required by plugins.
-* `/targetdefinition`: Eclipse target definition defines the P2 repositories for all the required MANFIEST features.
+* `/targetdefinition`: Eclipse target definition defines the P2 repositories for all the required MANIFEST features.
 
 The Judo update sites are based on versions, therefore all versions have their own update sites. This results in versions
 being coded in the URL. The category definition in tycho is loaded as an extension, because there is no way to replace
@@ -26,13 +26,13 @@ The following command can be used to update the versions:
 
 `mvn clean install -P update-category-versions -f site/pom.xml`
 
-Model modules:
+**Model modules:**
 
 * `/model`: eclipse plugin. It contains the model and ecore generated java classes. Builder and Helpers are added with
 via the MWE2 workflow.
 * `/model-test`: Module containing model tests
 
-OSGI wrapper:
+**OSGI wrapper:**
 
 * `/osgi`: OSGi bundle. It repackages the model and adds extra information / services for consumers to be able to use
 it in transformation pipelines in other platforms.
