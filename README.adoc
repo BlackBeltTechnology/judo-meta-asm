@@ -4,13 +4,11 @@ image::https://github.com/BlackBeltTechnology/judo-meta-asm/actions/workflows/bu
 
 == Introduction
 
-> ASM is an acronym which stands for Architecture Specific Model
-
 This project contains the ASM meta model.
 
 It acts as an eclipse plugin with features and sites, and can be used standalone and in standard OSGi (without eclipse).
 
-It is a pure ECore meta model. Additionally it provides builders for better usability
+It is a pure ECore meta model. Additionally, it provides builders for better usability
 
 == Contributing to the project
 
