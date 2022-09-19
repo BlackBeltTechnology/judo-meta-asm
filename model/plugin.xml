@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+
+<!--
+ <copyright>
+ </copyright>
+
+ $Id$
+-->
+<plugin>
+    <extension
+            point="org.eclipse.epsilon.evl.emf.validation">
+        <constraintsBinding
+                constraints="validations/asm-plugin-validation.evl"
+                modelName="ASM"
+                namespaceURI="http://blackbelt.hu/judo/meta/asm">
+            <!-- All packages have to register
+            <additionalNamespaceURI
+                    namespaceURI="http://blackbelt.hu/judo/meta/asm/subpackage">
+            </additionalNamespaceURI>
+            -->
+        </constraintsBinding>
+    </extension>
+    <extension
+            point="org.eclipse.ui.ide.markerResolution">
+        <markerResolutionGenerator
+                class="org.eclipse.epsilon.evl.emf.validation.EvlMarkerResolutionGenerator"
+                markerType="org.eclipse.emf.ecore.diagnostic">
+        </markerResolutionGenerator>
+        <markerResolutionGenerator
+                class="org.eclipse.epsilon.evl.emf.validation.EvlMarkerResolutionGenerator"
+                markerType="org.eclipse.emf.ecoretools.diagram.diagnostic">
+        </markerResolutionGenerator>
+    </extension>
+    <extension
+            point="org.eclipse.epsilon.common.dt.tool">
+        <tool
+                class="hu.blackbelt.judo.meta.asm.runtime.AsmUtils"
+                defaultName="asmUtils"/>
+    </extension>
+
+
+</plugin>

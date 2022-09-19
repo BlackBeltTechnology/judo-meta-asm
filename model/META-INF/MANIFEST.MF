@@ -1,0 +1,28 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: JUDO ASM Model
+Bundle-SymbolicName: hu.blackbelt.judo.meta.asm.model;singleton:=true
+Bundle-Version: 1.1.0
+Bundle-ClassPath: .
+Bundle-Vendor: BlackBelt Technology
+Bundle-Localization: plugin
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Bundle-Activator: hu.blackbelt.judo.eclipse.asm.Activator
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.emf.ecore;visibility:=reexport,
+ org.eclipse.emf.ecore.xmi;visibility:=reexport,
+ org.eclipse.ui,
+ org.eclipse.epsilon.evl.emf.validation,
+ org.eclipse.ui.ide,
+ hu.blackbelt.epsilon.runtime.execution,
+ org.eclipse.epsilon.common
+Export-Package: hu.blackbelt.judo.meta.asm.runtime,
+ hu.blackbelt.judo.meta.asm.support,
+ org.eclipse.emf.ecore.runtime,
+ org.eclipse.emf.ecore.support,
+ org.eclipse.emf.ecore.util,
+ org.eclipse.emf.ecore.util.builder
+Bundle-ActivationPolicy: lazy
+Automatic-Module-Name: hu.blackbelt.judo.meta.asm.model
+Import-Package: hu.blackbelt.epsilon.runtime.execution.exceptions,
+ org.slf4j;version="1.7.2"
