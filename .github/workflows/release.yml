@@ -101,7 +101,7 @@ jobs:
 
       - name: Set release version
         run: |-
-          mvn tycho-versions:set-version -DnewVersion=${{ steps.next_version.outputs.version }} -Dtycho.mode=maven
+          mvn tycho-versions:set-version -DnewVersion=${{ steps.version.outputs.base-version }} -Dtycho.mode=maven
           mvn tycho-versions:update-eclipse-metadata -Dtycho.mode=maven
           git ls-files | grep pom.xml | xargs git restore --
           ./mvnw versions:set-property -Dproperty=revision -DnewVersion=${{ steps.version.outputs.base-version }} -Dtycho.mode=maven -DskipModules=true
