@@ -112,7 +112,7 @@ jobs:
           ./mvnw -B -Dstyle.color=always \
           -Dtycho.mode=maven  \
           -P update-target-versions \
-          -f ./common-targetdefinition/pom.xml \
+          -f ./targetdefinition/pom.xml \
           install
 
       - name: 🚧 Set tycho version
