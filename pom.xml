@@ -59,16 +59,16 @@
 		<timestamp>${maven.build.timestamp}</timestamp>
 		<maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
 
-		<epsilon-runtime-version>1.4.0.20220629_123622_4279f257_develop</epsilon-runtime-version>
-		<epsilon-runtime-eclipse-version>1.4.0.20220629_124147_7f70e44e_develop</epsilon-runtime-eclipse-version>
+		<epsilon-runtime-version>1.5.0</epsilon-runtime-version>
+		<epsilon-runtime-eclipse-version>1.5.0.20220916_075622</epsilon-runtime-eclipse-version>
 
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
-		<tycho-version>2.7.3</tycho-version>
+		<tycho-version>2.7.5</tycho-version>
 
-		<emf-genmodel-generator-version>1.0.2.20220618_225039_158d46f1_develop</emf-genmodel-generator-version>
-		<judo-genmodel-generator-version>1.0.1.20220618_225527_386d550e_develop</judo-genmodel-generator-version>
-		<judo-epp-common-version>4.23.0.20220617_120427_1e370db3_develop</judo-epp-common-version>
+		<emf-genmodel-generator-version>1.0.2.20220916_082646</emf-genmodel-generator-version>
+		<judo-genmodel-generator-version>1.0.1.20220916_103853</judo-genmodel-generator-version>
+		<judo-epp-common-version>4.23.0.20220919_071730</judo-epp-common-version>
 
 		<xtext-version>2.27.0</xtext-version>
 		<emf-mwe2-launch-version>2.12.1</emf-mwe2-launch-version>
@@ -82,18 +82,19 @@
 		<karaf-version>4.3.3</karaf-version>
 		<cxf-version>3.4.4</cxf-version>
 
-		<osgi-utils-version>1.0.12.20220628_205152_6d1b9262_develop</osgi-utils-version>
-		<bouncycastle-karaf-features-version>1.61.2</bouncycastle-karaf-features-version>
-		<tinybundles-karaf-features-version>1.0.0</tinybundles-karaf-features-version>
-		<google-karaf-features-version>1.0.7</google-karaf-features-version>
-		<eclipse-emf-karaf-features-version>1.0.1</eclipse-emf-karaf-features-version>
-		<eclipse-epsilon-karaf-features-version>1.0.6</eclipse-epsilon-karaf-features-version>
-		<antlr-karaf-features-version>1.0.1</antlr-karaf-features-version>
-		<apache-commons-karaf-features-version>1.0.6</apache-commons-karaf-features-version>
-		<apache-poi-karaf-features-version>1.0.4</apache-poi-karaf-features-version>
-		<apache-httpclient-karaf-features-version>1.0.0</apache-httpclient-karaf-features-version>
+		<osgi-utils-version>1.1.0</osgi-utils-version>
+		<karaf-features-version>2.0.0</karaf-features-version>
         <pax-exam-version>4.13.4</pax-exam-version>
         <log4j.configuration>log4j.properties</log4j.configuration>
+
+        <!-- Code Quality-->
+		<sonar-maven-plugin-version>3.9.1.2184</sonar-maven-plugin-version>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+		<sonar.language>java</sonar.language>
+		<sonar.java.source>${java.version}</sonar.java.source>
+		<jacoco.version>0.8.8</jacoco.version>
+
     </properties>
 
 	<build>
@@ -144,13 +145,22 @@
 			</plugin>
 
 			<plugin>
-				<groupId>org.eclipse.tycho.extras</groupId>
-				<artifactId>tycho-source-feature-plugin</artifactId>
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-source-plugin</artifactId>
 			</plugin>
 
 			<plugin>
-				<groupId>org.eclipse.tycho</groupId>
-				<artifactId>tycho-source-plugin</artifactId>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>3.2.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 
 			<plugin>
@@ -178,6 +188,30 @@
 					</execution>
 				</executions>
 			</plugin>
+
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco.version}</version>
+				<configuration>
+					<propertyName>jacoco.agent</propertyName>
+				</configuration>
+				<executions>
+					<execution>
+						<id>jacoco-initialize</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>jacoco-report</id>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
 		</plugins>
 
 		<pluginManagement>
@@ -311,8 +345,15 @@
 								<goal>plugin-source</goal>
 							</goals>
 						</execution>
+						<execution>
+							<id>feature-source</id>
+							<goals>
+								<goal>feature-source</goal>
+							</goals>
+						</execution>
 					</executions>
 				</plugin>
+
 
 				<plugin>
 					<groupId>org.eclipse.tycho.extras</groupId>
@@ -368,13 +409,8 @@
 
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-gpg-plugin</artifactId>
-					<version>1.6</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>3.0.0-M5</version>
+					<version>${surefire-version}</version>
 					<configuration>
 						<argLine>-Dfile.encoding=UTF-8</argLine>
 						<trimStackTrace>false</trimStackTrace>
@@ -536,23 +572,14 @@
 			<build>
 				<plugins>
 					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-gpg-plugin</artifactId>
-						<version>1.6</version>
+						<groupId>org.simplify4u.plugins</groupId>
+						<artifactId>sign-maven-plugin</artifactId>
+						<version>1.0.1</version>
 						<executions>
 							<execution>
-								<id>sign-artifacts</id>
-								<phase>verify</phase>
 								<goals>
 									<goal>sign</goal>
 								</goals>
-								<configuration>
-									<!-- This is necessary for gpg to not try to use the pinentry programs -->
-									<gpgArguments>
-										<arg>--pinentry-mode</arg>
-										<arg>loopback</arg>
-									</gpgArguments>
-								</configuration>
 							</execution>
 						</executions>
 					</plugin>
@@ -603,19 +630,6 @@
 							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
 							<autoReleaseAfterClose>true</autoReleaseAfterClose>
 						</configuration>
-					</plugin>
-
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-source-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>attach-sources</id>
-								<goals>
-									<goal>jar-no-fork</goal>
-								</goals>
-							</execution>
-						</executions>
 					</plugin>
 				</plugins>
 			</build>
