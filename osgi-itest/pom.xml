@@ -84,7 +84,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
 
@@ -139,14 +139,14 @@
                 <configuration>
                     <forkedProcessExitTimeoutInSeconds>1</forkedProcessExitTimeoutInSeconds>
                     <systemPropertyVariables>
-                        <pax.exam.karaf.version>${karaf-version}</pax.exam.karaf.version>
+                        <karafVersion>${karaf-version}</karafVersion>
                     </systemPropertyVariables>
                 </configuration>
                 <dependencies>
                     <dependency>
                         <groupId>org.apache.maven.surefire</groupId>
                         <artifactId>surefire-junit47</artifactId>
-                        <version>3.0.0-M5</version>
+                        <version>${surefire-version}</version>
                     </dependency>
                 </dependencies>
             </plugin>
