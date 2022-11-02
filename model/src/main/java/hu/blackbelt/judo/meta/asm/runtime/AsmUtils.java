@@ -70,6 +70,8 @@ public class AsmUtils {
 
     private static final String EXPOSED_BY_ANNOTATION_NAME = "exposedBy";
 
+    private static final String STATIC_QUERY_ANNOTATION_NAME = "staticQuery";
+
     private final ResourceSet resourceSet;
 
     private final AsmUtilsCache cache = new AsmUtilsCache();
@@ -649,6 +651,15 @@ public class AsmUtils {
      */
     public static boolean isActorType(final EClass eClass) {
         return annotatedAsTrue(eClass, "actorType");
+    }
+
+    /**
+     *
+     * @param eClass class
+     * @return <code>true</code> if class is annotated as Static Query
+     */
+    public static boolean isStaticQuery(final EClass eClass) {
+        return eClass.getEAnnotations().stream().anyMatch(a -> Objects.equals(a.getSource(), getAnnotationUri(STATIC_QUERY_ANNOTATION_NAME)));
     }
 
     /**
