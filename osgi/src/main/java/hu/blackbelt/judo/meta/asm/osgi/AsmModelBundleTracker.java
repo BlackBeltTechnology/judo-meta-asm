@@ -51,19 +51,9 @@ import static java.util.Optional.ofNullable;
 
 @Component(immediate = true)
 @Slf4j
-@Designate(ocd = AsmModelBundleTracker.TrackerConfig.class)
 public class AsmModelBundleTracker {
 
     public static final String ASM_MODELS = "Asm-Models";
-
-    @ObjectClassDefinition(name="Asm Model Bundle Tracker")
-    public @interface TrackerConfig {
-        @AttributeDefinition(
-                name = "Tags",
-                description = "Which tags are on the loaded model when there is no one defined in bundle"
-        )
-        String tags() default "";
-    }
 
     @Reference
     BundleTrackerManager bundleTrackerManager;
@@ -72,11 +62,8 @@ public class AsmModelBundleTracker {
 
     Map<String, AsmModel> asmModels = new HashMap<>();
 
-    TrackerConfig config;
-
     @Activate
-    public void activate(final ComponentContext componentContext, final TrackerConfig trackerConfig) {
-        this.config = trackerConfig;
+    public void activate(final ComponentContext componentContext) {
         bundleTrackerManager.registerBundleCallback(this.getClass().getName(),
                 new AsmRegisterCallback(componentContext.getBundleContext()),
                 new AsmUnregisterCallback(),
