@@ -113,31 +113,20 @@ public class AsmModelBundleTracker {
                 if (asmModelRegistrations.containsKey(key)) {
                     log.error("Asm model already loaded: " + key);
                 } else {
-                    if (params.containsKey(AsmModel.META_VERSION_RANGE)) {
-                        VersionRange versionRange = new VersionRange(params.get(AsmModel.META_VERSION_RANGE).replaceAll("\"", ""));
-                        if (versionRange.includes(bundleContext.getBundle().getVersion())) {
-                            // Unpack model
-                            try {
-                                        AsmModel asmModel = AsmModel.loadAsmModel(
-                                        AsmModel.LoadArguments.asmLoadArgumentsBuilder()
-                                                .inputStream(trackedBundle.getEntry(params.get("file")).openStream())
-                                                .name(params.get(AsmModel.NAME))
-                                                .version(trackedBundle.getVersion().toString())
-                                                .checksum(params.get(AsmModel.CHECKSUM))
-                                                .tags(Stream.of(ofNullable(params.get(AsmModel.TAGS)).orElse(config.tags()).split(",")).collect(Collectors.toSet()))
-                                                .acceptedMetaVersionRange(versionRange.toString())
-                                );
+                    // Unpack model
+                    try {
+                                AsmModel asmModel = AsmModel.loadAsmModel(
+                                AsmModel.LoadArguments.asmLoadArgumentsBuilder()
+                                        .inputStream(trackedBundle.getEntry(params.get("file")).openStream()));
 
-                                log.info("Registering Asm model: " + asmModel);
+                        log.info("Registering Asm model: " + asmModel);
 
-                                ServiceRegistration<AsmModel> modelServiceRegistration = bundleContext.registerService(AsmModel.class, asmModel, asmModel.toDictionary());
-                                asmModels.put(key, asmModel);
-                                asmModelRegistrations.put(key, modelServiceRegistration);
+                        ServiceRegistration<AsmModel> modelServiceRegistration = bundleContext.registerService(AsmModel.class, asmModel, asmModel.toDictionary());
+                        asmModels.put(key, asmModel);
+                        asmModelRegistrations.put(key, modelServiceRegistration);
 
-                            } catch (IOException | AsmModel.AsmValidationException e) {
-                                log.error("Could not load Psm model: " + params.get(AsmModel.NAME) + " from bundle: " + trackedBundle.getBundleId(), e);
-                            }
-                        }
+                    } catch (IOException | AsmModel.AsmValidationException e) {
+                        log.error("Could not load Psm model: " + params.get(AsmModel.NAME) + " from bundle: " + trackedBundle.getBundleId(), e);
                     }
                 }
             }
