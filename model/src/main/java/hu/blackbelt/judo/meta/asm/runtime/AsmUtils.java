@@ -1547,6 +1547,16 @@ public class AsmUtils {
         }
     }
 
+    public String getVersion() {
+        EPackage model = getModel().orElseThrow(() -> new IllegalStateException("Could not find model root package"));
+        Optional<EAnnotation> annotation = getExtensionAnnotationByName(model, "ModelVersion", false);
+        if (annotation.isPresent()) {
+            EAnnotation eAnnotation = annotation.get();
+            return eAnnotation.getDetails().get("value");
+        }
+        return null;
+    }
+
     private static String pad(int level, final String message) {
         final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < level; i++) {

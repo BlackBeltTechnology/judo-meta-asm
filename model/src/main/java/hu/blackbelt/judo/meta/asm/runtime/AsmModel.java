@@ -20,6 +20,7 @@ package hu.blackbelt.judo.meta.asm.runtime;
  * #L%
  */
 
+import hu.blackbelt.judo.meta.asm.support.AsmModelResourceSupport;
 import org.eclipse.emf.common.util.Diagnostic;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
@@ -27,10 +28,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.URIHandler;
 
-import hu.blackbelt.judo.meta.asm.support.AsmModelResourceSupport;
-
 import java.io.*;
-import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.Map;
@@ -41,8 +39,9 @@ import static hu.blackbelt.judo.meta.asm.support.AsmModelResourceSupport.setupRe
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 
+
 /**
- * A wrapper class on a ASM metamodel based model. This wrapper organizing the model a structure which can be used
+ * A wrapper class on a Ecore metamodel based model. This wrapper organizing the model a structure which can be used
  * in Tatami as a logical model.
  * The logical model have version and loaded resources. The logical model can handle load and save from / to different
  * type of input / output source.
@@ -52,8 +51,7 @@ import static java.util.Optional.ofNullable;
  * Load an model from file.
  * <pre>
  *    AsmModel asmModel = AsmModel.loadAsmModel(asmLoadArgumentsBuilder()
- *                 .uri(URI.createFileURI(new File("src/test/model/test.asm").getAbsolutePath()))
- *                 .name("test")
+ *                 .uri(URI.createFileURI(new File("src/test/model/test.ecore").getAbsolutePath()))
  *                 .build());
  *
  * </pre>
@@ -65,17 +63,13 @@ import static java.util.Optional.ofNullable;
  *    BundleURIHandler bundleURIHandler = new BundleURIHandler("urn", "", bundleContext.getBundle());
  *
  *    AsmModel asmModel = AsmModel.buildAsmModel()
- *                 .name("test")
- *                 .version("1.0.0")
- *                 .uri(URI.createURI("urn:test.asm"))
+ *                 .uri(URI.createURI("urn:test.ecore"))
  *                 .uriHandler(bundleURIHandler)
- *                 .metaVersionRange(bundleContext.getBundle().getHeaders().get("[1.0,2))).build();
  * </pre>
  *
- * Create an empty asm model
+ * Create an empty ecore model
  * <pre>
  *    AsmModel asmModel = AsmModel.buildAsmModel()
- *                 .name("test")
  *                 .uri(URI.createFileURI("test.model"))
  *                 .build()
  * </pre>
@@ -85,19 +79,27 @@ public class AsmModel {
 
     public static final String NAME = "name";
     public static final String VERSION = "version";
-    public static final String CHECKSUM = "checksum";
-    public static final String META_VERSION_RANGE = "meta-version-range";
     public static final String URI = "uri";
     public static final String RESOURCESET = "resourceset";
-    public static final String TAGS = "tags";
 
-    private String name;
-    private String version;
     private URI uri;
-    private String checksum;
-    private String metaVersionRange;
-    private Set<String> tags;
     private AsmModelResourceSupport asmModelResourceSupport;
+
+    /**
+     * Return the model's name
+     * @return model's name
+     */
+    public String getName() {
+        return new hu.blackbelt.judo.meta.asm.runtime.AsmUtils(asmModelResourceSupport.getResourceSet()).getModel().orElseThrow(() -> new IllegalStateException("Could not get ASM model ePackage")).getName();
+    }
+
+    /**
+     * Return the model's version
+     * @return model's version
+     */
+    public String getVersion() {
+        return java.util.Optional.ofNullable(new hu.blackbelt.judo.meta.asm.runtime.AsmUtils(asmModelResourceSupport.getResourceSet()).getVersion()).orElse("1.0.0");
+    }
 
     /**
      * Return all properties as a {@link Dictionary}
@@ -105,14 +107,19 @@ public class AsmModel {
      */
     public Dictionary<String, Object> toDictionary() {
         Dictionary<String, Object> ret = new Hashtable<>();
-        ret.put(NAME, name);
-        ret.put(VERSION, version);
+        ret.put(NAME, getName());
+        ret.put(VERSION, getVersion());
         ret.put(URI, uri);
-        ret.put(CHECKSUM, checksum);
-        ret.put(META_VERSION_RANGE, metaVersionRange);
-        ret.put(TAGS, tags);
         ret.put(RESOURCESET, asmModelResourceSupport.getResourceSet());
         return ret;
+    }
+
+    /**
+     * Get the model's {@link AsmModelResourceSupport} resource helper itself.
+     * @return instance of {@link AsmModelResourceSupport}
+     */
+    public AsmModelResourceSupport getAsmModelResourceSupport() {
+        return asmModelResourceSupport;
     }
 
     /**
@@ -157,7 +164,7 @@ public class AsmModel {
      * @throws AsmValidationException when model validation is true and the model is invalid.
      */
     public AsmModel loadResource(LoadArguments.LoadArgumentsBuilder
-                                                        loadArgumentsBuilder)
+                                           loadArgumentsBuilder)
             throws IOException, AsmValidationException {
         return loadResource(loadArgumentsBuilder.build());
     }
@@ -234,19 +241,8 @@ public class AsmModel {
                     .loadAsm(loadArguments.toAsmModelResourceSupportLoadArgumentsBuilder()
                             .validateModel(false));
             AsmModel asmModel = buildAsmModel()
-                    .name(loadArguments.getName()
-                            .orElseThrow(() -> new IllegalArgumentException("Name is mandatory")))
-                    .version(loadArguments.getVersion()
-                            .orElse("1.0.0"))
-                    .uri(loadArguments.getUri()
-                            .orElseGet(() ->
-                                    org.eclipse.emf.common.util.URI.createURI(
-                                            loadArguments.getName().get() + "-asm.model")))
-                    .checksum(loadArguments.getChecksum()
-                            .orElse("NON-DEFINED"))
+                    .uri(loadArguments.getUri().orElseGet(() -> org.eclipse.emf.common.util.URI.createURI("asm.model")))
                     .asmModelResourceSupport(asmModelResourceSupport)
-                    .metaVersionRange(loadArguments.getAcceptedMetaVersionRange()
-                            .orElse("[0,9999)"))
                     .build();
 
             setupRelativeUriRoot(asmModel.getResourceSet(), loadArguments.uri);
@@ -342,9 +338,7 @@ public class AsmModel {
         AsmModel asmModel;
 
         public AsmValidationException(AsmModel asmModel) {
-            super("Invalid model\n" +
-                    asmModel.getDiagnosticsAsString() + "\n" + asmModel.asString()
-            );
+            super("Invalid model\n" + asmModel.getDiagnosticsAsString());
             this.asmModel = asmModel;
         }
     }
@@ -355,13 +349,8 @@ public class AsmModel {
      */
     public static class LoadArguments {
         URI uri;
-        String name;
         URIHandler uriHandler;
         ResourceSet resourceSet;
-        String version;
-        String checksum;
-        String acceptedMetaVersionRange;
-        Set<String> tags;
         Map<Object, Object> loadOptions;
         boolean validateModel;
         InputStream inputStream;
@@ -373,22 +362,6 @@ public class AsmModel {
 
         private static ResourceSet $default$resourceSet() {
             return null;
-        }
-
-        private static String $default$version() {
-            return "1.0.0";
-        }
-
-        private static String $default$checksum() {
-            return "NOT-SET";
-        }
-
-        private static String $default$acceptedMetaVersionRange() {
-            return "[0,9999]";
-        }
-
-        private static Set<String> $default$tags() {
-            return Collections.emptySet();
         }
 
         private static File $default$file() {
@@ -407,32 +380,12 @@ public class AsmModel {
             return ofNullable(uri);
         }
 
-        Optional<String> getName() {
-            return ofNullable(name);
-        }
-
         Optional<URIHandler> getUriHandler() {
             return ofNullable(uriHandler);
         }
 
         Optional<ResourceSet> getResourceSet() {
             return ofNullable(resourceSet);
-        }
-
-        Optional<String> getVersion() {
-            return ofNullable(version);
-        }
-
-        Optional<String> getChecksum() {
-            return ofNullable(checksum);
-        }
-
-        Optional<String> getAcceptedMetaVersionRange() {
-            return ofNullable(acceptedMetaVersionRange);
-        }
-
-        Optional<Set<String>> getTags() {
-            return ofNullable(tags);
         }
 
         Optional<Map<Object, Object>> getLoadOptions() {
@@ -456,25 +409,13 @@ public class AsmModel {
          */
         public static class LoadArgumentsBuilder {
             private URI uri;
-            private String name;
 
             private boolean uriHandler$set;
             private URIHandler uriHandler;
-            
+
             private boolean resourceSet$set;
             private ResourceSet resourceSet;
-            
-            private boolean version$set;
-            private String version;
-            
-            private boolean checksum$set;
-            private String checksum;
-            
-            private boolean acceptedMetaVersionRange$set;
-            private String acceptedMetaVersionRange;
 
-            private boolean tags$set;
-            private Set<String> tags;
 
             private boolean loadOptions$set;
             private Map<Object, Object> loadOptions;
@@ -484,11 +425,11 @@ public class AsmModel {
             private boolean file$set;
             private File file;
 
-            
+
             private boolean inputStream$set;
             private InputStream inputStream;
 
-            
+
             LoadArgumentsBuilder() {
             }
 
@@ -502,16 +443,6 @@ public class AsmModel {
                 return this;
             }
 
-            
-            /**
-             * Defines the name of the model.
-             * This is mandatory.
-             */
-            public LoadArgumentsBuilder name(final String name) {
-                requireNonNull(name);
-                this.name = name;
-                return this;
-            }
 
             /**
              * Defines the {@link URIHandler} used for model IO. If not defined the default is EMF used.
@@ -523,7 +454,7 @@ public class AsmModel {
                 return this;
             }
 
-            
+
             /**
              * Defines the default {@link ResourceSet}. If it is not defined the factory based resourceSet is used.
              */
@@ -531,49 +462,6 @@ public class AsmModel {
                 requireNonNull(resourceSet);
                 this.resourceSet = resourceSet;
                 resourceSet$set = true;
-                return this;
-            }
-
-            
-            /**
-             * Defines the model version. If its not defined the version will be 1.0.0
-             */
-            public LoadArgumentsBuilder version(final String version) {
-                requireNonNull(version);
-                this.version = version;
-                version$set = true;
-                return this;
-            }
-
-            
-            /**
-             * Defines the model checksum. If its not defined 'notused' is defined.
-             */
-            public LoadArgumentsBuilder checksum(final String checksum) {
-                requireNonNull(checksum);
-                this.checksum = checksum;
-                checksum$set = true;
-                return this;
-            }
-
-            
-            /**
-             * Defines the accepted version range of the meta model. If its not defined [1.0,999) is used.
-             */
-            public LoadArgumentsBuilder acceptedMetaVersionRange(final String acceptedMetaVersionRange) {
-                requireNonNull(acceptedMetaVersionRange);
-                this.acceptedMetaVersionRange = acceptedMetaVersionRange;
-                acceptedMetaVersionRange$set = true;
-                return this;
-            }
-
-            /**
-             * Defines the tags of the meta model. If its not defined empty set is used.
-             */
-            public LoadArgumentsBuilder tags(final Set<String> tags) {
-                requireNonNull(tags);
-                this.tags = tags;
-                tags$set = true;
                 return this;
             }
 
@@ -589,7 +477,7 @@ public class AsmModel {
                 return this;
             }
 
-            
+
             /**
              * Defines that model validation required or not on load. Default: true
              */
@@ -598,7 +486,7 @@ public class AsmModel {
                 return this;
             }
 
-            
+
             /**
              * Defines the file if it is not loaded from URI. If not defined, URI is used. If inputStream is defined
              * it is used.
@@ -610,7 +498,7 @@ public class AsmModel {
                 return this;
             }
 
-            
+
             /**
              * Defines the file if it is not loaded from  File or URI. If not defined, File or URI is used.
              */
@@ -626,16 +514,7 @@ public class AsmModel {
                 if (!uriHandler$set) uriHandler = LoadArguments.$default$uriHandler();
                 ResourceSet resourceSet = this.resourceSet;
                 if (!resourceSet$set) resourceSet = LoadArguments.$default$resourceSet();
-                String version = this.version;
-                if (!version$set) version = LoadArguments.$default$version();
-                String checksum = this.checksum;
-                if (!checksum$set) checksum = LoadArguments.$default$checksum();
-                String acceptedMetaVersionRange = this.acceptedMetaVersionRange;
-                if (!acceptedMetaVersionRange$set)
-                    acceptedMetaVersionRange = LoadArguments.$default$acceptedMetaVersionRange();
-                Set<String> tags = this.tags;
-                if (!tags$set)
-                    tags = LoadArguments.$default$tags();
+
                 Map<Object, Object> loadOptions = this.loadOptions;
                 if (!loadOptions$set) loadOptions = LoadArguments.$default$loadOptions();
                 File file = this.file;
@@ -643,21 +522,22 @@ public class AsmModel {
                 InputStream inputStream = this.inputStream;
                 if (!inputStream$set) inputStream = LoadArguments.$default$inputStream();
 
-                return new LoadArguments(uri, name, uriHandler, resourceSet, version,
-                        checksum, acceptedMetaVersionRange, tags, loadOptions, validateModel, file, inputStream);
+                return new LoadArguments(
+                        uri,
+                        uriHandler,
+                        resourceSet,
+                        loadOptions,
+                        validateModel,
+                        file,
+                        inputStream);
             }
 
             @java.lang.Override
-            
+
             public java.lang.String toString() {
                 return "AsmModel.LoadArguments.LoadArgumentsBuilder(uri=" + this.uri
-                        + ", name=" + this.name
                         + ", uriHandler=" + this.uriHandler
                         + ", resourceSet=" + this.resourceSet
-                        + ", version=" + this.version
-                        + ", checksum=" + this.checksum
-                        + ", acceptedMetaVersionRange=" + this.acceptedMetaVersionRange
-                        + ", tags=" + this.tags
                         + ", loadOptions=" + this.loadOptions
                         + ", validateModel=" + this.validateModel
                         + ", file=" + this.file
@@ -666,47 +546,36 @@ public class AsmModel {
             }
         }
 
-        
+
         public static LoadArgumentsBuilder asmLoadArgumentsBuilder() {
             return new LoadArgumentsBuilder();
         }
 
-        
+
         private LoadArguments(final URI uri,
-                              final String name,
                               final URIHandler uriHandler,
                               final ResourceSet resourceSet,
-                              final String version,
-                              final String checksum,
-                              final String acceptedMetaVersionRange,
-                              final Set<String> tags,
                               final Map<Object, Object> loadOptions,
                               final boolean validateModel,
                               final File file,
                               final InputStream inputStream) {
             this.uri = uri;
-            this.name = name;
             this.uriHandler = uriHandler;
             this.resourceSet = resourceSet;
-            this.version = version;
-            this.checksum = checksum;
-            this.acceptedMetaVersionRange = acceptedMetaVersionRange;
-            this.tags = tags;
             this.loadOptions = loadOptions;
             this.validateModel = validateModel;
             this.file = file;
             this.inputStream = inputStream;
         }
 
-        
+
         AsmModelResourceSupport.LoadArguments.LoadArgumentsBuilder
-                    toAsmModelResourceSupportLoadArgumentsBuilder() {
+        toAsmModelResourceSupportLoadArgumentsBuilder() {
             AsmModelResourceSupport.LoadArguments.LoadArgumentsBuilder argumentsBuilder =
                     AsmModelResourceSupport.LoadArguments.asmLoadArgumentsBuilder()
                             .uri(getUri()
                                     .orElseGet(() ->
-                                            org.eclipse.emf.common.util.URI.createURI(
-                                                    getName().get() + "-asm.model")))
+                                            org.eclipse.emf.common.util.URI.createURI("asm.model")))
                             .validateModel(isValidateModel());
 
             getUriHandler().ifPresent(argumentsBuilder::uriHandler);
@@ -764,25 +633,25 @@ public class AsmModel {
          * Builder for {@link AsmModel#saveAsmModel(SaveArguments)}.
          */
         public static class SaveArgumentsBuilder {
-            
+
             private boolean outputStream$set;
             private OutputStream outputStream;
-            
+
             private boolean file$set;
             private File file;
-            
+
             private boolean saveOptions$set;
             private Map<Object, Object> saveOptions;
 
             private boolean validateModel = true;
 
-            
+
             SaveArgumentsBuilder() {
             }
 
-            
+
             public AsmModelResourceSupport.SaveArguments.SaveArgumentsBuilder
-                        toAsmModelResourceSupportSaveArgumentsBuilder() {
+            toAsmModelResourceSupportSaveArgumentsBuilder() {
                 AsmModelResourceSupport.SaveArguments.SaveArgumentsBuilder argumentsBuilder =
                         AsmModelResourceSupport.SaveArguments.asmSaveArgumentsBuilder().validateModel(validateModel);
 
@@ -792,7 +661,7 @@ public class AsmModel {
                 return argumentsBuilder;
             }
 
-            
+
             /**
              * Defines {@link OutputStream} which is used by save. Whe it is not defined, file is used.
              */
@@ -803,7 +672,7 @@ public class AsmModel {
                 return this;
             }
 
-            
+
             /**
              * Defines {@link File} which is used by save. Whe it is not defined the model's
              * {@link AsmModel#uri is used}
@@ -815,7 +684,7 @@ public class AsmModel {
                 return this;
             }
 
-            
+
             /**
              * Defines save options. When it is not defined
              * {@link AsmModelResourceSupport#getAsmModelDefaultSaveOptions()} is used.
@@ -835,7 +704,7 @@ public class AsmModel {
                 return this;
             }
 
-            
+
             public SaveArguments build() {
                 OutputStream outputStream = this.outputStream;
                 if (!outputStream$set) outputStream = SaveArguments.$default$outputStream();
@@ -847,7 +716,7 @@ public class AsmModel {
             }
 
             @java.lang.Override
-            
+
             public java.lang.String toString() {
                 return "AsmModel.SaveArguments.SaveArgumentsBuilder("
                         + "outputStream=" + this.outputStream
@@ -857,12 +726,12 @@ public class AsmModel {
             }
         }
 
-        
+
         public static SaveArgumentsBuilder asmSaveArgumentsBuilder() {
             return new SaveArgumentsBuilder();
         }
 
-        
+
         public AsmModelResourceSupport.SaveArguments.SaveArgumentsBuilder toAsmModelResourceSupportSaveArgumentsBuilder() {
             AsmModelResourceSupport.SaveArguments.SaveArgumentsBuilder argumentsBuilder =
                     AsmModelResourceSupport.SaveArguments.asmSaveArgumentsBuilder().validateModel(validateModel);
@@ -874,7 +743,7 @@ public class AsmModel {
         }
 
 
-        
+
         private SaveArguments(final OutputStream outputStream,
                               final File file,
                               final Map<Object, Object> saveOptions,
@@ -887,23 +756,11 @@ public class AsmModel {
     }
 
 
-    
+
     public static class AsmModelBuilder {
-        
-        private String name;
+
         private URI uri;
 
-        private boolean version$set;
-        private String version;
-
-        private boolean checksum$set;
-        private String checksum;
-
-        private boolean metaVersionRange$set;
-        private String metaVersionRange;
-
-        private boolean tags$set;
-        private Set<String> tags;
 
         private boolean asmModelResourceSupport$set;
         private AsmModelResourceSupport asmModelResourceSupport;
@@ -914,68 +771,17 @@ public class AsmModel {
         private URIHandler uriHandler;
         private boolean uriHandler$set;
 
-
         AsmModelBuilder() {
         }
 
-        
-        /**
-         * Defines name of the model. Its mandatory.
-         */
-        public AsmModelBuilder name(final String name) {
-            this.name = name;
-            return this;
-        }
 
-        
+
+
         /**
          * Defines the uri {@link URI} of the model. Its mandatory.
          */
         public AsmModelBuilder uri(final URI uri) {
             this.uri = uri;
-            return this;
-        }
-
-        
-        /**
-         * Defines the version of the model. Its mandatory.
-         */
-        public AsmModelBuilder version(final String version) {
-            requireNonNull(version);
-            this.version = version;
-            version$set = true;
-            return this;
-        }
-
-        
-        /**
-         * Defines the checksum of the model. Its mandatory.
-         */
-        public AsmModelBuilder checksum(final String checksum) {
-            requireNonNull(checksum);
-            this.checksum = checksum;
-            this.checksum$set = true;
-            return this;
-        }
-
-        
-        /**
-         * Defines the version of the model.
-         */
-        public AsmModelBuilder metaVersionRange(final String metaVersionRange) {
-            requireNonNull(metaVersionRange);
-            this.metaVersionRange = metaVersionRange;
-            this.metaVersionRange$set = true;
-            return this;
-        }
-
-        /**
-         * Defines the tags of the model.
-         */
-        public AsmModelBuilder tags(final Set<String> tags) {
-            requireNonNull(tags);
-            this.tags = tags;
-            this.tags$set = true;
             return this;
         }
 
@@ -1004,7 +810,8 @@ public class AsmModel {
 
         public AsmModel build() {
             org.eclipse.emf.common.util.URI uriPhysicalOrLogical = ofNullable(uri)
-                    .orElseGet(() -> org.eclipse.emf.common.util.URI.createURI(name + "-asm.model"));
+                    .orElseGet(() -> org.eclipse.emf.common.util.URI.createURI("asm.model"));
+
 
             AsmModelResourceSupport asmModelResourceSupport = this.asmModelResourceSupport;
             if (!asmModelResourceSupport$set) {
@@ -1020,27 +827,16 @@ public class AsmModel {
                 this.uri = asmModelResourceSupport.getResource().getURI();
             }
 
-            String version = this.version;
-            if (!version$set) version = LoadArguments.$default$version();
-            String checksum = this.checksum;
-            if (!checksum$set) checksum = LoadArguments.$default$checksum();
-            String metaVersionRange = this.metaVersionRange;
-            if (!metaVersionRange$set) metaVersionRange = LoadArguments.$default$acceptedMetaVersionRange();
 
-            Set<String> tags = this.tags;
-            if (!tags$set) tags = LoadArguments.$default$tags();
-
-            return new AsmModel(name, version, uriPhysicalOrLogical, checksum, metaVersionRange, tags, asmModelResourceSupport);
+            return new AsmModel(
+                    uriPhysicalOrLogical,
+                    asmModelResourceSupport);
         }
 
         @java.lang.Override
         public java.lang.String toString() {
-            return "AsmModel.AsmModelBuilder(name=" + this.name
-                    + ", version=" + this.version
-                    + ", uri=" + this.uri
-                    + ", checksum=" + this.checksum
-                    + ", metaVersionRange=" + this.metaVersionRange
-                    + ", tags=" + this.tags
+            return "AsmModel.AsmModelBuilder("
+                    + "uri=" + this.uri
                     + ", asmModelResourceSupport=" + this.asmModelResourceSupport + ")";
         }
     }
@@ -1049,49 +845,20 @@ public class AsmModel {
         return new AsmModelBuilder();
     }
 
-    private AsmModel(final String name,
-                     final String version,
-                     final URI uri,
-                     final String checksum,
-                     final String metaVersionRange,
-                     final Set<String> tags,
-                     final AsmModelResourceSupport asmModelResourceSupport) {
+    private AsmModel(
+            final URI uri,
+            final AsmModelResourceSupport asmModelResourceSupport) {
 
-        requireNonNull(name, "Name is mandatory");
-        requireNonNull(name, "URI is mandatory");
-
-        this.name = name;
-        this.version = version;
+        requireNonNull(uri, "URI is mandatory");
         this.uri = uri;
-        this.checksum = checksum;
-        this.metaVersionRange = metaVersionRange;
         this.asmModelResourceSupport = asmModelResourceSupport;
-        this.tags = tags;
     }
 
     @java.lang.Override
     public java.lang.String toString() {
-        return "AsmModel(name=" + this.getName()
-                + ", version=" + this.getVersion()
+        return "AsmModel("
                 + ", uri=" + this.getUri()
-                + ", checksum=" + this.getChecksum()
-                + ", metaVersionRange=" + this.getMetaVersionRange()
-                + ", tags=" + this.getTags()
                 + ", asmModelResourceSupport=" + this.asmModelResourceSupport + ")";
-    }
-
-    /**
-     * Get the name of the model.
-     */
-    public String getName() {
-        return this.name;
-    }
-
-    /**
-     * Get the model version.
-     */
-    public String getVersion() {
-        return this.version;
     }
 
     /**
@@ -1100,26 +867,4 @@ public class AsmModel {
     public URI getUri() {
         return this.uri;
     }
-
-    /**
-     * Get the checksum of the model.
-     */
-    public String getChecksum() {
-        return this.checksum;
-    }
-
-    /**
-     * Get the accepted range of meta model version.
-     */
-    public String getMetaVersionRange() {
-        return this.metaVersionRange;
-    }
-
-    /**
-     * Get the tags of meta model version.
-     */
-    public Set<String> getTags() {
-        return this.tags;
-    }
-
 }

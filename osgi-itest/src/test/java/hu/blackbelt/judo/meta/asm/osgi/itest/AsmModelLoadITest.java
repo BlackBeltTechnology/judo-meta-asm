@@ -28,6 +28,7 @@ import hu.blackbelt.judo.meta.asm.runtime.AsmModel.AsmValidationException;
 import hu.blackbelt.judo.meta.asm.runtime.AsmModel.SaveArguments;
 import hu.blackbelt.osgi.utils.osgi.api.BundleTrackerManager;
 import lombok.extern.slf4j.Slf4j;
+import org.eclipse.emf.ecore.util.builder.EPackageBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
@@ -84,20 +85,22 @@ public class AsmModelLoadITest {
     private InputStream getAsmModelBundle() throws IOException, AsmValidationException {
     	
     	AsmModel asmModel = buildAsmModel()
-                .name(DEMO)
                 .build();
-    	
+        asmModel.getAsmModelResourceSupport().addContent(EPackageBuilder.create()
+                .withName("test")
+                        .withNsURI("http://blackbelt.hu/judo/test/test")
+                        .withNsPrefix("runtimetestTest")
+                .build());
     	ByteArrayOutputStream os = new ByteArrayOutputStream();
     	
     	asmModel.saveAsmModel(SaveArguments.asmSaveArgumentsBuilder().outputStream(os));
     	
     	return bundle()
-                .add("model/" + DEMO + ".judo-meta-asm",
+                .add("model/" + asmModel.getName() + "-asm.model",
                         new ByteArrayInputStream(os.toByteArray()))
                 .set( Constants.BUNDLE_MANIFESTVERSION, "2")
-                .set( Constants.BUNDLE_SYMBOLICNAME, DEMO + "-asm" )
-                //set( Constants.IMPORT_PACKAGE, "meta/psm;version=\"" + getConfiguration(META_PSM_IMPORT_RANGE) +"\"")
-                .set( "Asm-Models", "file=model/" + DEMO + ".judo-meta-asm;version=1.0.0;name=" + DEMO + ";checksum=notset;meta-version-range=\"[1.0.0,2)\"")
+                .set( Constants.BUNDLE_SYMBOLICNAME, asmModel.getName() + "-asm" )
+                .set( "Asm-Models", "name=" + asmModel.getName() + ";file=model/" + asmModel.getName() + "-asm.model")
                 .build( withBnd());
     }
 
