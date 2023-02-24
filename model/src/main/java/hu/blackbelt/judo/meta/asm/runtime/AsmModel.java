@@ -241,8 +241,7 @@ public class AsmModel {
                     .loadAsm(loadArguments.toAsmModelResourceSupportLoadArgumentsBuilder()
                             .validateModel(false));
             AsmModel asmModel = buildAsmModel()
-                    .uri(loadArguments.getUri().orElseGet(() -> org.eclipse.emf.common.util.URI.createURI(
-                            String.valueOf(System.currentTimeMillis()) + "-ecore.model")))
+                    .uri(loadArguments.getUri().orElseGet(() -> org.eclipse.emf.common.util.URI.createURI("asm.model")))
                     .asmModelResourceSupport(asmModelResourceSupport)
                     .build();
 
@@ -576,8 +575,7 @@ public class AsmModel {
                     AsmModelResourceSupport.LoadArguments.asmLoadArgumentsBuilder()
                             .uri(getUri()
                                     .orElseGet(() ->
-                                            org.eclipse.emf.common.util.URI.createURI(
-                                                    String.valueOf(System.currentTimeMillis()) + "-ecore.model")))
+                                            org.eclipse.emf.common.util.URI.createURI("asm.model")))
                             .validateModel(isValidateModel());
 
             getUriHandler().ifPresent(argumentsBuilder::uriHandler);
@@ -812,8 +810,7 @@ public class AsmModel {
 
         public AsmModel build() {
             org.eclipse.emf.common.util.URI uriPhysicalOrLogical = ofNullable(uri)
-                    .orElseGet(() -> org.eclipse.emf.common.util.URI.createURI(
-                            String.valueOf(System.currentTimeMillis()) + "-ecore.model"));
+                    .orElseGet(() -> org.eclipse.emf.common.util.URI.createURI("asm.model"));
 
 
             AsmModelResourceSupport asmModelResourceSupport = this.asmModelResourceSupport;
