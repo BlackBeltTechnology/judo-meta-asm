@@ -47,7 +47,6 @@ public class EmfBuilderTest {
 
         AsmModel asmModel = AsmModel.buildAsmModel()
                 .uri(URI.createFileURI("target/test-classes/Company.ecore"))
-                .name("company")
                 .build();
         asmModel.addContent(createCopmanyPackage());
 
@@ -62,7 +61,6 @@ public class EmfBuilderTest {
 
         AsmModel asmModel = AsmModel.buildAsmModel()
                 .uri(URI.createFileURI("target/test-classes/CompanyInvalid.ecore"))
-                .name("company")
                 .build();
         asmModel.addContent(createCopmanyPackage());
 
