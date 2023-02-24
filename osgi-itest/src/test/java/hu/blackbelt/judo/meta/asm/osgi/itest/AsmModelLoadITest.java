@@ -96,12 +96,11 @@ public class AsmModelLoadITest {
     	asmModel.saveAsmModel(SaveArguments.asmSaveArgumentsBuilder().outputStream(os));
     	
     	return bundle()
-                .add("model/" + DEMO + ".judo-meta-asm",
+                .add("model/" + asmModel.getName() + "-asm.model",
                         new ByteArrayInputStream(os.toByteArray()))
                 .set( Constants.BUNDLE_MANIFESTVERSION, "2")
-                .set( Constants.BUNDLE_SYMBOLICNAME, DEMO + "-asm" )
-                //set( Constants.IMPORT_PACKAGE, "meta/psm;version=\"" + getConfiguration(META_PSM_IMPORT_RANGE) +"\"")
-                .set( "Asm-Models", "file=model/" + DEMO + ".judo-meta-asm;version=1.0.0;name=" + DEMO + ";checksum=notset;meta-version-range=\"[1.0.0,2)\"")
+                .set( Constants.BUNDLE_SYMBOLICNAME, asmModel.getName() + "-asm" )
+                .set( "Asm-Models", "name=" + asmModel.getName() + ";file=model/" + asmModel.getName() + "-asm.model")
                 .build( withBnd());
     }
 
