@@ -113,7 +113,7 @@ public class AsmModelBundleTracker {
                         asmModelRegistrations.put(key, modelServiceRegistration);
 
                     } catch (IOException | AsmModel.AsmValidationException e) {
-                        log.error("Could not load Psm model: " + params.get(AsmModel.NAME) + " from bundle: " + trackedBundle.getBundleId(), e);
+                        log.error("Could not load Asm model: " + params.get(AsmModel.NAME) + " from bundle: " + trackedBundle.getBundleId(), e);
                     }
                 }
             }
