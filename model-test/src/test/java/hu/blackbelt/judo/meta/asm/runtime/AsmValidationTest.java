@@ -43,7 +43,6 @@ public class AsmValidationTest {
         
         asmModel = AsmModel.buildAsmModel()
                 .uri(URI.createURI(createdSourceModelName))
-                .name("test")
                 .build();
     }
 
