@@ -45,5 +45,7 @@ Workflow {
 	component = hu.blackbelt.judo.eclipse.emf.genmodel.generator.runtimemodel.RuntimeModelGeneratorWorkflow {
 		modelDir = "${rootPath}/${modelDir}"
 		javaGenPath = "${rootPath}/${javaGenPath}"
+		resolveModelName = "new hu.blackbelt.judo.meta.asm.runtime.AsmUtils(ecoreModelResourceSupport.getResourceSet()).getModel().orElseThrow(() -> new IllegalStateException(\"Could not get ASM model ePackage\")).getName()"
+        resolveModelVersion = "java.util.Optional.ofNullable(new hu.blackbelt.judo.meta.asm.runtime.AsmUtils(ecoreModelResourceSupport.getResourceSet()).getVersion()).orElse(\"1.0.0\")"
 	}
 }
