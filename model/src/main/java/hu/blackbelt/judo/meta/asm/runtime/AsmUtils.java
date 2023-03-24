@@ -9,13 +9,13 @@ package hu.blackbelt.judo.meta.asm.runtime;
  * This program and the accompanying materials are made available under the
  * terms of the Eclipse Public License 2.0 which is available at
  * http://www.eclipse.org/legal/epl-2.0.
- * 
+ *
  * This Source Code may also be made available under the following Secondary
  * Licenses when the conditions for such availability set forth in the Eclipse
  * Public License, v. 2.0 are satisfied: GNU General Public License, version 2
  * with the GNU Classpath Exception which is
  * available at https://www.gnu.org/software/classpath/license.html.
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  * #L%
  */
@@ -897,7 +897,7 @@ public class AsmUtils {
     public static boolean isIdentifier(final EAttribute eAttribute) {
         return annotatedAsTrue(eAttribute, "identifier");
     }
-    
+
     /**
      * Get all access points.
      *
@@ -922,12 +922,12 @@ public class AsmUtils {
         }
         final boolean exposedByAdded = addExtensionAnnotation(transferObjectType, EXPOSED_BY_ANNOTATION_NAME, actorTypeFqName);
         transferObjectType.getEAllAttributes().stream()
-        		.filter(a -> !transferObjectType.getEAllAttributes().stream().anyMatch(d -> Objects.equals(a.getName(), AsmUtils.getExtensionAnnotationValue(d, "default", false).orElse("-"))))
-        		.forEach(a -> addExtensionAnnotation(a, EXPOSED_BY_ANNOTATION_NAME, actorTypeFqName));
+                .filter(a -> !transferObjectType.getEAllAttributes().stream().anyMatch(d -> Objects.equals(a.getName(), AsmUtils.getExtensionAnnotationValue(d, "default", false).orElse("-"))))
+                .forEach(a -> addExtensionAnnotation(a, EXPOSED_BY_ANNOTATION_NAME, actorTypeFqName));
         transferObjectType.getEAllReferences().stream()
-        		//.filter(r -> !transferObjectType.getEAllReferences().stream().anyMatch(d -> Objects.equals(r.getName(), AsmUtils.getExtensionAnnotationValue(d, "default", false).orElse("-"))))
-        		//.filter(r -> !transferObjectType.getEAllReferences().stream().anyMatch(d -> Objects.equals(r.getName(), AsmUtils.getExtensionAnnotationValue(d, "range", false).orElse("-"))))
-    			.filter(r -> includeAccess && annotatedAsTrue(r, "access") ||
+                //.filter(r -> !transferObjectType.getEAllReferences().stream().anyMatch(d -> Objects.equals(r.getName(), AsmUtils.getExtensionAnnotationValue(d, "default", false).orElse("-"))))
+                //.filter(r -> !transferObjectType.getEAllReferences().stream().anyMatch(d -> Objects.equals(r.getName(), AsmUtils.getExtensionAnnotationValue(d, "range", false).orElse("-"))))
+                .filter(r -> includeAccess && annotatedAsTrue(r, "access") ||
                         (annotatedAsTrue(r, "embedded") || isMappedTransferObjectType(r.getEContainingClass())) && !annotatedAsTrue(r, "access"))
                 .forEach(r -> {
                     final boolean added = addExtensionAnnotation(r, EXPOSED_BY_ANNOTATION_NAME, actorTypeFqName);
@@ -1503,7 +1503,7 @@ public class AsmUtils {
         REMOVE_REFERENCE("removeReference"),
 
         GET_REFERENCE_RANGE("getReferenceRange"),
-        
+
         GET_INPUT_RANGE("getInputRange"),
 
         /**
