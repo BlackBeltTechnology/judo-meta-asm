@@ -45,7 +45,7 @@ public class AsmUtilsCache {
 
     private final static LoadingCache<ResourceSet, AsmUtilsCache> cacheProvider = CacheBuilder
             .newBuilder()
-            .expireAfterAccess(60, TimeUnit.SECONDS)
+            .expireAfterAccess(Long.parseLong(System.getProperty("AsmUtilsCacheExpiration", "60")), TimeUnit.SECONDS)
             .build(cacheLoader);
 
 
