@@ -20,6 +20,9 @@ package hu.blackbelt.judo.meta.asm.runtime;
  * #L%
  */
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
@@ -33,6 +36,8 @@ import org.eclipse.emf.ecore.xmi.XMLResource;
 import org.slf4j.Logger;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -74,10 +79,11 @@ public class AsmUtils {
 
     private final ResourceSet resourceSet;
 
-    private final AsmUtilsCache cache = new AsmUtilsCache();
+    private final AsmUtilsCache cache;
 
     public AsmUtils(final ResourceSet resourceSet) {
         this.resourceSet = resourceSet;
+        this.cache = AsmUtilsCache.getCache(resourceSet);
     }
 
     /**
@@ -1016,6 +1022,7 @@ public class AsmUtils {
                     .forEach(accessPoint -> addExposedByAnnotationToTransferObjectType(accessPoint, actorTypeFqName, 0, false));
             addExposedByAnnotationToTransferObjectType(actorType, actorTypeFqName, 0, true);
         });
+        cache.clear();
     }
 
     /**
@@ -1039,9 +1046,7 @@ public class AsmUtils {
      */
     static <T> Stream<T> getAllContents(final EObject eObject, final Class<T> clazz) {
         final ResourceSet resourceSet = eObject.eResource().getResourceSet();
-        final Iterable<Notifier> asmContents = resourceSet::getAllContents;
-        return StreamSupport.stream(asmContents.spliterator(), true)
-                .filter(e -> clazz.isAssignableFrom(e.getClass())).map(e -> (T) e);
+        return new AsmUtils(resourceSet).all(clazz);
     }
 
     /**
