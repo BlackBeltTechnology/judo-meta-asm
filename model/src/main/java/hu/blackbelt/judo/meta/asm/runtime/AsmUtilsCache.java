@@ -20,17 +20,34 @@ package hu.blackbelt.judo.meta.asm.runtime;
  * #L%
  */
 
-import org.eclipse.emf.ecore.EAttribute;
-import org.eclipse.emf.ecore.EClassifier;
-import org.eclipse.emf.ecore.EOperation;
-import org.eclipse.emf.ecore.EReference;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import org.eclipse.emf.ecore.*;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 public class AsmUtilsCache {
+
+    private final static CacheLoader<ResourceSet, AsmUtilsCache> cacheLoader = new CacheLoader<>() {
+        @Override
+        public AsmUtilsCache load(ResourceSet resourceSet) {
+            AsmUtilsCache cache = new AsmUtilsCache();
+            return cache;
+        }
+    };
+
+    private final static LoadingCache<ResourceSet, AsmUtilsCache> cacheProvider = CacheBuilder
+            .newBuilder()
+            .expireAfterAccess(Long.parseLong(System.getProperty("AsmUtilsCacheExpiration", "60")), TimeUnit.SECONDS)
+            .build(cacheLoader);
+
 
     private final Map<String, Optional<EClassifier>> classifiersByFqName = new ConcurrentHashMap<>();
 
@@ -40,7 +57,19 @@ public class AsmUtilsCache {
 
     private final Map<String, Optional<EOperation>> operationsByFqName = new ConcurrentHashMap<>();
 
+    private final Map<EPackage, String> packageFqName = new ConcurrentHashMap<>();
+
     private Map<Class, Collection> elementsByType = new ConcurrentHashMap<>();
+
+    public static AsmUtilsCache getCache(ResourceSet resourceSet) {
+        AsmUtilsCache cache = null;
+        try {
+            cache = cacheProvider.get(resourceSet);
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+        return cache;
+    }
 
     public void clear() {
         classifiersByFqName.clear();
@@ -48,6 +77,7 @@ public class AsmUtilsCache {
         attributesByFqName.clear();
         operationsByFqName.clear();
         elementsByType.clear();
+        packageFqName.clear();
     }
 
     public Map<String, Optional<EClassifier>> getClassifiersByFqName() {
@@ -69,4 +99,5 @@ public class AsmUtilsCache {
     public Map<Class, Collection> getElementsByType() {
         return elementsByType;
     }
+
 }
