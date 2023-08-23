@@ -21,7 +21,6 @@ package hu.blackbelt.judo.meta.asm.runtime;
  */
 
 import com.google.common.collect.ImmutableList;
-import hu.blackbelt.epsilon.runtime.execution.api.Log;
 import hu.blackbelt.epsilon.runtime.execution.exceptions.EvlScriptExecutionException;
 import hu.blackbelt.epsilon.runtime.execution.impl.BufferedSlf4jLogger;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +46,7 @@ public class AsmValidationTest {
     }
 
     private void runEpsilon (Collection<String> expectedErrors, Collection<String> expectedWarnings) throws Exception {
-        try (Log bufferedLog = new BufferedSlf4jLogger(log)) {
+        try (BufferedSlf4jLogger bufferedLog = new BufferedSlf4jLogger(log)) {
             AsmEpsilonValidator.validateAsm(bufferedLog,
                     asmModel,
                     AsmEpsilonValidator.calculateAsmValidationScriptURI(),
