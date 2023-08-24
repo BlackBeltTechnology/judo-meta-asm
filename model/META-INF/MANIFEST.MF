@@ -25,4 +25,4 @@ Export-Package: hu.blackbelt.judo.meta.asm.runtime,
 Bundle-ActivationPolicy: lazy
 Automatic-Module-Name: hu.blackbelt.judo.meta.asm.model
 Import-Package: hu.blackbelt.epsilon.runtime.execution.exceptions,
- org.slf4j;version="1.7.2"
+ org.slf4j;version="(1.6,3]"
