@@ -20,7 +20,7 @@ package hu.blackbelt.judo.meta.asm.osgi.itest;
  * #L%
  */
 
-import hu.blackbelt.epsilon.runtime.execution.api.Log;
+import org.slf4j.Logger;
 import hu.blackbelt.epsilon.runtime.execution.impl.BufferedSlf4jLogger;
 import hu.blackbelt.judo.meta.asm.runtime.AsmEpsilonValidator;
 import hu.blackbelt.judo.meta.asm.runtime.AsmModel;
@@ -106,7 +106,7 @@ public class AsmModelLoadITest {
 
     @Test
     public void testModelValidation() throws Exception {
-        try (Log bufferedLog = new BufferedSlf4jLogger(log)) {
+        try (BufferedSlf4jLogger bufferedLog = new BufferedSlf4jLogger(log)) {
             AsmEpsilonValidator.validateAsm(bufferedLog, asmModel, AsmEpsilonValidator.calculateAsmValidationScriptURI());
         }
     }
