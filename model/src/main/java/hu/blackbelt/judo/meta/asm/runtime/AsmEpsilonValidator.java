@@ -34,17 +34,17 @@ import java.util.Collection;
 import org.eclipse.epsilon.common.util.UriUtil;
 
 import hu.blackbelt.epsilon.runtime.execution.ExecutionContext;
-import hu.blackbelt.epsilon.runtime.execution.api.Log;
+import org.slf4j.Logger;
 import hu.blackbelt.epsilon.runtime.execution.exceptions.ScriptExecutionException;
 
 public class AsmEpsilonValidator {
 
-    public static void validateAsm(Log log, AsmModel asmModel, URI scriptRoot)
+    public static void validateAsm(Logger log, AsmModel asmModel, URI scriptRoot)
             throws ScriptExecutionException, URISyntaxException {
         validateAsm(log, asmModel, scriptRoot, emptyList(), emptyList());
     }
 
-    public static void validateAsm(Log log, AsmModel asmModel, URI scriptRoot,
+    public static void validateAsm(Logger log, AsmModel asmModel, URI scriptRoot,
             Collection<String> expectedErrors, Collection<String> expectedWarnings)
             throws ScriptExecutionException, URISyntaxException {
 
