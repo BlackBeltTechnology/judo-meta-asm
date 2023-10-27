@@ -1485,6 +1485,8 @@ public class AsmUtils {
     }
 
     public enum OperationBehaviour {
+        EXPORT("export"),
+        
         LIST("list"),
 
         CREATE_INSTANCE("createInstance"),
