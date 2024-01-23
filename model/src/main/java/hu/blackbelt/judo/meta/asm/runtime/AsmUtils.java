@@ -1307,7 +1307,8 @@ public class AsmUtils {
                 case UNSET_REFERENCE:
                 case ADD_REFERENCE:
                 case REMOVE_REFERENCE:
-                case GET_REFERENCE_RANGE: {
+                case GET_REFERENCE_RANGE:
+                case EXPORT: {
                     final Optional<EReference> resolvedReference = resolveReference(ownerString);
 
                     if (resolvedReference.isPresent()) {
@@ -1485,8 +1486,6 @@ public class AsmUtils {
     }
 
     public enum OperationBehaviour {
-        EXPORT("export"),
-        
         LIST("list"),
 
         CREATE_INSTANCE("createInstance"),
@@ -1531,7 +1530,10 @@ public class AsmUtils {
         /**
          * Get upload token for binary data represented by attribute.
          */
-        GET_UPLOAD_TOKEN("getUploadToken");
+        GET_UPLOAD_TOKEN("getUploadToken"),
+
+        EXPORT("export");
+        
 
         private final String type;
 
