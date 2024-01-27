@@ -1317,7 +1317,8 @@ public class AsmUtils {
                         throw new IllegalStateException("Invalid owner: " + ownerString);
                     }
                 }
-                case GET_INPUT_RANGE: {
+                case GET_INPUT_RANGE:
+                case VALIDATE_OPERATION_INPUT: {
                     final Optional<EOperation> resolvedOperation = resolveOperation(ownerString);
 
                     if (resolvedOperation.isPresent()) {
@@ -1532,8 +1533,9 @@ public class AsmUtils {
          */
         GET_UPLOAD_TOKEN("getUploadToken"),
 
-        EXPORT("export");
-        
+        EXPORT("export"),
+
+        VALIDATE_OPERATION_INPUT("validateOperationInput");
 
         private final String type;
 
