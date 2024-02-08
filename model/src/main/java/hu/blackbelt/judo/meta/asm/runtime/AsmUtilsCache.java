@@ -61,6 +61,12 @@ public class AsmUtilsCache {
 
     private Map<Class, Collection> elementsByType = new ConcurrentHashMap<>();
 
+    private final Map<EClass, Optional<EClass>> entityByMappedTransfer = new ConcurrentHashMap<>();
+
+    private final Map<EAttribute, Optional<EAttribute>> entityAttributeByMappedAttribute = new ConcurrentHashMap<>();
+
+    private final Map<EReference, Optional<EReference>> entityReferenceByMappedReference = new ConcurrentHashMap<>();
+
     public static AsmUtilsCache getCache(ResourceSet resourceSet) {
         AsmUtilsCache cache = null;
         try {
@@ -78,6 +84,9 @@ public class AsmUtilsCache {
         operationsByFqName.clear();
         elementsByType.clear();
         packageFqName.clear();
+        entityByMappedTransfer.clear();
+        entityAttributeByMappedAttribute.clear();
+        entityReferenceByMappedReference.clear();
     }
 
     public Map<String, Optional<EClassifier>> getClassifiersByFqName() {
@@ -98,6 +107,22 @@ public class AsmUtilsCache {
 
     public Map<Class, Collection> getElementsByType() {
         return elementsByType;
+    }
+
+    public Map<EPackage, String> getPackageFqName() {
+        return packageFqName;
+    }
+
+    public Map<EClass, Optional<EClass>> getEntityByMappedTransfer() {
+        return entityByMappedTransfer;
+    }
+
+    public Map<EAttribute, Optional<EAttribute>> getEntityAttributeByMappedAttribute() {
+        return entityAttributeByMappedAttribute;
+    }
+
+    public Map<EReference, Optional<EReference>> getEntityReferenceByMappedReference() {
+        return entityReferenceByMappedReference;
     }
 
 }

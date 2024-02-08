@@ -569,22 +569,27 @@ public class AsmUtils {
      * @return mapped entity type (or null if no mappedEntityType annotation found nor it represents a valid entity type)
      */
     public Optional<EClass> getMappedEntityType(final EClass eClass) {
-        final Optional<String> mappedEntityTypeFQName = getExtensionAnnotationValue(eClass, "mappedEntityType", false);
-        if (mappedEntityTypeFQName.isPresent()) {
-            final Optional<EClass> entityType = getClassByFQName(mappedEntityTypeFQName.get());
-            if (entityType.isPresent()) {
-                if (isEntityType(entityType.get())) {
-                    return entityType;
+        if (cache.getEntityByMappedTransfer().containsKey(eClass)) {
+            return cache.getEntityByMappedTransfer().get(eClass);
+        } else {
+            final Optional<String> mappedEntityTypeFQName = getExtensionAnnotationValue(eClass, "mappedEntityType", false);
+            if (mappedEntityTypeFQName.isPresent()) {
+                final Optional<EClass> entityType = getClassByFQName(mappedEntityTypeFQName.get());
+                if (entityType.isPresent()) {
+                    if (isEntityType(entityType.get())) {
+                        cache.getEntityByMappedTransfer().put(eClass, entityType);
+                    } else {
+                        log.error("Invalid entity type: {}", mappedEntityTypeFQName.get());
+                        cache.getEntityByMappedTransfer().put(eClass, Optional.empty());
+                    }
                 } else {
-                    log.error("Invalid entity type: {}", mappedEntityTypeFQName.get());
-                    return Optional.empty();
+                    cache.getEntityByMappedTransfer().put(eClass, Optional.empty());
                 }
             } else {
-                return Optional.empty();
+                cache.getEntityByMappedTransfer().put(eClass, Optional.empty());
             }
-        } else {
-            return Optional.empty();
         }
+        return cache.getEntityByMappedTransfer().get(eClass);
     }
 
     /**
@@ -721,23 +726,30 @@ public class AsmUtils {
      * @return mapped attribute
      */
     public Optional<EAttribute> getMappedAttribute(EAttribute type) {
-        Optional<String> mappedAttributeName = getExtensionAnnotationValue(type, "binding", false);
-        Optional<EClass> mappedEntityType = getMappedEntityType(type.getEContainingClass());
-        if (mappedAttributeName.isPresent()) {
-            if (!mappedEntityType.isPresent()) {
-                log.warn("Mapped attribute container class is not mapped: " + getAttributeFQName(type));
-                return empty();
-            } else {
-                if (mappedEntityType.get().getEStructuralFeature(mappedAttributeName.get()) instanceof EAttribute) {
-                    return Optional.of((EAttribute) mappedEntityType.get().getEStructuralFeature(mappedAttributeName.get()));
-                } else {
-                    log.warn("The given mapped alias is not attribute type: " + getAttributeFQName(type));
-                    return empty();
-                }
-            }
+
+        if (cache.getEntityAttributeByMappedAttribute().containsKey(type)) {
+            return cache.getEntityAttributeByMappedAttribute().get(type);
         } else {
-            return empty();
+            Optional<String> mappedAttributeName = getExtensionAnnotationValue(type, "binding", false);
+            Optional<EClass> mappedEntityType = getMappedEntityType(type.getEContainingClass());
+            if (mappedAttributeName.isPresent()) {
+                if (!mappedEntityType.isPresent()) {
+                    log.warn("Mapped attribute container class is not mapped: " + getAttributeFQName(type));
+                    cache.getEntityAttributeByMappedAttribute().put(type, empty());
+                } else {
+                    if (mappedEntityType.get().getEStructuralFeature(mappedAttributeName.get()) instanceof EAttribute) {
+                        cache.getEntityAttributeByMappedAttribute().put(type,
+                                Optional.of((EAttribute) mappedEntityType.get().getEStructuralFeature(mappedAttributeName.get())));
+                    } else {
+                        log.warn("The given mapped alias is not attribute type: " + getAttributeFQName(type));
+                        cache.getEntityAttributeByMappedAttribute().put(type, empty());
+                    }
+                }
+            } else {
+                cache.getEntityAttributeByMappedAttribute().put(type, empty());
+            }
         }
+        return cache.getEntityAttributeByMappedAttribute().get(type);
     }
 
     /**
@@ -748,23 +760,29 @@ public class AsmUtils {
      * @return mapped reference
      */
     public Optional<EReference> getMappedReference(EReference type) {
-        Optional<String> mappedReferenceName = getExtensionAnnotationValue(type, "binding", false);
-        Optional<EClass> mappedEntityType = getMappedEntityType(type.getEContainingClass());
-        if (mappedReferenceName.isPresent()) {
-            if (!mappedEntityType.isPresent()) {
-                log.warn("Mapped reference container class is not mapped: " + getReferenceFQName(type));
-                return empty();
-            } else {
-                if (mappedEntityType.get().getEStructuralFeature(mappedReferenceName.get()) instanceof EReference) {
-                    return Optional.of((EReference) mappedEntityType.get().getEStructuralFeature(mappedReferenceName.get()));
-                } else {
-                    log.warn("The given mapped alias is not attribute type: " + getReferenceFQName(type));
-                    return empty();
-                }
-            }
+        if (cache.getEntityReferenceByMappedReference().containsKey(type)) {
+            return cache.getEntityReferenceByMappedReference().get(type);
         } else {
-            return empty();
+            Optional<String> mappedReferenceName = getExtensionAnnotationValue(type, "binding", false);
+            Optional<EClass> mappedEntityType = getMappedEntityType(type.getEContainingClass());
+            if (mappedReferenceName.isPresent()) {
+                if (!mappedEntityType.isPresent()) {
+                    log.warn("Mapped reference container class is not mapped: " + getReferenceFQName(type));
+                    cache.getEntityReferenceByMappedReference().put(type, empty());
+                } else {
+                    if (mappedEntityType.get().getEStructuralFeature(mappedReferenceName.get()) instanceof EReference) {
+                        cache.getEntityReferenceByMappedReference().put(type,
+                                Optional.of((EReference) mappedEntityType.get().getEStructuralFeature(mappedReferenceName.get())));
+                    } else {
+                        log.warn("The given mapped alias is not attribute type: " + getReferenceFQName(type));
+                        cache.getEntityReferenceByMappedReference().put(type, empty());
+                    }
+                }
+            } else {
+                cache.getEntityReferenceByMappedReference().put(type, empty());
+            }
         }
+        return cache.getEntityReferenceByMappedReference().get(type);
     }
 
     /**
