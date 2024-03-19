@@ -67,6 +67,8 @@ public class AsmUtilsCache {
 
     private final Map<EReference, Optional<EReference>> entityReferenceByMappedReference = new ConcurrentHashMap<>();
 
+    private final Map<Pair<EModelElement, String>, Optional<EAnnotation>> annotationsByModelElementAndName = new ConcurrentHashMap<>();
+
     public static AsmUtilsCache getCache(ResourceSet resourceSet) {
         AsmUtilsCache cache = null;
         try {
@@ -123,6 +125,98 @@ public class AsmUtilsCache {
 
     public Map<EReference, Optional<EReference>> getEntityReferenceByMappedReference() {
         return entityReferenceByMappedReference;
+    }
+
+    public Map<Pair<EModelElement, String>, Optional<EAnnotation>> getAnnotationsByModelElementAndName() {
+        return annotationsByModelElementAndName;
+    }
+
+    public static class Pair<T1, T2> {
+        T1 val1;
+        T2 val2;
+
+        public Pair(T1 val1, T2 val2) {
+            this.val1 = val1;
+            this.val2 = val2;
+        }
+
+        public static <T1, T2> PairBuilder<T1, T2> builder() {
+            return new PairBuilder<T1, T2>();
+        }
+
+        public T1 getVal1() {
+            return this.val1;
+        }
+
+        public T2 getVal2() {
+            return this.val2;
+        }
+
+        public void setVal1(T1 val1) {
+            this.val1 = val1;
+        }
+
+        public void setVal2(T2 val2) {
+            this.val2 = val2;
+        }
+
+        public boolean equals(final Object o) {
+            if (o == this) return true;
+            if (!(o instanceof Pair)) return false;
+            final Pair<?, ?> other = (Pair<?, ?>) o;
+            if (!other.canEqual((Object) this)) return false;
+            final Object this$val1 = this.getVal1();
+            final Object other$val1 = other.getVal1();
+            if (this$val1 == null ? other$val1 != null : !this$val1.equals(other$val1)) return false;
+            final Object this$val2 = this.getVal2();
+            final Object other$val2 = other.getVal2();
+            if (this$val2 == null ? other$val2 != null : !this$val2.equals(other$val2)) return false;
+            return true;
+        }
+
+        protected boolean canEqual(final Object other) {
+            return other instanceof Pair;
+        }
+
+        public int hashCode() {
+            final int PRIME = 59;
+            int result = 1;
+            final Object $val1 = this.getVal1();
+            result = result * PRIME + ($val1 == null ? 43 : $val1.hashCode());
+            final Object $val2 = this.getVal2();
+            result = result * PRIME + ($val2 == null ? 43 : $val2.hashCode());
+            return result;
+        }
+
+        public String toString() {
+            return "AsmUtilsCache.Pair(val1=" + this.getVal1() + ", val2=" + this.getVal2() + ")";
+        }
+
+        public static class PairBuilder<T1, T2> {
+            private T1 val1;
+            private T2 val2;
+
+            PairBuilder() {
+            }
+
+            public PairBuilder<T1, T2> val1(T1 val1) {
+                this.val1 = val1;
+                return this;
+            }
+
+            public PairBuilder<T1, T2> val2(T2 val2) {
+                this.val2 = val2;
+                return this;
+            }
+
+            public Pair<T1, T2> build() {
+                return new Pair<T1, T2>(this.val1, this.val2);
+            }
+
+            public String toString() {
+                return "AsmUtilsCache.Pair.PairBuilder(val1=" + this.val1 + ", val2=" + this.val2 + ")";
+            }
+        }
     }
 
 }
