@@ -328,14 +328,31 @@ public class AsmUtils {
      * @return JUDO extension annotation (or null if createIfNotExists flag is <code>false</code> and annotation not exists yet)
      */
     public static Optional<EAnnotation> getExtensionAnnotationByName(final EModelElement eModelElement, final String annotationName, final boolean createIfNotExists) {
-        final Optional<EAnnotation> annotation = getExtensionAnnotationsAsStreamByName(eModelElement, annotationName).findAny();
-        if (!annotation.isPresent() && createIfNotExists) {
-            final EAnnotation a = newEAnnotationBuilder().withSource(getAnnotationUri(annotationName)).build();
-            eModelElement.getEAnnotations().add(a);
-            return Optional.of(a);
-        } else {
-            return annotation;
+        Optional<EAnnotation> annotation = null;
+        AsmUtilsCache cache = null;
+        AsmUtilsCache.Pair<EModelElement, String> cacheKey = new AsmUtilsCache.Pair<>(eModelElement, annotationName);
+        if (eModelElement.eResource() != null) {
+            cache = AsmUtilsCache.getCache(eModelElement.eResource().getResourceSet());
+            annotation = cache.getAnnotationsByModelElementAndName().get(cacheKey);
         }
+
+        if (annotation == null) {
+            annotation = getExtensionAnnotationsAsStreamByName(eModelElement, annotationName).findAny();
+            if (!annotation.isPresent() && createIfNotExists) {
+                final EAnnotation a = newEAnnotationBuilder().withSource(getAnnotationUri(annotationName)).build();
+                eModelElement.getEAnnotations().add(a);
+                if (cache != null) {
+                    cache.getAnnotationsByModelElementAndName().put(cacheKey, Optional.of(a));
+                }
+                return Optional.of(a);
+            } else {
+                if (cache != null) {
+                    cache.getAnnotationsByModelElementAndName().put(cacheKey, annotation);
+                }
+                return annotation;
+            }
+        }
+        return annotation;
     }
 
     /**
@@ -359,11 +376,9 @@ public class AsmUtils {
     public static boolean addExtensionAnnotation(final EModelElement eModelElement, final String annotationName, final String value) {
         final String sourceUri = getAnnotationUri(annotationName);
 
-        final Optional<EAnnotation> annotation = getExtensionAnnotationsAsStreamByName(eModelElement, annotationName)
-                .filter(a -> Objects.equals(a.getDetails().get(EXTENDED_METADATA_DETAILS_VALUE_KEY), value))
-                .findAny();
+        Optional<EAnnotation> annotation = getExtensionAnnotationByName(eModelElement, annotationName, false);
 
-        if (annotation.isPresent()) {
+        if (annotation.isPresent() && Objects.equals(annotation.get().getDetails().get(EXTENDED_METADATA_DETAILS_VALUE_KEY), value)) {
             log.trace("Annotation (prefix: {}, value: {}) is already added to model element {}", new Object[]{annotationName, value, eModelElement});
             return false;
         } else {
@@ -373,6 +388,13 @@ public class AsmUtils {
             eModelElement.getEAnnotations().add(newAnnotation);
             setId(newAnnotation, getId(newAnnotation.eContainer()) + "/" + upperFirst(annotationName) + "/" + upperFirst(value));
             newAnnotation.getDetails().put(EXTENDED_METADATA_DETAILS_VALUE_KEY, value);
+
+            AsmUtilsCache cache = null;
+            AsmUtilsCache.Pair<EModelElement, String> cacheKey = new AsmUtilsCache.Pair<>(eModelElement, annotationName);
+            if (eModelElement.eResource() != null) {
+                cache = AsmUtilsCache.getCache(eModelElement.eResource().getResourceSet());
+                cache.getAnnotationsByModelElementAndName().put(cacheKey, Optional.of(newAnnotation));
+            }
             return true;
         }
     }
@@ -392,14 +414,21 @@ public class AsmUtils {
     public static void addExtensionAnnotationDetails(final EModelElement eModelElement, final String annotationName, final Map<String, String> details) {
         final String sourceUri = getAnnotationUri(annotationName);
 
-        Optional<EAnnotation> annotation = getExtensionAnnotationsAsStreamByName(eModelElement, annotationName)
-                .findAny();
+        Optional<EAnnotation> annotation = getExtensionAnnotationByName(eModelElement, annotationName, false);
 
         if (!annotation.isPresent()) {
             annotation = Optional.of(newEAnnotationBuilder()
                     .withSource(sourceUri)
                     .build());
             eModelElement.getEAnnotations().add(annotation.get());
+
+            AsmUtilsCache cache = null;
+            AsmUtilsCache.Pair<EModelElement, String> cacheKey = new AsmUtilsCache.Pair<>(eModelElement, annotationName);
+            if (eModelElement.eResource() != null) {
+                cache = AsmUtilsCache.getCache(eModelElement.eResource().getResourceSet());
+                cache.getAnnotationsByModelElementAndName().put(cacheKey, annotation);
+            }
+
         }
 
         annotation.get().getDetails().putAll(details);
