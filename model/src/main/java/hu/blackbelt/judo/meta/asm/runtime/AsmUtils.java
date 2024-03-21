@@ -1442,7 +1442,10 @@ public class AsmUtils {
     }
 
     public Optional<EPackage> getModel() {
-        return all(EPackage.class).filter(p -> p.eContainer() == null).findAny();
+        if (cache.getModel() == null) {
+            cache.setModel(all(EPackage.class).filter(p -> p.eContainer() == null).findAny());
+        }
+        return cache.getModel();
     }
 
     public static Set<String> getAllOperationNames(final EClass clazz) {

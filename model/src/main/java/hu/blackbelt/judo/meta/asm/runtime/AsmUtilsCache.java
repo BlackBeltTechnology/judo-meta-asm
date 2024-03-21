@@ -69,6 +69,8 @@ public class AsmUtilsCache {
 
     private final Map<Pair<EModelElement, String>, Optional<EAnnotation>> annotationsByModelElementAndName = new ConcurrentHashMap<>();
 
+    private Optional<EPackage> model;
+
     public static AsmUtilsCache getCache(ResourceSet resourceSet) {
         AsmUtilsCache cache = null;
         try {
@@ -129,6 +131,14 @@ public class AsmUtilsCache {
 
     public Map<Pair<EModelElement, String>, Optional<EAnnotation>> getAnnotationsByModelElementAndName() {
         return annotationsByModelElementAndName;
+    }
+
+    public Optional<EPackage> getModel() {
+        return model;
+    }
+
+    public void setModel(Optional<EPackage> ePackage) {
+        this.model = ePackage;
     }
 
     public static class Pair<T1, T2> {
