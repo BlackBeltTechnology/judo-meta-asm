@@ -131,6 +131,22 @@ public class AsmUtils {
     }
 
     /**
+     * Get fully qualified name of a classifier without model name.
+     *
+     * @param eClassifier classifier
+     * @return fully qualified name without model name
+     */
+    public String getRelativeFQName(final EClassifier eClassifier) {
+        final String entityFQName = getClassifierFQName(eClassifier);
+        if (!entityFQName.startsWith(getModel().get().getName())) {
+            throw new IllegalArgumentException("The classifier name does not start with model name - " + entityFQName);
+        }
+        final String entityTypeName = entityFQName.substring(getModel().get().getName().length() + 1);
+        return entityTypeName;
+    }
+
+
+    /**
      * Get fully qualified name of an attribute.
      *
      * @param eAttribute attribute
@@ -1426,7 +1442,10 @@ public class AsmUtils {
     }
 
     public Optional<EPackage> getModel() {
-        return all(EPackage.class).filter(p -> p.eContainer() == null).findAny();
+        if (cache.getModel() == null) {
+            cache.setModel(all(EPackage.class).filter(p -> p.eContainer() == null).findAny());
+        }
+        return cache.getModel();
     }
 
     public static Set<String> getAllOperationNames(final EClass clazz) {
