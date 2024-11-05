@@ -58,6 +58,7 @@ public class AsmEpsilonValidator {
                                 .name("ASM")
                                 .resource(asmModel.getResource())
                                 .validateModel(false)
+                                .useCache(true)
                                 .build()))
                 .injectContexts(singletonMap("asmUtils", new AsmUtils(asmModel.getResourceSet())))
                 .build();
