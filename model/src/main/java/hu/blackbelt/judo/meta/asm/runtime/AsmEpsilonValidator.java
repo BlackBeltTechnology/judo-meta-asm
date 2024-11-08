@@ -43,9 +43,14 @@ public class AsmEpsilonValidator {
             throws ScriptExecutionException, URISyntaxException {
         validateAsm(log, asmModel, scriptRoot, emptyList(), emptyList());
     }
+    public static void validateAsm(Logger log, AsmModel asmModel, URI scriptRoot,
+                                   Collection<String> expectedErrors, Collection<String> expectedWarnings)
+            throws ScriptExecutionException, URISyntaxException {
+        validateAsm(log, asmModel, scriptRoot, expectedErrors, expectedWarnings, false);
+    }
 
     public static void validateAsm(Logger log, AsmModel asmModel, URI scriptRoot,
-            Collection<String> expectedErrors, Collection<String> expectedWarnings)
+            Collection<String> expectedErrors, Collection<String> expectedWarnings, boolean useCache)
             throws ScriptExecutionException, URISyntaxException {
 
         ExecutionContext executionContext = executionContextBuilder()
@@ -58,7 +63,7 @@ public class AsmEpsilonValidator {
                                 .name("ASM")
                                 .resource(asmModel.getResource())
                                 .validateModel(false)
-                                .useCache(true)
+                                .useCache(useCache)
                                 .build()))
                 .injectContexts(singletonMap("asmUtils", new AsmUtils(asmModel.getResourceSet())))
                 .build();
@@ -70,6 +75,7 @@ public class AsmEpsilonValidator {
             // Transformation script
             executionContext
                     .executeProgram(evlExecutionContextBuilder().source(UriUtil.resolve("asm.evl", scriptRoot))
+                            .parallel(true)
                             .expectedErrors(expectedErrors).expectedWarnings(expectedWarnings).build());
 
         } finally {
