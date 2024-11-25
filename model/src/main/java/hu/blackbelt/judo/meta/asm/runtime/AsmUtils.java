@@ -201,6 +201,8 @@ public class AsmUtils {
         if (xmlResource == null) {
             throw new IllegalStateException("Id " + id + " cannot be set: target object " + eObject + " does not have a resource");
         }
+        AsmUtilsCache cache = AsmUtilsCache.getCache(xmlResource.getResourceSet());
+        cache.clear();
         xmlResource.setID(eObject, id);
     }
 
