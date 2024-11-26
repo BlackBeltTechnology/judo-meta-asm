@@ -46,7 +46,7 @@ public class AsmEpsilonValidator {
     public static void validateAsm(Logger log, AsmModel asmModel, URI scriptRoot,
                                    Collection<String> expectedErrors, Collection<String> expectedWarnings)
             throws ScriptExecutionException, URISyntaxException {
-        validateAsm(log, asmModel, scriptRoot, expectedErrors, expectedWarnings, false);
+        validateAsm(log, asmModel, scriptRoot, expectedErrors, expectedWarnings, true);
     }
 
     public static void validateAsm(Logger log, AsmModel asmModel, URI scriptRoot,
