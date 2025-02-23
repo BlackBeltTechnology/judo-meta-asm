@@ -23,7 +23,6 @@ package hu.blackbelt.judo.meta.asm.runtime;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import lombok.Getter;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 
