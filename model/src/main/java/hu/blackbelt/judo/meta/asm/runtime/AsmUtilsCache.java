@@ -67,6 +67,12 @@ public class AsmUtilsCache {
 
     private final Map<EReference, Optional<EReference>> entityReferenceByMappedReference = new ConcurrentHashMap<>();
 
+    private final Map<EClass, Optional<EClass>> defaultRepresentation = new ConcurrentHashMap<>();
+
+    private final Map<EOperation, Optional<EOperation>> bindOperation = new ConcurrentHashMap<>();
+
+    private final Map<EOperation, Optional<EClass>> instanceRepresentation = new ConcurrentHashMap<>();
+
     private final Map<Pair<EModelElement, String>, Optional<EAnnotation>> annotationsByModelElementAndName = new ConcurrentHashMap<>();
 
     private Optional<EPackage> model;
@@ -91,6 +97,9 @@ public class AsmUtilsCache {
         entityByMappedTransfer.clear();
         entityAttributeByMappedAttribute.clear();
         entityReferenceByMappedReference.clear();
+        defaultRepresentation.clear();
+        bindOperation.clear();
+        instanceRepresentation.clear();
     }
 
     public Map<String, Optional<EClassifier>> getClassifiersByFqName() {
@@ -131,6 +140,18 @@ public class AsmUtilsCache {
 
     public Map<Pair<EModelElement, String>, Optional<EAnnotation>> getAnnotationsByModelElementAndName() {
         return annotationsByModelElementAndName;
+    }
+
+    public Map<EClass, Optional<EClass>> getDefaultRepresentation() {
+        return defaultRepresentation;
+    }
+
+    public Map<EOperation, Optional<EOperation>> getBindOperation() {
+        return bindOperation;
+    }
+
+    public Map<EOperation, Optional<EClass>> getInstanceRepresentation() {
+        return instanceRepresentation;
     }
 
     public Optional<EPackage> getModel() {

@@ -831,6 +831,114 @@ public class AsmUtils {
     }
 
     /**
+     * Returns the given EClass's default transfer representation.
+     *
+     * @param eClass The given EClass type.
+     * @return The default transfer representation of the given EClass type.
+     */
+    public Optional<EClass> getDefaultRepresentation(EClass eClass) {
+        if (cache.getDefaultRepresentation().containsKey(eClass)) {
+            return cache.getDefaultRepresentation().get(eClass);
+        }
+        final Optional<String> defaultTransferObjectFQName = getExtensionAnnotationValue(eClass, "defaultRepresentation", false);
+        if (defaultTransferObjectFQName.isPresent()) {
+            Optional<EClass> classByFQName = getClassByFQName(defaultTransferObjectFQName.get());
+            cache.getDefaultRepresentation().put(eClass, classByFQName);
+            return classByFQName;
+        }
+        cache.getDefaultRepresentation().put(eClass, Optional.empty());
+        return Optional.empty();
+    }
+
+    /**
+     * Check the given EClass's object is a default transfer representation.
+     *
+     * @param eClass The given EClass type.
+     * @return true if the given EClass is a default transfer representation.
+     */
+    public boolean isDefaultTransferObject(final EClass eClass) {
+        Optional<EClass> mappedEntityType = getMappedEntityType(eClass);
+        if (mappedEntityType.isEmpty()) {
+            return false;
+        }
+        Optional<EClass> defaultRepresentation = getDefaultRepresentation(mappedEntityType.get());
+        return defaultRepresentation.filter(eClass::equals).isPresent();
+    }
+
+    /**
+     * Returns the instance Representation EClass of the operation.
+     *
+     * @param operation The given EOperation type.
+     * @return with the given EOperation instance representation.
+     */
+    public Optional<EClass> getInstanceRepresentation(EOperation operation) {
+        if (cache.getInstanceRepresentation().containsKey(operation)) {
+            return cache.getInstanceRepresentation().get(operation);
+        }
+        final Optional<String> instanceTransferObjectFQName = getExtensionAnnotationValue(operation, "instanceRepresentation", false);
+        if (instanceTransferObjectFQName.isPresent()) {
+            Optional<EClass> instanceRepresentationByFQName = getClassByFQName(instanceTransferObjectFQName.get());
+            cache.getInstanceRepresentation().put(operation, instanceRepresentationByFQName);
+            return instanceRepresentationByFQName;
+        }
+        cache.getInstanceRepresentation().put(operation, Optional.empty());
+        return Optional.empty();
+    }
+
+    /**
+     * Check the given EOperation is an instance representation.
+     * (An operation is an instance operation if the bind operation doesn't present on any transfer object)
+     *
+     * @param operation The given EOperation type.
+     * @return <code>true</code> if the given EOperation is an instance representation.
+     */
+    public boolean isInstanceOperation(EOperation operation) {
+        // If the operation is not bound and its eContainer is an entity, then it is not an instance operation.
+        if (!isBound(operation) || isEntityType(operation.getEContainingClass()) || getBehaviour(operation).isPresent()) {
+            return false;
+        }
+        if (isDefaultTransferObject(operation.getEContainingClass())) {
+            return false;
+        }
+
+        Set<EOperation> bindDefaultOperations = all(EOperation.class)
+                .filter(op -> getBehaviour(op).isEmpty())
+                .filter(op -> AsmUtils.isBound(op))
+                .filter(op -> !isEntityType(op.getEContainingClass()))
+                .filter(op -> isDefaultTransferObject(op.getEContainingClass()))
+                // instead of isPresent filter and get map
+                .<EOperation>mapMulti((op, consumer) -> getBindOperation(op).ifPresent(consumer))
+                .collect(Collectors.toSet());
+
+        return getBindOperation(operation).filter(eOperation -> !bindDefaultOperations.contains(eOperation)).isPresent();
+    }
+
+    /**
+     * Returns the bind operation of the operation.
+     *
+     * @param operation The given EOperation type.
+     * @return with the given EOperation bind operation.
+     */
+    public Optional<EOperation> getBindOperation(EOperation operation) {
+        // cache
+        if (cache.getBindOperation().containsKey(operation)) {
+            return cache.getBindOperation().get(operation);
+        }
+        if (!isBound(operation)) {
+            return Optional.empty();
+        }
+        Optional<String> bindOperationName = getExtensionAnnotationValue(operation, "binding", false);
+        Optional<EClass> entityType = getMappedEntityType(operation.getEContainingClass());
+        if (bindOperationName.isPresent() && entityType.isPresent()) {
+            Optional<EOperation> bindOperationByName = getOperationImplementationByName(entityType.get(), bindOperationName.get());
+            cache.getBindOperation().put(operation, bindOperationByName);
+            return bindOperationByName;
+        }
+        cache.getBindOperation().put(operation, Optional.empty());
+        return Optional.empty();
+    }
+
+    /**
      * Check if a given data type is integer.
      *
      * @param eDataType data type
