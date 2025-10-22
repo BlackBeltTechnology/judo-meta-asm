@@ -64,6 +64,7 @@
 			javax.annotation;version="[1.0,2)",
 			org.slf4j;version="[1.6,3)",
 			org.eclipse.emf.common.notify;version="[2.30,3)",
+			org.eclipse.emf.common.notify.impl;version="[2.30,3)",
 			org.eclipse.emf.common.util;version="[2.30,3)",
 			org.eclipse.emf.ecore;version="[2.21,3)",
 			org.eclipse.emf.ecore.plugin;version="[2.21,3)",
@@ -79,12 +80,14 @@
 		<epsilon-runtime-version>2.8.0.20251022_112123_14c440b1_develop</epsilon-runtime-version>
 		<epsilon-runtime-eclipse-version>2.8.0.20251022_112418_29e91090_develop</epsilon-runtime-eclipse-version>
 
+		<judo-zeta-version>1.0.0.20260107_002619_f839417a_feature_JNG_6349_AddZetaValidatiob</judo-zeta-version>
+
 		<maven.compiler.source>21</maven.compiler.source>
 		<maven.compiler.target>21</maven.compiler.target>
 		<tycho-version>4.0.13</tycho-version>
 
-		<emf-genmodel-generator-version>1.1.1.20250605_190907_e367833f_develop</emf-genmodel-generator-version>
-		<judo-genmodel-generator-version>1.1.2.20250606_070133_196de678_develop</judo-genmodel-generator-version>
+		<emf-genmodel-generator-version>1.1.1.20251205_144303_04125fa3_develop</emf-genmodel-generator-version>
+		<judo-genmodel-generator-version>1.1.2.20251205_154407_83ad88a7_develop</judo-genmodel-generator-version>
 		<judo-epp-common-version>4.35.0.20250605_190936_39ca7ff3_develop</judo-epp-common-version>
 
 		<xtext-version>2.39.0</xtext-version>
@@ -118,6 +121,8 @@
 		<sonar.language>java</sonar.language>
 		<sonar.java.source>${java.version}</sonar.java.source>
 		<jacoco.version>0.8.12</jacoco.version>
+
+		<judo-cli-api-version>1.0.0.20260108_122217_1b5b40eb_develop</judo-cli-api-version>
 
     </properties>
 
