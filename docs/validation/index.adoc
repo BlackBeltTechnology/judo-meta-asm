@@ -5,7 +5,7 @@
 
 == Introduction
 
-The ASM (Abstract Syntax Model) validation framework provides dual validation capabilities for EMF-based ASM models. It supports both EVL (Epsilon Validation Language) scripts and Java-based validation using the Judo Zeta Validation Framework.
+The ASM (Abstract Syntax Model) validation framework provides dual validation capabilities for EMF-based ASM models. It supports both EVL (Epsilon Validation Language) scripts and Java-based validation using the https://github.com/BlackBeltTechnology/judo-zeta[Judo Zeta Validation Framework].
 
 == Validation Approaches
 
@@ -17,7 +17,7 @@ EVL is the traditional script-based validation approach that uses the Epsilon pl
 
 === Java Validation (Judo Zeta)
 
-The Java validation framework provides annotation-based validation that offers:
+The Java validation framework uses the https://github.com/BlackBeltTechnology/judo-zeta[Judo Zeta] library for annotation-based validation that offers:
 
 * *Type Safety* - Compile-time type checking
 * *IDE Support* - Full autocomplete, refactoring, and debugging
@@ -25,7 +25,30 @@ The Java validation framework provides annotation-based validation that offers:
 * *Testability* - Standard unit testing for validation rules
 * *Maintainability* - Familiar Java code
 
-*Location*: `model/src/main/java/hu/blackbelt/judo/meta/asm/validation/`
+*Validation Entry Point*: `model/src/main/java/hu/blackbelt/judo/meta/asm/validation/AsmValidator.java`
+
+== Dependencies
+
+The ASM validation uses the Judo Zeta framework. Add these dependencies to your `pom.xml`:
+
+[source,xml]
+----
+<dependency>
+    <groupId>hu.blackbelt.judo.zeta</groupId>
+    <artifactId>hu.blackbelt.judo.zeta.validation-core</artifactId>
+    <version>${judo-zeta-version}</version>
+</dependency>
+<dependency>
+    <groupId>hu.blackbelt.judo.zeta</groupId>
+    <artifactId>hu.blackbelt.judo.zeta.annotations</artifactId>
+    <version>${judo-zeta-version}</version>
+</dependency>
+<dependency>
+    <groupId>hu.blackbelt.judo.zeta</groupId>
+    <artifactId>hu.blackbelt.judo.zeta.common</artifactId>
+    <version>${judo-zeta-version}</version>
+</dependency>
+----
 
 == Architecture
 
@@ -34,6 +57,13 @@ The Java validation framework provides annotation-based validation that offers:
                     ┌─────────────────────────────────────────┐
                     │           AsmValidator                  │
                     │  (Entry point for Java validation)      │
+                    └─────────────────────┬───────────────────┘
+                                          │
+                                          │ uses
+                                          ▼
+                    ┌─────────────────────────────────────────┐
+                    │         Judo Zeta Framework             │
+                    │  hu.blackbelt.judo.zeta.validation.core │
                     └─────────────────────┬───────────────────┘
                                           │
                     ┌─────────────────────┴───────────────────┐
@@ -55,6 +85,8 @@ The Java validation framework provides annotation-based validation that offers:
 ----
 
 == Core Annotations
+
+All annotations are from the `hu.blackbelt.judo.zeta.annotation` package:
 
 |===
 | Annotation | Level | Purpose
@@ -94,8 +126,8 @@ The Java validation framework provides annotation-based validation that offers:
 ----
 package hu.blackbelt.judo.meta.asm.validation;
 
-import hu.blackbelt.judo.meta.asm.validation.annotation.*;
-import hu.blackbelt.judo.meta.asm.validation.core.*;
+import hu.blackbelt.judo.zeta.annotation.*;
+import hu.blackbelt.judo.zeta.validation.core.*;
 import org.eclipse.emf.ecore.EClass;
 
 @ValidationContext(EClass.class)
@@ -142,8 +174,8 @@ public class EClassValidations {
 
 [source,java]
 ----
-import hu.blackbelt.judo.meta.asm.validation.*;
-import hu.blackbelt.judo.meta.asm.validation.core.*;
+import hu.blackbelt.judo.meta.asm.validation.AsmValidator;
+import hu.blackbelt.judo.meta.asm.runtime.AsmModel;
 
 public class ValidationExample {
 
@@ -190,7 +222,7 @@ public class AsmValidationTest extends AbstractAsmValidationTest {
 
 == Related Documentation
 
-* https://github.com/BlackBeltTechnology/judo-zeta[Judo Zeta Framework] - The validation framework source
+* https://github.com/BlackBeltTechnology/judo-zeta[Judo Zeta Framework] - The validation framework source and documentation
 * link:annotations.adoc[Annotations Reference] - Complete annotation documentation
 * link:validation-context.adoc[ValidationContext API] - Full API reference
 

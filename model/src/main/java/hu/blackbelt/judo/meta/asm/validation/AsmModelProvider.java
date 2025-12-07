@@ -1,4 +1,4 @@
-package hu.blackbelt.judo.meta.asm.validation.annotation;
+package hu.blackbelt.judo.meta.asm.validation;
 
 /*-
  * #%L
@@ -20,33 +20,24 @@ package hu.blackbelt.judo.meta.asm.validation.annotation;
  * #L%
  */
 
+import hu.blackbelt.judo.meta.asm.runtime.AsmUtils;
+import hu.blackbelt.judo.zeta.common.ModelProvider;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.ResourceSet;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
- * Class-level annotation that defines the EClass type this validator handles.
+ * ModelProvider implementation for ASM models.
  *
- * <p>Example usage:</p>
- * <pre>
- * {@code
- * @ValidationContext(EntityType.class)
- * public class EntityTypeValidations {
- *     // Validation rules for EntityType
- * }
- * }
- * </pre>
+ * <p>Integrates ASM model traversal with the Judo Zeta validation framework.</p>
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface ValidationContext {
-    /**
-     * The EClass type that this validator handles.
-     *
-     * @return the EClass type
-     */
-    Class<? extends EObject> value();
+public class AsmModelProvider implements ModelProvider {
+
+    @Override
+    public <T extends EObject> Collection<T> getAllContents(ResourceSet resourceSet, Class<T> type) {
+        AsmUtils asmUtils = new AsmUtils(resourceSet);
+        return asmUtils.all(type).collect(Collectors.toList());
+    }
 }
