@@ -8,7 +8,30 @@ This project contains the ASM meta model.
 
 It acts as an eclipse plugin with features and sites, and can be used standalone and in standard OSGi (without eclipse).
 
-It is a pure ECore meta model. Additionally, it provides builders for better usability
+It is a pure ECore meta model. Additionally, it provides builders for better usability.
+
+== Validation
+
+The ASM model supports dual validation approaches:
+
+=== EVL (Epsilon Validation Language)
+
+Traditional script-based validation using the Epsilon platform. EVL scripts are stored in `.evl` files.
+
+*Location*: `model/src/main/epsilon/validations/`
+
+=== Java Validation (Judo Zeta Framework)
+
+Annotation-based Java validation providing:
+
+* *Type Safety* - Compile-time type checking
+* *IDE Support* - Full autocomplete, refactoring, and debugging
+* *Performance* - No interpretation overhead, automatic parallelization
+* *Testability* - Standard unit testing for validation rules
+
+*Location*: `model/src/main/java/hu/blackbelt/judo/meta/asm/validation/`
+
+For detailed documentation, see link:docs/validation/index.adoc[Validation Framework Documentation]
 
 == Context
 
