@@ -10,13 +10,91 @@ The Judo Zeta Validation Framework provides annotation-based validation for EMF 
 - Write parameterized tests for validation rules
 - Understand validation patterns and best practices
 
+## Constants Pattern (REQUIRED)
+
+**Always use constants for constraint names, guard method names, and extension method names.** This provides compile-time safety, IDE autocomplete, and easier refactoring.
+
+### ConstraintNames.java
+
+Location: `model/src/main/java/hu/blackbelt/judo/meta/asm/validation/ConstraintNames.java`
+
+```java
+package hu.blackbelt.judo.meta.asm.validation;
+
+/**
+ * Centralized constants for all validation constraint and critique names.
+ */
+public final class ConstraintNames {
+
+    private ConstraintNames() {
+        throw new UnsupportedOperationException("Utility class");
+    }
+
+    // EClass Constraints
+    public static final String ECLASS_MUST_HAVE_NAME = "EClassMustHaveName";
+    public static final String ECLASS_NAMES_ARE_UNIQUE = "EClassNamesAreUnique";
+    
+    // EAttribute Constraints
+    public static final String EATTRIBUTE_MUST_HAVE_NAME = "EAttributeMustHaveName";
+    public static final String EATTRIBUTE_MUST_HAVE_TYPE = "EAttributeMustHaveType";
+    
+    // EReference Constraints
+    public static final String EREFERENCE_TARGET_MUST_EXIST = "EReferenceTargetMustExist";
+}
+```
+
+### GuardMethodNames.java
+
+Location: `model/src/main/java/hu/blackbelt/judo/meta/asm/validation/GuardMethodNames.java`
+
+```java
+package hu.blackbelt.judo.meta.asm.validation;
+
+/**
+ * Centralized constants for guard method names.
+ */
+public final class GuardMethodNames {
+
+    private GuardMethodNames() {
+        throw new UnsupportedOperationException("Utility class");
+    }
+
+    public static final String IS_ABSTRACT = "isAbstract";
+    public static final String IS_CONCRETE = "isConcrete";
+    public static final String HAS_SUPERTYPE = "hasSupertype";
+    public static final String HAS_NAME = "hasName";
+}
+```
+
+### ExtensionMethodNames.java
+
+Location: `model/src/main/java/hu/blackbelt/judo/meta/asm/validation/ExtensionMethodNames.java`
+
+```java
+package hu.blackbelt.judo.meta.asm.validation;
+
+/**
+ * Centralized constants for extension method names.
+ */
+public final class ExtensionMethodNames {
+
+    private ExtensionMethodNames() {
+        throw new UnsupportedOperationException("Utility class");
+    }
+
+    public static final String GET_ALL_SUPERTYPES = "getAllSupertypes";
+    public static final String GET_ALL_ATTRIBUTES = "getAllAttributes";
+    public static final String GET_INHERITANCE_CHAIN = "getInheritanceChain";
+}
+```
+
 ## Validation Rule Structure
 
 ### Package Location
 
 Validation classes go in: `model/src/main/java/hu/blackbelt/judo/meta/asm/validation/`
 
-### Basic Validator Class
+### Basic Validator Class (Using Constants)
 
 ```java
 package hu.blackbelt.judo.meta.asm.validation;
@@ -26,11 +104,14 @@ import hu.blackbelt.judo.meta.asm.validation.core.*;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EClass;
 
+import static hu.blackbelt.judo.meta.asm.validation.ConstraintNames.*;
+import static hu.blackbelt.judo.meta.asm.validation.GuardMethodNames.*;
+
 @ValidationContext(EClass.class)
 public class EClassValidations {
 
     @Constraint(
-        name = "EClassMustHaveName",
+        name = ECLASS_MUST_HAVE_NAME,
         message = "EClass must have a name"
     )
     public ValidationRule eClassMustHaveName() {
@@ -39,7 +120,7 @@ public class EClassValidations {
             
             if (eClass.getName() == null || eClass.getName().trim().isEmpty()) {
                 return ValidationResult.fail(
-                    "EClassMustHaveName",
+                    ECLASS_MUST_HAVE_NAME,
                     "EClass must have a name",
                     Severity.ERROR,
                     element
@@ -48,6 +129,57 @@ public class EClassValidations {
             
             return ValidationResult.pass();
         };
+    }
+
+    @Satisfies(constraints = {ECLASS_MUST_HAVE_NAME})
+    @Critique(
+        name = ECLASS_NAMES_ARE_UNIQUE,
+        message = "EClass names should be unique"
+    )
+    public ValidationRule eClassNamesAreUnique() {
+        return (element, ctx) -> {
+            EClass eClass = (EClass) element;
+            List<EClass> allClasses = ctx.getAllInstances(EClass.class);
+            
+            long count = allClasses.stream()
+                .filter(c -> eClass.getName().equals(c.getName()))
+                .count();
+            
+            return count == 1
+                ? ValidationResult.pass()
+                : ValidationResult.warn(
+                    ECLASS_NAMES_ARE_UNIQUE,
+                    "Duplicate EClass name: " + eClass.getName(),
+                    element
+                );
+        };
+    }
+
+    @Guard(method = IS_CONCRETE)
+    @Constraint(
+        name = CONCRETE_ECLASS_MUST_HAVE_ATTRIBUTES,
+        message = "Concrete EClass must have attributes"
+    )
+    public ValidationRule concreteEClassMustHaveAttributes() {
+        return (element, ctx) -> {
+            EClass eClass = (EClass) element;
+            
+            if (eClass.getEAttributes().isEmpty()) {
+                return ValidationResult.fail(
+                    CONCRETE_ECLASS_MUST_HAVE_ATTRIBUTES,
+                    "Concrete EClass '" + eClass.getName() + "' must have at least one attribute",
+                    Severity.ERROR,
+                    element
+                );
+            }
+            
+            return ValidationResult.pass();
+        };
+    }
+
+    // Guard method - name MUST match the constant
+    public boolean isConcrete(EObject element, ValidationContext ctx) {
+        return !((EClass) element).isAbstract();
     }
 }
 ```
@@ -71,7 +203,7 @@ Error-level validation rule. Model is invalid if this fails.
 
 ```java
 @Constraint(
-    name = "UniqueConstraintName",   // Unique identifier
+    name = CONSTRAINT_NAME_CONSTANT,  // Use constant!
     message = "Default error message"
 )
 public ValidationRule ruleName() {
@@ -94,7 +226,7 @@ Warning-level validation rule. Recommendations and best practices.
 
 ```java
 @Critique(
-    name = "UniqueCritiqueName",
+    name = CRITIQUE_NAME_CONSTANT,  // Use constant!
     message = "Default warning message"
 )
 public ValidationRule ruleName() {
@@ -115,14 +247,14 @@ public ValidationRule ruleName() {
 Conditional execution - rule only runs if guard returns true.
 
 ```java
-@Constraint(name = "RuleName", message = "...")
-@Guard(method = "guardMethodName")
+@Constraint(name = RULE_NAME, message = "...")
+@Guard(method = GUARD_METHOD_NAME)  // Use constant!
 public ValidationRule ruleName() {
     return (element, ctx) -> { ... };
 }
 
-// Guard method signature - MUST match exactly
-private boolean guardMethodName(EObject element, ValidationContext ctx) {
+// Guard method name MUST match the constant value
+public boolean guardMethodName(EObject element, ValidationContext ctx) {
     MyType obj = (MyType) element;
     return obj.someCondition();
 }
@@ -133,11 +265,11 @@ private boolean guardMethodName(EObject element, ValidationContext ctx) {
 Dependency declaration - rule only runs if specified constraints passed.
 
 ```java
-@Constraint(name = "DependentRule", message = "...")
-@Satisfies(constraints = {"MustHaveName", "MustHaveType"})
+@Constraint(name = DEPENDENT_RULE, message = "...")
+@Satisfies(constraints = {MUST_HAVE_NAME, MUST_HAVE_TYPE})  // Use constants!
 public ValidationRule dependentRule() {
     return (element, ctx) -> {
-        // Safe to assume MustHaveName and MustHaveType passed
+        // Safe to assume MUST_HAVE_NAME and MUST_HAVE_TYPE passed
     };
 }
 ```
@@ -148,7 +280,7 @@ Cache expensive computation results.
 
 ```java
 @Cached
-@Constraint(name = "ExpensiveRule", message = "...")
+@Constraint(name = EXPENSIVE_RULE, message = "...")
 public ValidationRule expensiveRule() {
     return (element, ctx) -> {
         // Result cached per element
@@ -161,17 +293,14 @@ public ValidationRule expensiveRule() {
 Define reusable helper methods for element types.
 
 ```java
+import static hu.blackbelt.judo.meta.asm.validation.ExtensionMethodNames.*;
+
 @ExtensionMethod(EntityType.class)
 public class EntityTypeExtensions {
 
     @Cached
     public Collection<EntityType> getAllSuperTypes(EntityType self) {
-        // Expensive recursive operation - cached
-    }
-    
-    public boolean hasAttribute(EntityType self, String name) {
-        return self.getAttributes().stream()
-            .anyMatch(attr -> name.equals(attr.getName()));
+        // Method name matches GET_ALL_SUPERTYPES constant
     }
 }
 ```
@@ -182,25 +311,14 @@ public class EntityTypeExtensions {
 // Passing result
 ValidationResult.pass()
 
-// Failing result (simple)
+// Failing result (use constant for name!)
+ValidationResult.fail(CONSTRAINT_NAME, "Error message", Severity.ERROR, element)
+
+// Simple fail (for cases where constraint name is already set)
 ValidationResult.fail("Error message")
 
-// Failing result (full metadata)
-ValidationResult.fail(
-    "ConstraintName",    // Constraint identifier
-    "Error message",     // Message
-    Severity.ERROR,      // Severity
-    element              // The element that failed
-)
-
-// Warning result
-ValidationResult.warn("Warning message")
-
-ValidationResult.warn(
-    "CritiqueName",
-    "Warning message",
-    element
-)
+// Warning result (use constant for name!)
+ValidationResult.warn(CRITIQUE_NAME, "Warning message", element)
 ```
 
 ## ValidationContext API
@@ -209,11 +327,11 @@ ValidationResult.warn(
 // Get all instances of a type in the model
 List<EntityType> allEntities = ctx.getAllInstances(EntityType.class);
 
-// Check if another constraint passed for this element
-boolean passed = ctx.satisfies(element, "OtherConstraintName");
+// Check if another constraint passed for this element (use constant!)
+boolean passed = ctx.satisfies(element, OTHER_CONSTRAINT_NAME);
 
-// Call an extension method
-Collection<EntityType> superTypes = ctx.call(entity, "getAllSuperTypes");
+// Call an extension method (use constant!)
+Collection<EntityType> superTypes = ctx.call(entity, GET_ALL_SUPERTYPES);
 
 // Cache management
 CacheKey key = CacheKey.of("my-cache-key");
@@ -226,13 +344,15 @@ ctx.putCached(key, computedValue);
 ### 1. Required Field (Not Null/Empty)
 
 ```java
-@Constraint(name = "MustHaveName", message = "Name is required")
+import static hu.blackbelt.judo.meta.asm.validation.ConstraintNames.*;
+
+@Constraint(name = MUST_HAVE_NAME, message = "Name is required")
 public ValidationRule mustHaveName() {
     return (element, ctx) -> {
         MyType obj = (MyType) element;
         return obj.getName() != null && !obj.getName().trim().isEmpty()
             ? ValidationResult.pass()
-            : ValidationResult.fail("Name is required");
+            : ValidationResult.fail(MUST_HAVE_NAME, "Name is required", Severity.ERROR, element);
     };
 }
 ```
@@ -240,8 +360,8 @@ public ValidationRule mustHaveName() {
 ### 2. Uniqueness Check
 
 ```java
-@Constraint(name = "NameMustBeUnique", message = "Name must be unique")
-@Satisfies(constraints = {"MustHaveName"})
+@Satisfies(constraints = {MUST_HAVE_NAME})
+@Constraint(name = NAME_MUST_BE_UNIQUE, message = "Name must be unique")
 public ValidationRule nameMustBeUnique() {
     return (element, ctx) -> {
         EntityType entity = (EntityType) element;
@@ -253,47 +373,55 @@ public ValidationRule nameMustBeUnique() {
         
         return count == 1
             ? ValidationResult.pass()
-            : ValidationResult.fail("Duplicate name: " + entity.getName());
+            : ValidationResult.fail(NAME_MUST_BE_UNIQUE, 
+                "Duplicate name: " + entity.getName(), Severity.ERROR, element);
     };
 }
 ```
 
-### 3. Pattern Matching
+### 3. Conditional Validation with Guard
 
 ```java
-@Constraint(name = "ValidIdentifier", message = "Must be valid identifier")
-public ValidationRule validIdentifier() {
+@Guard(method = IS_CONCRETE)
+@Constraint(name = CONCRETE_ENTITY_MUST_HAVE_TABLE, message = "...")
+public ValidationRule concreteEntityMustHaveTable() {
     return (element, ctx) -> {
-        MyType obj = (MyType) element;
-        String name = obj.getName();
+        EntityType entity = (EntityType) element;
         
-        if (name == null || name.isEmpty()) {
-            return ValidationResult.pass(); // Let other constraint handle
-        }
-        
-        // Pattern: starts with letter, letters/digits/underscores
-        if (!name.matches("^[A-Za-z][A-Za-z0-9_]*$")) {
+        if (entity.getTableName() == null || entity.getTableName().isEmpty()) {
             return ValidationResult.fail(
-                "Name '" + name + "' must start with letter and contain only letters, digits, underscores"
+                CONCRETE_ENTITY_MUST_HAVE_TABLE,
+                "Concrete entity '" + entity.getName() + "' must have table name",
+                Severity.ERROR,
+                element
             );
         }
         
         return ValidationResult.pass();
     };
 }
+
+// Guard method - name matches IS_CONCRETE constant value
+public boolean isConcrete(EObject element, ValidationContext ctx) {
+    return !((EntityType) element).isAbstract();
+}
 ```
 
 ### 4. Cycle Detection
 
 ```java
-@Constraint(name = "NoCyclicInheritance", message = "Circular inheritance not allowed")
+@Satisfies(constraints = {MUST_HAVE_NAME})
+@Constraint(name = NO_CYCLIC_INHERITANCE, message = "Circular inheritance not allowed")
 public ValidationRule noCyclicInheritance() {
     return (element, ctx) -> {
         EntityType entity = (EntityType) element;
         
         if (hasCycle(entity, new HashSet<>())) {
             return ValidationResult.fail(
-                "Entity '" + entity.getName() + "' has circular inheritance"
+                NO_CYCLIC_INHERITANCE,
+                "Entity '" + entity.getName() + "' has circular inheritance",
+                Severity.ERROR,
+                element
             );
         }
         
@@ -314,41 +442,20 @@ private boolean hasCycle(EntityType entity, Set<EntityType> visited) {
 }
 ```
 
-### 5. Conditional Validation with Guard
+### 5. Collection Validation
 
 ```java
-@Constraint(name = "ConcreteEntityMustHaveTable", message = "...")
-@Guard(method = "isConcrete")
-public ValidationRule concreteEntityMustHaveTable() {
-    return (element, ctx) -> {
-        EntityType entity = (EntityType) element;
-        
-        if (entity.getTableName() == null || entity.getTableName().isEmpty()) {
-            return ValidationResult.fail(
-                "Concrete entity '" + entity.getName() + "' must have table name"
-            );
-        }
-        
-        return ValidationResult.pass();
-    };
-}
-
-private boolean isConcrete(EObject element, ValidationContext ctx) {
-    return !((EntityType) element).isAbstract();
-}
-```
-
-### 6. Collection Validation
-
-```java
-@Constraint(name = "MustHaveAttributes", message = "Must have at least one attribute")
+@Constraint(name = MUST_HAVE_ATTRIBUTES, message = "Must have at least one attribute")
 public ValidationRule mustHaveAttributes() {
     return (element, ctx) -> {
         EntityType entity = (EntityType) element;
         
         if (entity.getAttributes() == null || entity.getAttributes().isEmpty()) {
             return ValidationResult.fail(
-                "Entity '" + entity.getName() + "' must have at least one attribute"
+                MUST_HAVE_ATTRIBUTES,
+                "Entity '" + entity.getName() + "' must have at least one attribute",
+                Severity.ERROR,
+                element
             );
         }
         
@@ -363,9 +470,7 @@ public ValidationRule mustHaveAttributes() {
 
 Tests go in: `model-test/src/test/java/hu/blackbelt/judo/meta/asm/runtime/`
 
-### Parameterized Test Structure
-
-Tests run with both EVL and Java validators using parameterized tests:
+### Parameterized Test Structure (Using Constants)
 
 ```java
 package hu.blackbelt.judo.meta.asm.runtime;
@@ -375,6 +480,8 @@ import hu.blackbelt.judo.meta.asm.ValidatorType;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EnumSource;
 import com.google.common.collect.ImmutableList;
+
+import static hu.blackbelt.judo.meta.asm.validation.ConstraintNames.*;
 
 public class MyValidationTest extends AbstractAsmValidationTest {
 
@@ -400,10 +507,10 @@ public class MyValidationTest extends AbstractAsmValidationTest {
         // Build model with missing name
         // ...
         
-        // Expect specific error
+        // Use constant for expected error!
         runValidation(
-            ImmutableList.of("MustHaveName"),  // Expected errors
-            ImmutableList.of()                  // Expected warnings
+            ImmutableList.of(MUST_HAVE_NAME),
+            ImmutableList.of()
         );
     }
 
@@ -416,52 +523,39 @@ public class MyValidationTest extends AbstractAsmValidationTest {
         // Build model without description
         // ...
         
-        // Expect warning, no errors
+        // Use constant for expected warning!
         runValidation(
-            ImmutableList.of(),                     // Expected errors
-            ImmutableList.of("ShouldHaveDescription") // Expected warnings
+            ImmutableList.of(),
+            ImmutableList.of(SHOULD_HAVE_DESCRIPTION)
         );
     }
 }
-```
-
-### AbstractAsmValidationTest Methods
-
-```java
-// Initialize the model (call first in each test)
-initModel();
-
-// Run validation with expected results
-runValidation(
-    Collection<String> expectedErrors,
-    Collection<String> expectedWarnings
-);
-
-// Access the validator type (EVL or JAVA)
-this.validatorType
-
-// Access the model
-this.asmModel
 ```
 
 ## Error Message Best Practices
 
 ```java
 // BAD: Vague
-return ValidationResult.fail("Invalid");
+return ValidationResult.fail(CONSTRAINT_NAME, "Invalid", Severity.ERROR, element);
 
 // BAD: No context
-return ValidationResult.fail("Name is required");
+return ValidationResult.fail(CONSTRAINT_NAME, "Name is required", Severity.ERROR, element);
 
 // GOOD: Specific with context
 return ValidationResult.fail(
-    "Entity '" + entity.getName() + "' must have a name"
+    CONSTRAINT_NAME,
+    "Entity '" + entity.getName() + "' must have a name",
+    Severity.ERROR,
+    element
 );
 
 // GOOD: Actionable guidance
 return ValidationResult.fail(
+    NO_CYCLIC_INHERITANCE,
     "Entity '" + entity.getName() + "' has circular inheritance. " +
-    "Remove one of the inheritance relationships to break the cycle."
+    "Remove one of the inheritance relationships to break the cycle.",
+    Severity.ERROR,
+    element
 );
 ```
 
@@ -493,6 +587,19 @@ public static void validateAsm(...) {
     // ...
 }
 ```
+
+## Checklist for New Validation Rules
+
+1. [ ] Add constraint/critique name constant to `ConstraintNames.java`
+2. [ ] Add guard method name constant to `GuardMethodNames.java` (if using guards)
+3. [ ] Add extension method name constant to `ExtensionMethodNames.java` (if using extensions)
+4. [ ] Use static imports for all constants
+5. [ ] Use constant in `@Constraint`/`@Critique` name parameter
+6. [ ] Use constant in `ValidationResult.fail()`/`ValidationResult.warn()`
+7. [ ] Use constant in `@Guard(method = ...)` if applicable
+8. [ ] Use constants in `@Satisfies(constraints = {...})` if applicable
+9. [ ] Register validation class in `AsmValidator.java`
+10. [ ] Write parameterized test using constants for expected errors/warnings
 
 ## See Also
 
