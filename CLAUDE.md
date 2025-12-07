@@ -21,7 +21,7 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 
 **Always read `AGENTS.md` first** - it contains comprehensive documentation about:
 - Project structure and all modules
-- ESM metamodel architecture
+- ASM (JUDO Architecture Model) metamodel architecture
 - Technology stack (EMF, Ecore, Tycho, Epsilon, Handlebars)
 - Build commands and Maven profiles
 - Code generation flow
