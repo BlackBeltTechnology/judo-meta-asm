@@ -1,4 +1,4 @@
-# Judo ASM (Abstract Syntax Model) Meta - Project Documentation
+# Judo ASM (Architecture Specific Model) Meta - Project Documentation
 
 ## Project Overview
 

@@ -2,7 +2,7 @@
 
 ## Purpose
 
-**Judo ASM (Abstract Syntax Model) Meta** is an Eclipse/Tycho-based metamodel project that:
+**Judo ASM (Architecture Specific Model) Meta** is an Eclipse/Tycho-based metamodel project that:
 - Wraps the EMF/Ecore metamodel for programmatic access
 - Provides runtime utilities (`AsmUtils`) for navigating Ecore structures
 - Implements validation via Epsilon Validation Language (EVL)

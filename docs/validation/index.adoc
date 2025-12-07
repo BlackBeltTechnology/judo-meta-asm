@@ -5,7 +5,7 @@
 
 == Introduction
 
-The ASM (Abstract Syntax Model) validation framework provides dual validation capabilities for EMF-based ASM models. It supports both EVL (Epsilon Validation Language) scripts and Java-based validation using the https://github.com/BlackBeltTechnology/judo-zeta[Judo Zeta Validation Framework].
+The ASM (Architecture Specific Model) validation framework provides dual validation capabilities for EMF-based ASM models. It supports both EVL (Epsilon Validation Language) scripts and Java-based validation using the https://github.com/BlackBeltTechnology/judo-zeta[Judo Zeta Validation Framework].
 
 == Validation Approaches
 
