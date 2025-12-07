@@ -1,38 +1,45 @@
-= ASM Model Validation Framework
-:toc: left
-:toclevels: 3
-:sectnums:
+# ASM Model Validation Framework
 
-== Introduction
+## Table of Contents
+- [Introduction](#introduction)
+- [Validation Approaches](#validation-approaches)
+- [Dependencies](#dependencies)
+- [Architecture](#architecture)
+- [Core Annotations](#core-annotations)
+- [Quick Example](#quick-example)
+- [Executing Validation](#executing-validation)
+- [Test Infrastructure](#test-infrastructure)
+- [Related Documentation](#related-documentation)
 
-The ASM (Architecture Specific Model) validation framework provides dual validation capabilities for EMF-based ASM models. It supports both EVL (Epsilon Validation Language) scripts and Java-based validation using the https://github.com/BlackBeltTechnology/judo-zeta[Judo Zeta Validation Framework].
+## Introduction
 
-== Validation Approaches
+The ASM (Architecture Specific Model) validation framework provides dual validation capabilities for EMF-based ASM models. It supports both EVL (Epsilon Validation Language) scripts and Java-based validation using the [Judo Zeta Validation Framework](https://github.com/BlackBeltTechnology/judo-zeta).
 
-=== EVL (Epsilon Validation Language)
+## Validation Approaches
+
+### EVL (Epsilon Validation Language)
 
 EVL is the traditional script-based validation approach that uses the Epsilon platform. EVL scripts are stored in `.evl` files and provide a declarative way to define validation rules.
 
-*Location*: `model/src/main/epsilon/validations/`
+**Location**: `model/src/main/epsilon/validations/`
 
-=== Java Validation (Judo Zeta)
+### Java Validation (Judo Zeta)
 
-The Java validation framework uses the https://github.com/BlackBeltTechnology/judo-zeta[Judo Zeta] library for annotation-based validation that offers:
+The Java validation framework uses the [Judo Zeta](https://github.com/BlackBeltTechnology/judo-zeta) library for annotation-based validation that offers:
 
-* *Type Safety* - Compile-time type checking
-* *IDE Support* - Full autocomplete, refactoring, and debugging
-* *Performance* - No interpretation overhead, automatic parallelization
-* *Testability* - Standard unit testing for validation rules
-* *Maintainability* - Familiar Java code
+* **Type Safety** - Compile-time type checking
+* **IDE Support** - Full autocomplete, refactoring, and debugging
+* **Performance** - No interpretation overhead, automatic parallelization
+* **Testability** - Standard unit testing for validation rules
+* **Maintainability** - Familiar Java code
 
-*Validation Entry Point*: `model/src/main/java/hu/blackbelt/judo/meta/asm/validation/AsmValidator.java`
+**Validation Entry Point**: `model/src/main/java/hu/blackbelt/judo/meta/asm/validation/AsmValidator.java`
 
-== Dependencies
+## Dependencies
 
 The ASM validation uses the Judo Zeta framework. Add these dependencies to your `pom.xml`:
 
-[source,xml]
-----
+```xml
 <dependency>
     <groupId>hu.blackbelt.judo.zeta</groupId>
     <artifactId>hu.blackbelt.judo.zeta.validation-core</artifactId>
@@ -48,12 +55,11 @@ The ASM validation uses the Judo Zeta framework. Add these dependencies to your 
     <artifactId>hu.blackbelt.judo.zeta.common</artifactId>
     <version>${judo-zeta-version}</version>
 </dependency>
-----
+```
 
-== Architecture
+## Architecture
 
-[source]
-----
+```
                     ┌─────────────────────────────────────────┐
                     │           AsmValidator                  │
                     │  (Entry point for Java validation)      │
@@ -82,48 +88,25 @@ The ASM validation uses the Judo Zeta framework. Add these dependencies to your 
         │   ValidationResult    │
         │  (Pass/Fail/Warning)  │
         └───────────────────────┘
-----
+```
 
-== Core Annotations
+## Core Annotations
 
 All annotations are from the `hu.blackbelt.judo.zeta.annotation` package:
 
-|===
-| Annotation | Level | Purpose
+| Annotation | Level | Purpose |
+|------------|-------|---------|
+| `@ValidationContext` | Class | Declares the element type this class validates |
+| `@Constraint` | Method | Defines an error-level validation rule |
+| `@Critique` | Method | Defines a warning-level validation rule |
+| `@Guard` | Method | Adds a conditional guard to a rule |
+| `@Satisfies` | Method | Declares dependencies on other constraints |
+| `@Cached` | Method | Caches the result of expensive computations |
+| `@ExtensionMethod` | Method | Defines a reusable helper method |
 
-| `@ValidationContext`
-| Class
-| Declares the element type this class validates
+## Quick Example
 
-| `@Constraint`
-| Method
-| Defines an error-level validation rule
-
-| `@Critique`
-| Method
-| Defines a warning-level validation rule
-
-| `@Guard`
-| Method
-| Adds a conditional guard to a rule
-
-| `@Satisfies`
-| Method
-| Declares dependencies on other constraints
-
-| `@Cached`
-| Method
-| Caches the result of expensive computations
-
-| `@ExtensionMethod`
-| Method
-| Defines a reusable helper method
-|===
-
-== Quick Example
-
-[source,java]
-----
+```java
 package hu.blackbelt.judo.meta.asm.validation;
 
 import hu.blackbelt.judo.zeta.annotation.*;
@@ -168,12 +151,11 @@ public class EClassValidations {
         };
     }
 }
-----
+```
 
-== Executing Validation
+## Executing Validation
 
-[source,java]
-----
+```java
 import hu.blackbelt.judo.meta.asm.validation.AsmValidator;
 import hu.blackbelt.judo.meta.asm.runtime.AsmModel;
 
@@ -190,14 +172,13 @@ public class ValidationExample {
         );
     }
 }
-----
+```
 
-== Test Infrastructure
+## Test Infrastructure
 
 The ASM validation test infrastructure supports parameterized testing with both EVL and Java validators:
 
-[source,java]
-----
+```java
 import hu.blackbelt.judo.meta.asm.ValidatorType;
 import hu.blackbelt.judo.meta.asm.AbstractAsmValidationTest;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -218,15 +199,15 @@ public class AsmValidationTest extends AbstractAsmValidationTest {
         );
     }
 }
-----
+```
 
-== Related Documentation
+## Related Documentation
 
-* https://github.com/BlackBeltTechnology/judo-zeta[Judo Zeta Framework] - The validation framework source and documentation
-* link:annotations.adoc[Annotations Reference] - Complete annotation documentation
-* link:validation-context.adoc[ValidationContext API] - Full API reference
+* [Judo Zeta Framework](https://github.com/BlackBeltTechnology/judo-zeta) - The validation framework source and documentation
+* [Annotations Reference](annotations.md) - Complete annotation documentation
+* [ValidationContext API](validation-context.md) - Full API reference
 
-== See Also
+## See Also
 
-* link:../README.adoc[ASM Model Documentation]
-* https://www.eclipse.org/epsilon/doc/evl/[EVL Documentation] - Epsilon Validation Language
+* [ASM Model Documentation](../../README.md)
+* [EVL Documentation](https://www.eclipse.org/epsilon/doc/evl/) - Epsilon Validation Language

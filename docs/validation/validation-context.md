@@ -1,25 +1,28 @@
-= ValidationContext API Reference
-:toc: left
-:toclevels: 3
-:sectnums:
+# ValidationContext API Reference
 
-== Overview
+## Table of Contents
+- [Overview](#overview)
+- [Import](#import)
+- [Key Methods](#key-methods)
+- [Common Usage Patterns](#common-usage-patterns)
+- [AsmModelProvider](#asmmodelprovider)
+- [Thread Safety](#thread-safety)
+
+## Overview
 
 The `ValidationContext` class from `hu.blackbelt.judo.zeta.validation.core` provides access to the model and validation state during rule execution. It is passed to every validation rule as the second parameter.
 
-== Import
+## Import
 
-[source,java]
-----
+```java
 import hu.blackbelt.judo.zeta.validation.core.ValidationContext;
-----
+```
 
-== Key Methods
+## Key Methods
 
-=== Model Traversal
+### Model Traversal
 
-[source,java]
-----
+```java
 /**
  * Get all instances of a given EClass type from the resource set.
  *
@@ -27,12 +30,11 @@ import hu.blackbelt.judo.zeta.validation.core.ValidationContext;
  * @return collection of instances
  */
 <T extends EObject> Collection<T> getAllInstances(Class<T> eClass);
-----
+```
 
-=== Constraint Dependencies
+### Constraint Dependencies
 
-[source,java]
-----
+```java
 /**
  * Check if a constraint is satisfied for the current element.
  *
@@ -58,12 +60,11 @@ boolean satisfies(EObject element, String constraintName);
  * @return true if all elements satisfy the constraint
  */
 boolean allSatisfy(Collection<? extends EObject> elements, String constraintName);
-----
+```
 
-=== Extension Methods
+### Extension Methods
 
-[source,java]
-----
+```java
 /**
  * Call cached extension method on any EObject.
  *
@@ -82,23 +83,21 @@ boolean allSatisfy(Collection<? extends EObject> elements, String constraintName
  * @return the method result
  */
 <T> T call(String methodName, Object... args);
-----
+```
 
-=== Current Element
+### Current Element
 
-[source,java]
-----
+```java
 /**
  * Get the current element being validated.
  * Uses ThreadLocal for thread-safety in parallel validation.
  */
 EObject getCurrentElement();
-----
+```
 
-=== Custom Attributes
+### Custom Attributes
 
-[source,java]
-----
+```java
 /**
  * Set a custom attribute (for use in pre/post hooks).
  */
@@ -108,12 +107,11 @@ void setAttribute(String key, Object value);
  * Get a custom attribute.
  */
 <T> T getAttribute(String key);
-----
+```
 
-=== Resource Access
+### Resource Access
 
-[source,java]
-----
+```java
 /**
  * Get the resource set containing the model.
  */
@@ -123,14 +121,13 @@ ResourceSet getResourceSet();
  * Get the ModelProvider instance.
  */
 ModelProvider getModelProvider();
-----
+```
 
-== Common Usage Patterns
+## Common Usage Patterns
 
-=== Getting All Instances of a Type
+### Getting All Instances of a Type
 
-[source,java]
-----
+```java
 @Constraint(name = "NameMustBeUnique", message = "Name must be unique")
 public ValidationRule nameMustBeUnique() {
     return (element, ctx) -> {
@@ -149,12 +146,11 @@ public ValidationRule nameMustBeUnique() {
             : ValidationResult.fail("Duplicate name: " + entity.getName());
     };
 }
-----
+```
 
-=== Checking Constraint Dependencies
+### Checking Constraint Dependencies
 
-[source,java]
-----
+```java
 @Constraint(name = "ValidateName", message = "...")
 public ValidationRule validateName() {
     return (element, ctx) -> {
@@ -168,12 +164,11 @@ public ValidationRule validateName() {
         // ...
     };
 }
-----
+```
 
-=== Calling Extension Methods
+### Calling Extension Methods
 
-[source,java]
-----
+```java
 @Constraint(name = "ValidateSuperTypes", message = "...")
 public ValidationRule validateSuperTypes() {
     return (element, ctx) -> {
@@ -191,22 +186,21 @@ public ValidationRule validateSuperTypes() {
         return ValidationResult.pass();
     };
 }
-----
+```
 
-== AsmModelProvider
+## AsmModelProvider
 
 The `AsmModelProvider` class implements the `ModelProvider` interface for ASM models:
 
-[source,java]
-----
+```java
 import hu.blackbelt.judo.meta.asm.validation.AsmModelProvider;
 import hu.blackbelt.judo.zeta.common.ModelProvider;
 
 // Used internally by AsmValidator
 ModelProvider modelProvider = new AsmModelProvider();
-----
+```
 
-== Thread Safety
+## Thread Safety
 
 The `ValidationContext` is designed for use in parallel validation:
 
@@ -215,8 +209,8 @@ The `ValidationContext` is designed for use in parallel validation:
 * `getCurrentElement()` uses ThreadLocal for thread-safety
 * Extension method calls are thread-safe when methods are stateless
 
-== See Also
+## See Also
 
-* link:index.adoc[Validation Framework Overview]
-* link:annotations.adoc[Annotations Reference]
-* https://github.com/BlackBeltTechnology/judo-zeta[Judo Zeta Framework]
+* [Validation Framework Overview](index.md)
+* [Annotations Reference](annotations.md)
+* [Judo Zeta Framework](https://github.com/BlackBeltTechnology/judo-zeta)
