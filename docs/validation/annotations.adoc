@@ -5,7 +5,7 @@
 
 == Overview
 
-The ASM validation framework provides annotations for defining validation rules. All annotations are located in the `hu.blackbelt.judo.meta.asm.validation.annotation` package.
+The ASM validation framework uses annotations from the https://github.com/BlackBeltTechnology/judo-zeta[Judo Zeta] library. All annotations are located in the `hu.blackbelt.judo.zeta.annotation` package.
 
 == Class-Level Annotations
 
@@ -15,6 +15,8 @@ Marks a class as a validator for a specific EClass type. All validation rules in
 
 [source,java]
 ----
+import hu.blackbelt.judo.zeta.annotation.ValidationContext;
+
 @ValidationContext(EClass.class)
 public class EClassValidations {
     // All rules validate EClass instances
@@ -38,6 +40,9 @@ Defines an error-level validation rule. Constraints indicate the model is invali
 
 [source,java]
 ----
+import hu.blackbelt.judo.zeta.annotation.Constraint;
+import hu.blackbelt.judo.zeta.validation.core.ValidationRule;
+
 @Constraint(
     name = "EntityMustHaveName",
     message = "Entity must have a name"
@@ -69,6 +74,8 @@ Defines a warning-level validation rule. Critiques indicate quality issues that 
 
 [source,java]
 ----
+import hu.blackbelt.judo.zeta.annotation.Critique;
+
 @Critique(
     name = "EntityShouldHaveDescription",
     message = "Entity should have a description"
@@ -100,6 +107,8 @@ Adds a conditional guard to a rule. The rule only executes if the guard method r
 
 [source,java]
 ----
+import hu.blackbelt.judo.zeta.annotation.Guard;
+
 @Constraint(
     name = "ConcreteEntityMustHaveTable",
     message = "Concrete entity must have table name"
@@ -132,6 +141,8 @@ Declares dependencies on other constraints. The rule only runs if all specified 
 
 [source,java]
 ----
+import hu.blackbelt.judo.zeta.annotation.Satisfies;
+
 @Constraint(
     name = "NameMustBeUnique",
     message = "Entity name must be unique"
@@ -159,6 +170,9 @@ Marks a method result for caching. Used with extension methods to avoid expensiv
 
 [source,java]
 ----
+import hu.blackbelt.judo.zeta.annotation.Cached;
+import hu.blackbelt.judo.zeta.annotation.ExtensionMethod;
+
 @ExtensionMethod(EntityType.class)
 public class EntityTypeExtensions {
 
@@ -175,6 +189,8 @@ Defines a reusable helper method that extends an EClass type.
 
 [source,java]
 ----
+import hu.blackbelt.judo.zeta.annotation.ExtensionMethod;
+
 @ExtensionMethod(EntityType.class)
 public class EntityTypeExtensions {
 
@@ -196,10 +212,15 @@ public class EntityTypeExtensions {
 
 == ValidationResult API
 
+The `ValidationResult` class is from `hu.blackbelt.judo.zeta.validation.core`:
+
 === Creating Results
 
 [source,java]
 ----
+import hu.blackbelt.judo.zeta.validation.core.ValidationResult;
+import hu.blackbelt.judo.zeta.validation.core.Severity;
+
 // Passing result
 ValidationResult.pass()
 
@@ -218,6 +239,10 @@ ValidationResult.warn("Consider adding a description")
 | `isValid()`
 | `boolean`
 | Returns true if validation passed
+
+| `isFailed()`
+| `boolean`
+| Returns true if validation failed
 
 | `getSeverity()`
 | `Severity`
@@ -238,25 +263,29 @@ ValidationResult.warn("Consider adding a description")
 
 == ValidationContext API
 
+The `ValidationContext` class is from `hu.blackbelt.judo.zeta.validation.core`:
+
 === Available Methods
 
 [source,java]
 ----
-public interface ValidationContext {
-    // Get all instances of a type in the model
-    <T extends EObject> List<T> getAllInstances(Class<T> type);
+import hu.blackbelt.judo.zeta.validation.core.ValidationContext;
 
-    // Check if another constraint passed for this element
-    boolean satisfies(EObject element, String constraintName);
+// Get all instances of a type in the model
+Collection<EntityType> allEntities = ctx.getAllInstances(EntityType.class);
 
-    // Call an extension method (cached)
-    <T> T call(EObject target, String methodName, Object... args);
+// Check if another constraint passed for this element
+boolean passed = ctx.satisfies("OtherConstraintName");
 
-    // Cache management
-    Object getCached(CacheKey key);
-    void putCached(CacheKey key, Object value);
-    void clearCaches();
-}
+// Check if constraint passed for specific element
+boolean passed = ctx.satisfies(element, "OtherConstraintName");
+
+// Call an extension method (cached)
+Object result = ctx.call(entity, "getAllSuperTypes");
+
+// Get/set custom attributes
+ctx.setAttribute("key", value);
+Object value = ctx.getAttribute("key");
 ----
 
 == Annotation Combinations

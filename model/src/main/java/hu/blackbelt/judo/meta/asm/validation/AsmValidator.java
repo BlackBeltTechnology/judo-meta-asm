@@ -22,9 +22,12 @@ package hu.blackbelt.judo.meta.asm.validation;
 
 import hu.blackbelt.judo.meta.asm.runtime.AsmModel;
 import hu.blackbelt.judo.meta.asm.runtime.AsmUtils;
-import hu.blackbelt.judo.meta.asm.validation.core.*;
+import hu.blackbelt.judo.zeta.common.ExtensionMethodRegistry;
+import hu.blackbelt.judo.zeta.validation.core.*;
+
 import java.util.*;
 import java.util.stream.Collectors;
+
 import org.eclipse.emf.ecore.EObject;
 import org.slf4j.Logger;
 
@@ -34,12 +37,16 @@ import org.slf4j.Logger;
  * <p>This validator provides a native Java alternative to EVL (Epsilon Validation Language)
  * validation with better IDE integration, debugging support, and performance.</p>
  *
+ * <p>Uses the Judo Zeta Validation Framework for annotation-based validation.</p>
+ *
  * <p>Example usage:</p>
  * <pre>
  * {@code
  * AsmValidator.validateAsm(log, asmModel);
  * }
  * </pre>
+ *
+ * @see <a href="https://github.com/BlackBeltTechnology/judo-zeta">Judo Zeta Framework</a>
  */
 public class AsmValidator {
 
@@ -92,23 +99,23 @@ public class AsmValidator {
     ) throws AsmModel.AsmValidationException {
         log.info("Starting Java-based ASM validation...");
 
-        // Create validation infrastructure
+        // Create validation infrastructure using Zeta framework
         ValidationRegistry registry = new ValidationRegistry();
         ExtensionMethodRegistry extensionRegistry = new ExtensionMethodRegistry();
 
         // Register extension methods
         try {
             // Currently no extension methods registered - add as needed
-            // extensionRegistry.register(AsmUtilsExtensions.class);
+            // extensionRegistry.register(AsmExtensions.class);
             log.debug("Extension method registry initialized");
         } catch (Exception e) {
             log.error("Failed to register extension methods", e);
             throw new RuntimeException(e);
         }
 
-        // Create validation context
+        // Create validation context with ASM model provider
         ValidationContext context = new ValidationContext(
-            new AsmUtils(asmModel.getResourceSet()),
+            new AsmModelProvider(),
             asmModel.getResourceSet(),
             extensionRegistry
         );
@@ -116,7 +123,7 @@ public class AsmValidator {
         // Register validation rule classes
         // Currently no validation rules - the asm.evl is empty
         // Add validation rule classes here as needed:
-        // registry.register(SomeValidations.class);
+        // registry.register(EClassValidations.class);
         log.debug("Validation registry initialized (no rules registered - asm.evl is empty)");
 
         // Set registry in context for satisfies() support

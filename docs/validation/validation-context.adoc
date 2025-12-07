@@ -5,83 +5,124 @@
 
 == Overview
 
-The `ValidationContext` interface provides access to the model and validation state during rule execution. It is passed to every validation rule as the second parameter.
+The `ValidationContext` class from `hu.blackbelt.judo.zeta.validation.core` provides access to the model and validation state during rule execution. It is passed to every validation rule as the second parameter.
 
-== Interface Definition
+== Import
 
 [source,java]
 ----
-public interface ValidationContext {
+import hu.blackbelt.judo.zeta.validation.core.ValidationContext;
+----
 
-    /**
-     * Get all instances of a specific type in the model.
-     *
-     * @param type The EClass type to search for
-     * @return List of all instances of the specified type
-     */
-    <T extends EObject> List<T> getAllInstances(Class<T> type);
+== Key Methods
 
-    /**
-     * Check if a constraint has passed for a specific element.
-     *
-     * @param element The element to check
-     * @param constraintName The name of the constraint
-     * @return true if the constraint passed, false otherwise
-     */
-    boolean satisfies(EObject element, String constraintName);
+=== Model Traversal
 
-    /**
-     * Call an extension method on an element.
-     *
-     * @param target The target element
-     * @param methodName The extension method name
-     * @param args Additional arguments
-     * @return The method result
-     */
-    <T> T call(EObject target, String methodName, Object... args);
+[source,java]
+----
+/**
+ * Get all instances of a given EClass type from the resource set.
+ *
+ * @param eClass the EClass type
+ * @return collection of instances
+ */
+<T extends EObject> Collection<T> getAllInstances(Class<T> eClass);
+----
 
-    /**
-     * Get a cached value.
-     *
-     * @param key The cache key
-     * @return The cached value, or null if not present
-     */
-    Object getCached(CacheKey key);
+=== Constraint Dependencies
 
-    /**
-     * Store a value in the cache.
-     *
-     * @param key The cache key
-     * @param value The value to cache
-     */
-    void putCached(CacheKey key, Object value);
+[source,java]
+----
+/**
+ * Check if a constraint is satisfied for the current element.
+ *
+ * @param constraintName the constraint name
+ * @return true if the constraint is satisfied
+ */
+boolean satisfies(String constraintName);
 
-    /**
-     * Clear all cached values.
-     */
-    void clearCaches();
+/**
+ * Check if a constraint is satisfied for a specific element.
+ *
+ * @param element the element to check
+ * @param constraintName the constraint name
+ * @return true if the constraint is satisfied
+ */
+boolean satisfies(EObject element, String constraintName);
 
-    /**
-     * Get the validation registry.
-     *
-     * @return The validation registry
-     */
-    ValidationRegistry getValidationRegistry();
+/**
+ * Check if all elements in a collection satisfy a constraint.
+ *
+ * @param elements the elements to check
+ * @param constraintName the constraint name
+ * @return true if all elements satisfy the constraint
+ */
+boolean allSatisfy(Collection<? extends EObject> elements, String constraintName);
+----
 
-    /**
-     * Get the extension method registry.
-     *
-     * @return The extension method registry
-     */
-    ExtensionMethodRegistry getExtensionMethodRegistry();
+=== Extension Methods
 
-    /**
-     * Get the resource set containing the model.
-     *
-     * @return The EMF resource set
-     */
-    ResourceSet getResourceSet();
-}
+[source,java]
+----
+/**
+ * Call cached extension method on any EObject.
+ *
+ * @param target the target object
+ * @param methodName the method name
+ * @param args method arguments
+ * @return the method result
+ */
+<T> T call(EObject target, String methodName, Object... args);
+
+/**
+ * Call extension method on current element.
+ *
+ * @param methodName the method name
+ * @param args method arguments
+ * @return the method result
+ */
+<T> T call(String methodName, Object... args);
+----
+
+=== Current Element
+
+[source,java]
+----
+/**
+ * Get the current element being validated.
+ * Uses ThreadLocal for thread-safety in parallel validation.
+ */
+EObject getCurrentElement();
+----
+
+=== Custom Attributes
+
+[source,java]
+----
+/**
+ * Set a custom attribute (for use in pre/post hooks).
+ */
+void setAttribute(String key, Object value);
+
+/**
+ * Get a custom attribute.
+ */
+<T> T getAttribute(String key);
+----
+
+=== Resource Access
+
+[source,java]
+----
+/**
+ * Get the resource set containing the model.
+ */
+ResourceSet getResourceSet();
+
+/**
+ * Get the ModelProvider instance.
+ */
+ModelProvider getModelProvider();
 ----
 
 == Common Usage Patterns
@@ -96,7 +137,7 @@ public ValidationRule nameMustBeUnique() {
         EntityType entity = (EntityType) element;
 
         // Get all EntityType instances in the model
-        List<EntityType> allEntities = ctx.getAllInstances(EntityType.class);
+        Collection<EntityType> allEntities = ctx.getAllInstances(EntityType.class);
 
         // Check for duplicates
         long count = allEntities.stream()
@@ -118,7 +159,7 @@ public ValidationRule nameMustBeUnique() {
 public ValidationRule validateName() {
     return (element, ctx) -> {
         // Check if another constraint passed
-        if (!ctx.satisfies(element, "EntityMustExist")) {
+        if (!ctx.satisfies("EntityMustExist")) {
             // Skip validation if dependency not satisfied
             return ValidationResult.pass();
         }
@@ -139,10 +180,8 @@ public ValidationRule validateSuperTypes() {
         EntityType entity = (EntityType) element;
 
         // Call extension method
-        Collection<EntityType> superTypes = ctx.call(
-            entity,
-            "getAllSuperTypes"
-        );
+        @SuppressWarnings("unchecked")
+        Collection<EntityType> superTypes = ctx.call(entity, "getAllSuperTypes");
 
         // Use the result
         if (superTypes.contains(entity)) {
@@ -154,81 +193,26 @@ public ValidationRule validateSuperTypes() {
 }
 ----
 
-=== Caching Expensive Computations
+== AsmModelProvider
+
+The `AsmModelProvider` class implements the `ModelProvider` interface for ASM models:
 
 [source,java]
 ----
-@Constraint(name = "ValidateComplexRule", message = "...")
-public ValidationRule validateComplexRule() {
-    return (element, ctx) -> {
-        EntityType entity = (EntityType) element;
+import hu.blackbelt.judo.meta.asm.validation.AsmModelProvider;
+import hu.blackbelt.judo.zeta.common.ModelProvider;
 
-        // Create cache key
-        CacheKey key = CacheKey.builder()
-            .element(entity)
-            .methodName("computeExpensiveResult")
-            .build();
-
-        // Check cache first
-        Object cached = ctx.getCached(key);
-        if (cached != null) {
-            return processResult((ExpensiveResult) cached);
-        }
-
-        // Compute and cache
-        ExpensiveResult result = computeExpensiveResult(entity);
-        ctx.putCached(key, result);
-
-        return processResult(result);
-    };
-}
-----
-
-== AsmUtils Integration
-
-The `ValidationContext` in ASM provides access to `AsmUtils` for model traversal:
-
-[source,java]
-----
-public class ValidationContext {
-    private final AsmUtils asmUtils;
-
-    public ValidationContext(AsmUtils asmUtils, ResourceSet resourceSet,
-                            ExtensionMethodRegistry extensionRegistry) {
-        this.asmUtils = asmUtils;
-        // ...
-    }
-
-    public AsmUtils getAsmUtils() {
-        return asmUtils;
-    }
-}
-----
-
-=== Using AsmUtils in Validation Rules
-
-[source,java]
-----
-@Constraint(name = "ValidateModel", message = "...")
-public ValidationRule validateModel() {
-    return (element, ctx) -> {
-        AsmUtils asmUtils = ctx.getAsmUtils();
-
-        // Use AsmUtils methods
-        List<EClass> allClasses = asmUtils.all(EClass.class)
-            .collect(Collectors.toList());
-
-        // Validate...
-    };
-}
+// Used internally by AsmValidator
+ModelProvider modelProvider = new AsmModelProvider();
 ----
 
 == Thread Safety
 
 The `ValidationContext` is designed for use in parallel validation:
 
-* `getAllInstances()` returns a thread-safe snapshot
-* `getCached()` and `putCached()` use concurrent data structures
+* `getAllInstances()` returns a thread-safe collection
+* `satisfies()` uses concurrent caching
+* `getCurrentElement()` uses ThreadLocal for thread-safety
 * Extension method calls are thread-safe when methods are stateless
 
 == See Also
