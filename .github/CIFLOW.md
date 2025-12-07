@@ -17,7 +17,54 @@ Branches:
 * **bugfix/JNG-NUMBER_short_summary**, **support/JNG-NUMBER_short_summary**: bugfix and support branches are based on release branches and must be applied to release and development branches of newer versions too
 * **master**: contains latest released sources of the last active version
 
-![branches](branches.png)
+```mermaid
+%%{init: {'theme': 'base', 'gitGraph': {'rotateCommitLabel': false}}}%%
+gitGraph
+    commit id: "init"
+    branch develop
+    checkout develop
+    commit id: "dev-1"
+    branch feature/JNG-1
+    checkout feature/JNG-1
+    commit id: "feat-1"
+    commit id: "feat-2"
+    checkout develop
+    branch feature/JNG-2
+    checkout feature/JNG-2
+    commit id: "feat-3"
+    checkout develop
+    merge feature/JNG-1
+    merge feature/JNG-2
+    branch feature/JNG-3
+    checkout feature/JNG-3
+    commit id: "feat-4"
+    checkout develop
+    merge feature/JNG-3
+    branch release/1.0-beta1
+    checkout release/1.0-beta1
+    commit id: "rel-1"
+    branch bugfix/JNG-4
+    checkout bugfix/JNG-4
+    commit id: "fix-1"
+    checkout release/1.0-beta1
+    merge bugfix/JNG-4
+    checkout develop
+    merge release/1.0-beta1
+    checkout main
+    merge release/1.0-beta1 tag: "v1.0-beta1"
+    branch hotfix/JNG-6
+    checkout hotfix/JNG-6
+    commit id: "hotfix-1"
+    checkout main
+    merge hotfix/JNG-6 tag: "v1.0-beta1.1"
+    checkout develop
+    merge hotfix/JNG-6
+    branch release/1.1-beta1
+    checkout release/1.1-beta1
+    commit id: "rel-2"
+    checkout main
+    merge release/1.1-beta1 tag: "v1.1-beta1"
+```
 
 ## Version numbers
 
@@ -33,19 +80,81 @@ Version numbers are increased using semantic versioning:
 
 #### build.yml
 
-![build](build.png)
+```mermaid
+flowchart TD
+    A["<b>when</b><br/>push on <b>develop</b> branch<br/>or<br/>pull request on <b>develop</b>, <b>master</b>,<br/><b>increment/*</b>, <b>release/*</b> branch"]
+    A --> B{Commit or Pull request's<br/>base branch?}
+    B -->|master, release/*| C["set <b>version</b><br/>from project pom.xml<br/>(version without '-SNAPSHOT')"]
+    B -->|develop, increment/*| D["set version<br/><b>major.minor.qualifier.date_commitId_branchName</b><br/>from project pom.xml<br/>(version without '-SNAPSHOT')"]
+    C --> E[build and deploy to nexus]
+    D --> E
+    E --> F["create git tag <b>v&lt;version&gt;</b>"]
+    F --> G{Pull request or commit<br/>base branch?}
+    G -->|increment/*, release/*| H["create tag <b>merge-pr/&lt;version&gt;</b>"]
+    H --> I["<b>trigger merge-pr-tagged.yml</b>"]
+    G -->|develop| J[build change log]
+    G -->|other| K[end]
+    I --> K
+    J --> L["create <b>github release</b><br/>(prerelease) with change log"]
+    L --> K
+
+    style A fill:#ffffcc
+    style I fill:#90EE90
+```
 
 #### merge-pr-tagged.yml
 
-![merge-pr-tagged](merge-pr-tagged.png)
+```mermaid
+flowchart TD
+    A["<b>when</b><br/>push on <b>merge-pr/*</b> tag"]
+    A --> B["get &lt;version&gt; from tag name"]
+    B --> C{"check &lt;version&gt; format"}
+    C -->|major.minor.qualifier| D[merge pull request to <b>master</b>]
+    D --> E["<b>trigger create-release-on-master.yml</b>"]
+    C -->|other| F[squash pull request to <b>develop</b>]
+    F --> G["<b>trigger build.yml</b>"]
+    E --> H["delete tag <b>merge-pr/&lt;version&gt;</b>"]
+    G --> H
+    H --> I[end]
+
+    style A fill:#ffffcc
+    style E fill:#90EE90
+    style G fill:#90EE90
+```
 
 #### create-release-on-master.yml
 
-![create-release-on-master](create-release-on-master.png)
+```mermaid
+flowchart TD
+    A["<b>when</b><br/>push on <b>master</b> branch"]
+    A --> B["get &lt;version&gt; from tag name"]
+    B --> C[build change log]
+    C --> D["create <b>github release</b><br/>(last) with change log"]
+    D --> E[end]
+
+    style A fill:#ffffcc
+```
 
 #### release.yml
 
-![release](release.png)
+```mermaid
+flowchart TD
+    A["<b>when</b><br/>manually triggered with <b>given version</b><br/>which is <b>'auto'</b> or any other<br/>in <b>major.minor.qualifier</b> form"]
+    A --> B{"given version is"}
+    B -->|'auto'| C["set <b>release version</b><br/>from project pom.xml<br/>(version without '-SNAPSHOT')"]
+    B -->|other| D["set <b>release version</b><br/>to given <b>version</b>"]
+    C --> E["set <b>next version</b> to<br/><b>release version</b>'s qualifier + 1"]
+    D --> E
+    E --> F["create pull request on <b>master</b><br/>with <b>release version</b>"]
+    F --> G["<b>trigger build.yml</b>"]
+    G --> H["create pull request on <b>develop</b><br/>with <b>next version</b>"]
+    H --> I["<b>trigger build.yml</b>"]
+    I --> J[end]
+
+    style A fill:#ffffcc
+    style G fill:#90EE90
+    style I fill:#90EE90
+```
 
 ## How to develop
 
