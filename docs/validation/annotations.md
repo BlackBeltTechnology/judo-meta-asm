@@ -1,0 +1,269 @@
+# Validation Annotations Reference
+
+## Table of Contents
+- [Overview](#overview)
+- [Class-Level Annotations](#class-level-annotations)
+- [Method-Level Annotations](#method-level-annotations)
+- [ValidationResult API](#validationresult-api)
+- [ValidationContext API](#validationcontext-api)
+- [Annotation Combinations](#annotation-combinations)
+- [Severity Levels](#severity-levels)
+
+## Overview
+
+The ASM validation framework uses annotations from the [Judo Zeta](https://github.com/BlackBeltTechnology/judo-zeta) library. All annotations are located in the `hu.blackbelt.judo.zeta.annotation` package.
+
+## Class-Level Annotations
+
+### @ValidationContext
+
+Marks a class as a validator for a specific EClass type. All validation rules in the class apply to instances of the specified type.
+
+```java
+import hu.blackbelt.judo.zeta.annotation.ValidationContext;
+
+@ValidationContext(EClass.class)
+public class EClassValidations {
+    // All rules validate EClass instances
+}
+```
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `value` | `Class<? extends EObject>` | Yes | The EClass type this validator handles |
+
+## Method-Level Annotations
+
+### @Constraint
+
+Defines an error-level validation rule. Constraints indicate the model is invalid and must be fixed.
+
+```java
+import hu.blackbelt.judo.zeta.annotation.Constraint;
+import hu.blackbelt.judo.zeta.validation.core.ValidationRule;
+
+@Constraint(
+    name = "EntityMustHaveName",
+    message = "Entity must have a name"
+)
+public ValidationRule entityMustHaveName() {
+    return (element, ctx) -> {
+        // Validation logic
+    };
+}
+```
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `name` | `String` | Yes | Unique identifier for this constraint |
+| `message` | `String` | Yes | Default error message |
+
+### @Critique
+
+Defines a warning-level validation rule. Critiques indicate quality issues that should be addressed.
+
+```java
+import hu.blackbelt.judo.zeta.annotation.Critique;
+
+@Critique(
+    name = "EntityShouldHaveDescription",
+    message = "Entity should have a description"
+)
+public ValidationRule entityShouldHaveDescription() {
+    return (element, ctx) -> {
+        // Validation logic
+    };
+}
+```
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `name` | `String` | Yes | Unique identifier for this critique |
+| `message` | `String` | Yes | Default warning message |
+
+### @Guard
+
+Adds a conditional guard to a rule. The rule only executes if the guard method returns `true`.
+
+```java
+import hu.blackbelt.judo.zeta.annotation.Guard;
+
+@Constraint(
+    name = "ConcreteEntityMustHaveTable",
+    message = "Concrete entity must have table name"
+)
+@Guard(method = "isNotAbstract")
+public ValidationRule concreteEntityMustHaveTable() {
+    return (element, ctx) -> {
+        // Only runs if isNotAbstract() returns true
+    };
+}
+
+private boolean isNotAbstract(EObject element, ValidationContext ctx) {
+    EntityType entity = (EntityType) element;
+    return !entity.isAbstract();
+}
+```
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `method` | `String` | Yes | Name of the guard method in this class |
+
+### @Satisfies
+
+Declares dependencies on other constraints. The rule only runs if all specified constraints have passed for this element.
+
+```java
+import hu.blackbelt.judo.zeta.annotation.Satisfies;
+
+@Constraint(
+    name = "NameMustBeUnique",
+    message = "Entity name must be unique"
+)
+@Satisfies(constraints = {"EntityMustHaveName"})
+public ValidationRule nameMustBeUnique() {
+    return (element, ctx) -> {
+        // Safe to use getName() because EntityMustHaveName passed
+    };
+}
+```
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `constraints` | `String[]` | Yes | Names of constraints that must pass first |
+
+### @Cached
+
+Marks a method result for caching. Used with extension methods to avoid expensive recomputation.
+
+```java
+import hu.blackbelt.judo.zeta.annotation.Cached;
+import hu.blackbelt.judo.zeta.annotation.ExtensionMethod;
+
+@ExtensionMethod(EntityType.class)
+public class EntityTypeExtensions {
+
+    @Cached
+    public Collection<EntityType> getAllSuperTypes(EntityType self) {
+        // Expensive recursive operation - cached
+    }
+}
+```
+
+### @ExtensionMethod
+
+Defines a reusable helper method that extends an EClass type.
+
+```java
+import hu.blackbelt.judo.zeta.annotation.ExtensionMethod;
+
+@ExtensionMethod(EntityType.class)
+public class EntityTypeExtensions {
+
+    public boolean hasAttribute(EntityType self, String name) {
+        return self.getAttributes().stream()
+            .anyMatch(attr -> name.equals(attr.getName()));
+    }
+}
+```
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `value` | `Class<? extends EObject>` | Yes | The EClass type this method extends |
+
+## ValidationResult API
+
+The `ValidationResult` class is from `hu.blackbelt.judo.zeta.validation.core`:
+
+### Creating Results
+
+```java
+import hu.blackbelt.judo.zeta.validation.core.ValidationResult;
+import hu.blackbelt.judo.zeta.validation.core.Severity;
+
+// Passing result
+ValidationResult.pass()
+
+// Failing result with message
+ValidationResult.fail("Entity name is required")
+
+// Warning result
+ValidationResult.warn("Consider adding a description")
+```
+
+### Result Properties
+
+| Method | Return Type | Description |
+|--------|-------------|-------------|
+| `isValid()` | `boolean` | Returns true if validation passed |
+| `isFailed()` | `boolean` | Returns true if validation failed |
+| `getSeverity()` | `Severity` | Returns `ERROR` or `WARNING` |
+| `getMessage()` | `String` | Returns the error/warning message |
+| `getConstraintName()` | `String` | Returns the constraint identifier |
+| `getElement()` | `EObject` | Returns the validated element |
+
+## ValidationContext API
+
+The `ValidationContext` class is from `hu.blackbelt.judo.zeta.validation.core`:
+
+### Available Methods
+
+```java
+import hu.blackbelt.judo.zeta.validation.core.ValidationContext;
+
+// Get all instances of a type in the model
+Collection<EntityType> allEntities = ctx.getAllInstances(EntityType.class);
+
+// Check if another constraint passed for this element
+boolean passed = ctx.satisfies("OtherConstraintName");
+
+// Check if constraint passed for specific element
+boolean passed = ctx.satisfies(element, "OtherConstraintName");
+
+// Call an extension method (cached)
+Object result = ctx.call(entity, "getAllSuperTypes");
+
+// Get/set custom attributes
+ctx.setAttribute("key", value);
+Object value = ctx.getAttribute("key");
+```
+
+## Annotation Combinations
+
+### Constraint with Guard
+
+```java
+@Constraint(name = "Rule", message = "...")
+@Guard(method = "guardMethod")
+public ValidationRule rule() { ... }
+```
+
+### Constraint with Dependencies
+
+```java
+@Constraint(name = "Rule", message = "...")
+@Satisfies(constraints = {"OtherRule1", "OtherRule2"})
+public ValidationRule rule() { ... }
+```
+
+### Constraint with Guard and Dependencies
+
+```java
+@Constraint(name = "Rule", message = "...")
+@Guard(method = "guardMethod")
+@Satisfies(constraints = {"OtherRule"})
+public ValidationRule rule() { ... }
+```
+
+## Severity Levels
+
+| Severity | Annotation | Meaning |
+|----------|------------|---------|
+| `ERROR` | `@Constraint` | Must be fixed - model is invalid |
+| `WARNING` | `@Critique` | Should be fixed - quality issue |
+
+## See Also
+
+* [Validation Framework Overview](index.md)
+* [ValidationContext API Reference](validation-context.md)
+* [Judo Zeta Framework](https://github.com/BlackBeltTechnology/judo-zeta)
