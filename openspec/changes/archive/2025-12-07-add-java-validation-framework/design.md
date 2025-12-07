@@ -2,7 +2,7 @@
 
 ## Context
 
-The ASM (Abstract Syntax Model) module wraps the EMF/Ecore metamodel and provides validation via Epsilon Validation Language (EVL). The ESM module has successfully implemented a dual-validation approach using the Judo Zeta framework, enabling both EVL and native Java validation to run in parallel with identical results.
+The ASM (Architecture Specific Model) module wraps the EMF/Ecore metamodel and provides validation via Epsilon Validation Language (EVL). The ESM module has successfully implemented a dual-validation approach using the Judo Zeta framework, enabling both EVL and native Java validation to run in parallel with identical results.
 
 **Stakeholders:**
 - Developers maintaining ASM validation rules
