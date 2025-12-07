@@ -69,6 +69,29 @@ public class AsmModelLoadITest {
     public Option[] config() throws IOException, AsmValidationException {
 
         return combine(karafConfig(this.getClass()),
+                // Guava (required by ASM model)
+                mavenBundle(maven()
+                        .groupId("com.google.guava")
+                        .artifactId("failureaccess")
+                        .version("1.0.1")),
+                mavenBundle(maven()
+                        .groupId("com.google.guava")
+                        .artifactId("guava")
+                        .versionAsInProject()),
+                // Zeta validation dependencies
+                mavenBundle(maven()
+                        .groupId("hu.blackbelt.judo.zeta")
+                        .artifactId("hu.blackbelt.judo.zeta.common")
+                        .versionAsInProject()),
+                mavenBundle(maven()
+                        .groupId("hu.blackbelt.judo.zeta")
+                        .artifactId("hu.blackbelt.judo.zeta.annotations")
+                        .versionAsInProject()),
+                mavenBundle(maven()
+                        .groupId("hu.blackbelt.judo.zeta")
+                        .artifactId("hu.blackbelt.judo.zeta.validation-core")
+                        .versionAsInProject()),
+                // ASM OSGi bundle
                 mavenBundle(maven()
                         .groupId("hu.blackbelt.judo.meta")
                         .artifactId("hu.blackbelt.judo.meta.asm.osgi")
