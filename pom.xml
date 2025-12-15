@@ -80,7 +80,7 @@
 		<epsilon-runtime-version>2.8.0.20251022_112123_14c440b1_develop</epsilon-runtime-version>
 		<epsilon-runtime-eclipse-version>2.8.0.20251022_112418_29e91090_develop</epsilon-runtime-eclipse-version>
 
-		<judo-zeta-version>1.0.0.20251207_081454_0779b890_develop</judo-zeta-version>
+		<judo-zeta-version>1.0.0.20251215_001216_39824811_feature_JNG_6349_AddZetaValidatiob</judo-zeta-version>
 
 		<maven.compiler.source>21</maven.compiler.source>
 		<maven.compiler.target>21</maven.compiler.target>
