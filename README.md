@@ -33,6 +33,34 @@ Annotation-based Java validation providing:
 
 For detailed documentation, see [Validation Framework Documentation](docs/validation/index.md)
 
+## CLI Integration
+
+This metamodel provides CLI support classes for use with [judo-model-cli](https://github.com/BlackBeltTechnology/judo-model-cli):
+
+**CLI Classes**:
+- `AsmFqnResolverImpl` - Resolves fully qualified names for ASM elements (hand-written)
+- `AsmValidatorImpl` - Validates ASM models via CLI (hand-written)
+- `AsmModelSchema` - GraphQL schema for querying ASM models (generated in `model/src-gen/`)
+
+Additionally, Ecore CLI classes are provided since ASM wraps the Ecore metamodel:
+- `EcoreFqnResolverImpl` - Resolves FQNs for base Ecore elements (hand-written)
+- `EcoreValidatorImpl` - Validates Ecore structure (hand-written)
+- `EcoreModelSchema` - GraphQL schema for Ecore queries (generated)
+
+**FQN Format**: `package.ClassName` (e.g., `myapp.Customer`)
+
+**Example CLI Queries**:
+```bash
+# Count classes in ASM model
+judo-model-cli -m model.asm graphql '{ asm { count(type: "EClass") } }'
+
+# List packages
+judo-model-cli -m model.asm graphql '{ asm { list(type: "EPackage", limit: 10) { __fqn __type } } }'
+
+# Query Ecore elements directly
+judo-model-cli -m model.asm graphql '{ ecore { list(type: "EAttribute") { __fqn } } }'
+```
+
 ## Context
 
 This project is a building block of the [judo-community](https://github.com/BlackBeltTechnology/judo-community) aggregator

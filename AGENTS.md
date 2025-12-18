@@ -50,6 +50,26 @@ judo-meta-asm/
 | `feature/` | eclipse-feature | Bundles model and plugins for Eclipse |
 | `site/` | eclipse-repository | P2 update site for Eclipse distribution |
 
+## CLI Integration Layer
+
+This metamodel integrates with the **JUDO Model CLI** (`judo-model-cli`) to provide GraphQL querying capabilities:
+
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| `AsmModelSchema` | `model/src-gen/java/.../cli/` | ModelSchema implementation providing GraphQL operations for ASM/Ecore queries |
+| `AsmFqnResolverImpl` | `model/src-gen/java/.../cli/` | Resolves ASM Fully Qualified Names (format: `demo.entities.Customer#name`) |
+| `AsmValidatorImpl` | `model/src-gen/java/.../cli/` | Integrates EVL validation with CLI |
+
+**CLI Capabilities:**
+- **GraphQL Queries**: `{ asm { count(type: "EClass") } }`, `{ eClasses { fqn name } }`
+- **Ecore Queries**: Access all EMF Ecore elements (EClass, EAttribute, EReference, EPackage, etc.)
+- **Validation**: `validate` command using Epsilon Validation Language
+- **Transformation Tracing**: ASM elements can be traced to RDBMS and other derived models
+
+**Generated Files**: CLI integration classes are generated via `model/src/workflow/generateModel.mwe2` using the template in `emf-genmodel-generator/cli/ModelSchemaGenerator.xtend`.
+
+**See Also**: [judo-model-cli/AGENTS.md](../../judo-model-cli/AGENTS.md) for complete CLI documentation.
+
 ## ASM Metamodel Structure
 
 ASM wraps the **Ecore metamodel** - the Eclipse Modeling Framework's core metamodel:
@@ -146,3 +166,4 @@ mvn clean install
 - `openspec/project.md` - Project conventions for OpenSpec
 - `docs/validation/` - Validation documentation
 - `docs/epsilon/` - Epsilon language reference
+- [judo-model-cli/AGENTS.md](../../judo-model-cli/AGENTS.md) - JUDO Model CLI documentation
