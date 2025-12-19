@@ -33,10 +33,15 @@
                             hu.blackbelt.epsilon.runtime.execution.impl;resolution:=optional,
                             hu.blackbelt.epsilon.runtime.execution.model.emf;resolution:=optional,
                             org.eclipse.epsilon.common.util;resolution:=optional,
+                            com.google.common.cache;version="[27.0,32)",
+                            com.google.common.collect;version="[27.0,32)",
+                            com.google.common.base;version="[27.0,32)",
 							*
 						</Import-Package>
 						<Export-Package>
-                            hu.blackbelt.judo.meta.asm*;version=${project.version},
+                            hu.blackbelt.judo.meta.asm*;version=${project.version};-split-package:=merge-first,
+                            !hu.blackbelt.judo.meta.asm.cli,
+                            !org.eclipse.emf.ecore.cli,
                             org.eclipse.emf.ecore.util.builder;version=${project.version},
                             org.eclipse.emf.ecore.runtime;version=${project.version},
                             org.eclipse.emf.ecore.support;version=${project.version}
@@ -73,6 +78,26 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
+			<scope>compile</scope>
+		</dependency>
+
+		<!-- Zeta validation dependencies -->
+		<dependency>
+			<groupId>hu.blackbelt.judo.zeta</groupId>
+			<artifactId>hu.blackbelt.judo.zeta.validation-core</artifactId>
+			<version>${judo-zeta-version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>hu.blackbelt.judo.zeta</groupId>
+			<artifactId>hu.blackbelt.judo.zeta.annotations</artifactId>
+			<version>${judo-zeta-version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>hu.blackbelt.judo.zeta</groupId>
+			<artifactId>hu.blackbelt.judo.zeta.common</artifactId>
+			<version>${judo-zeta-version}</version>
 			<scope>compile</scope>
 		</dependency>
 

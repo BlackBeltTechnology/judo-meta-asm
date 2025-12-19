@@ -21,12 +21,12 @@ Workflow {
 		directory = "${rootPath}/${javaGenPath}"
 	}
 
-    
+
 //	// Generate standard EMF sources from GenModel
 //	component = EcoreGenerator {
 //		generateCustomClasses = false
 //		genModel = "${platformUri}/${modelDir}/Ecore.genmodel"
-//		srcPath = "${platformUri}/src/main/java"   
+//		srcPath = "${platformUri}/src/main/java"
 //	}
 
 	// Helper for model
@@ -39,7 +39,7 @@ Workflow {
 	component = hu.blackbelt.eclipse.emf.genmodel.generator.builder.BuilderGeneratorWorkflow {
 		modelDir = "${rootPath}/${modelDir}"
 		javaGenPath = "${rootPath}/${javaGenPath}"
-	}	
+	}
 
 	// Judo RuntimeModel for model
 	component = hu.blackbelt.judo.eclipse.emf.genmodel.generator.runtimemodel.RuntimeModelGeneratorWorkflow {
@@ -47,5 +47,13 @@ Workflow {
 		javaGenPath = "${rootPath}/${javaGenPath}"
 		resolveModelName = "new hu.blackbelt.judo.meta.asm.runtime.AsmUtils(ecoreModelResourceSupport.getResourceSet()).getModel().orElseThrow(() -> new IllegalStateException(\"Could not get ASM model ePackage\")).getName()"
         resolveModelVersion = "java.util.Optional.ofNullable(new hu.blackbelt.judo.meta.asm.runtime.AsmUtils(ecoreModelResourceSupport.getResourceSet()).getVersion()).orElse(\"1.0.0\")"
+	}
+
+	// Judo CLI for model
+	component = hu.blackbelt.eclipse.emf.genmodel.generator.cli.CliGeneratorWorkflow {
+		modelDir = "${rootPath}/${modelDir}"
+		javaGenPath = "${rootPath}/${javaGenPath}"
+		resolverClass = "hu.blackbelt.judo.meta.asm.cli.AsmFqnResolverImpl"
+		validatorClass = "hu.blackbelt.judo.meta.asm.cli.AsmValidatorImpl"
 	}
 }
