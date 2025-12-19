@@ -39,7 +39,9 @@
 							*
 						</Import-Package>
 						<Export-Package>
-                            hu.blackbelt.judo.meta.asm*;version=${project.version},
+                            hu.blackbelt.judo.meta.asm*;version=${project.version};-split-package:=merge-first,
+                            !hu.blackbelt.judo.meta.asm.cli,
+                            !org.eclipse.emf.ecore.cli,
                             org.eclipse.emf.ecore.util.builder;version=${project.version},
                             org.eclipse.emf.ecore.runtime;version=${project.version},
                             org.eclipse.emf.ecore.support;version=${project.version}
