@@ -48,12 +48,4 @@ Workflow {
 		resolveModelName = "new hu.blackbelt.judo.meta.asm.runtime.AsmUtils(ecoreModelResourceSupport.getResourceSet()).getModel().orElseThrow(() -> new IllegalStateException(\"Could not get ASM model ePackage\")).getName()"
         resolveModelVersion = "java.util.Optional.ofNullable(new hu.blackbelt.judo.meta.asm.runtime.AsmUtils(ecoreModelResourceSupport.getResourceSet()).getVersion()).orElse(\"1.0.0\")"
 	}
-
-	// Judo CLI for model
-	component = hu.blackbelt.eclipse.emf.genmodel.generator.cli.CliGeneratorWorkflow {
-		modelDir = "${rootPath}/${modelDir}"
-		javaGenPath = "${rootPath}/${javaGenPath}"
-		resolverClass = "hu.blackbelt.judo.meta.asm.cli.AsmFqnResolverImpl"
-		validatorClass = "hu.blackbelt.judo.meta.asm.cli.AsmValidatorImpl"
-	}
 }
