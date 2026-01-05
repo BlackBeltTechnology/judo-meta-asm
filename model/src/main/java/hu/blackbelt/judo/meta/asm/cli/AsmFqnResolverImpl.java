@@ -6,14 +6,18 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Stream;
 
 import org.eclipse.emf.common.util.TreeIterator;
+import org.eclipse.emf.ecore.EAnnotation;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EEnumLiteral;
+import org.eclipse.emf.ecore.EModelElement;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EOperation;
 import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.EParameter;
 import org.eclipse.emf.ecore.EReference;
+import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 
@@ -87,7 +91,7 @@ public class AsmFqnResolverImpl implements FqnResolver {
             return Optional.empty();
         }
         // Try to find by URI fragment
-        for (var resource : resourceSet.getResources()) {
+        for (Resource resource : resourceSet.getResources()) {
             EObject obj = resource.getEObject(xmiId);
             if (obj != null) {
                 return Optional.of(obj);
@@ -157,6 +161,57 @@ public class AsmFqnResolverImpl implements FqnResolver {
             if (eEnum != null && eEnum.getEPackage() != null) {
                 return Optional.of(AsmUtils.getClassifierFQName(eEnum) +
                         AsmUtils.FEATURE_SEPARATOR + eEnumLiteral.getName());
+            }
+        }
+
+        // EParameter (operation parameter)
+        if (eObject instanceof EParameter) {
+            EParameter eParameter = (EParameter) eObject;
+            EOperation eOperation = eParameter.getEOperation();
+            if (eOperation != null && eOperation.getEContainingClass() != null) {
+                String operationFqn = AsmUtils.getOperationFQName(eOperation);
+                String paramName = eParameter.getName();
+                if (paramName != null && !paramName.trim().isEmpty()) {
+                    return Optional.of(operationFqn + "/" + paramName);
+                }
+            }
+        }
+
+        // EAnnotation (uses source as identifier)
+        if (eObject instanceof EAnnotation) {
+            EAnnotation eAnnotation = (EAnnotation) eObject;
+            EModelElement container = eAnnotation.getEModelElement();
+            if (container != null) {
+                Optional<String> containerFqn = computeFqn(container);
+                if (containerFqn.isPresent()) {
+                    String source = eAnnotation.getSource();
+                    if (source != null && !source.trim().isEmpty()) {
+                        // Use last part of source URI as annotation name
+                        String annotationName = source.contains("/")
+                                ? source.substring(source.lastIndexOf('/') + 1)
+                                : source;
+                        return Optional.of(containerFqn.get() + "@" + annotationName);
+                    }
+                }
+            }
+        }
+
+        // EStringToStringMapEntry (annotation detail)
+        if (eObject.eClass().getName().equals("EStringToStringMapEntry")) {
+            EObject container = eObject.eContainer();
+            if (container instanceof EAnnotation) {
+                EAnnotation eAnnotation = (EAnnotation) container;
+                Optional<String> annotationFqn = computeFqn(eAnnotation);
+                if (annotationFqn.isPresent()) {
+                    // Get the key from the map entry
+                    Object keyValue = eObject.eGet(eObject.eClass().getEStructuralFeature("key"));
+                    if (keyValue instanceof String) {
+                        String key = (String) keyValue;
+                        if (key != null && !key.isEmpty()) {
+                            return Optional.of(annotationFqn.get() + "/" + key);
+                        }
+                    }
+                }
             }
         }
 
