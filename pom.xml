@@ -80,6 +80,8 @@
 		<epsilon-runtime-version>2.8.0.20251022_112123_14c440b1_develop</epsilon-runtime-version>
 		<epsilon-runtime-eclipse-version>2.8.0.20251022_112418_29e91090_develop</epsilon-runtime-eclipse-version>
 
+		<judo-zeta-version>1.0.0.20260107_002619_f839417a_feature_JNG_6349_AddZetaValidatiob</judo-zeta-version>
+
 		<maven.compiler.source>21</maven.compiler.source>
 		<maven.compiler.target>21</maven.compiler.target>
 		<tycho-version>4.0.13</tycho-version>
@@ -119,6 +121,8 @@
 		<sonar.language>java</sonar.language>
 		<sonar.java.source>${java.version}</sonar.java.source>
 		<jacoco.version>0.8.12</jacoco.version>
+
+		<judo-cli-api-version>1.0.0.20260108_122217_1b5b40eb_develop</judo-cli-api-version>
 
     </properties>
 
