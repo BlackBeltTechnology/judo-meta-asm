@@ -1,6 +1,7 @@
 package org.eclipse.emf.ecore.cli;
 
 import org.slf4j.Logger;
+import hu.blackbelt.judo.cli.api.CliValidationException;
 import hu.blackbelt.judo.cli.api.ModelValidator;
 
 /**
@@ -14,17 +15,13 @@ import hu.blackbelt.judo.cli.api.ModelValidator;
  */
 public class EcoreValidatorImpl implements ModelValidator {
 
-    /**
-     * Returns the model type identifier.
-     *
-     * @return "ecore"
-     */
+    @Override
     public String getModelType() {
         return "ecore";
     }
 
     @Override
-    public void validate(Logger logger, Object model) throws Exception {
+    public void validate(Logger logger, Object model) throws CliValidationException {
         // Ecore models don't require custom validation - EMF handles basic validation
         logger.debug("Ecore model validation: no custom validation required");
     }
