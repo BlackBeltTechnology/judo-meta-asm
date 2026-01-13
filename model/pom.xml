@@ -49,11 +49,6 @@
                         <artifactId>org.eclipse.emf.mwe2.launch</artifactId>
                         <version>${emf-mwe2-launch-version}</version>
                     </dependency>
-                    <dependency>
-                        <groupId>hu.blackbelt.eclipse</groupId>
-                        <artifactId>hu.blackbelt.eclipse.emf.genmodel.generator.cli</artifactId>
-                        <version>${emf-genmodel-generator-version}</version>
-                    </dependency>
                 </dependencies>
             </plugin>
             <plugin>
@@ -176,27 +171,10 @@
             <groupId>hu.blackbelt.epsilon</groupId>
             <artifactId>epsilon-runtime-execution</artifactId>
         </dependency>
-        <dependency>
-            <groupId>hu.blackbelt.judo.zeta</groupId>
-            <artifactId>hu.blackbelt.judo.zeta.validation-core</artifactId>
-            <version>${judo-zeta-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>hu.blackbelt.judo.zeta</groupId>
-            <artifactId>hu.blackbelt.judo.zeta.annotations</artifactId>
-            <version>${judo-zeta-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>hu.blackbelt.judo.zeta</groupId>
-            <artifactId>hu.blackbelt.judo.zeta.common</artifactId>
-            <version>${judo-zeta-version}</version>
-        </dependency>
 
-        <!-- Model CLI API for implementing ModelSchema interface -->
         <dependency>
             <groupId>hu.blackbelt.judo.cli</groupId>
             <artifactId>judo-cli-api</artifactId>
-            <version>${judo-cli-api-version}</version>
         </dependency>
     </dependencies>
 </project>
