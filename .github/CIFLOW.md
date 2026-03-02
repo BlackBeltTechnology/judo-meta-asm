@@ -47,7 +47,7 @@ gitGraph
    merge bugfix/JNG-4
    checkout develop
    merge release/1.0-beta1
-   checkout main
+   checkout master
    merge release/1.0-beta1
 ```
 
