@@ -1,0 +1,37 @@
+# judo-meta-asm
+
+> Architecture Specific Model (ASM) metamodel for the JUDO platform — wraps Eclipse EMF Ecore with builder utilities, validation, FQN resolution, and OSGi/Eclipse integration.
+
+Key facts:
+- Java 21, Maven 3.9.4+ with Tycho 4.0.13 (Eclipse plugin builds), Maven Wrapper (`./mvnw`)
+- 6 modules: model, model-test, osgi, osgi-itest, feature, site
+- Built on Eclipse EMF Ecore, Epsilon (EVL validation), Xtext/MWE2 (code generation), Lombok
+- Fluent builder API generated from Ecore metamodel via MWE2 workflow into `model/src-gen/` (never hand-edit)
+- CLI SPI integration for model validation and FQN resolution
+- License: Eclipse Public License 2.0 (EPL-2.0)
+
+## Docs
+
+- [README.md](README.md): Project overview, module descriptions, and architecture diagrams
+- [AGENTS.md](AGENTS.md): Developer guide with build commands, directory structure, key classes, and coding conventions
+- [CONTRIBUTING.md](CONTRIBUTING.md): Development setup, code structure, troubleshooting, and submission guidelines
+- [.github/CIFLOW.md](.github/CIFLOW.md): Branch strategy, version numbers, and GitHub Actions workflows
+
+## Modules — Core
+
+- [model/](model/): Core Eclipse plugin — Ecore metamodel, hand-written runtime classes (AsmModel, AsmUtils, AsmEpsilonValidator), generated builders/helpers, EVL validation rules, and CLI SPI implementations
+- [model-test/](model-test/): JUnit 5 tests for FQN resolution, builder API, validation engine, EAnnotation handling, and inheritance
+
+## Modules — OSGi/Eclipse Packaging
+
+- [osgi/](osgi/): Standalone OSGi bundle repackaging via Apache Felix Maven Bundle Plugin; exports all runtime packages
+- [osgi-itest/](osgi-itest/): OSGi integration tests using Pax Exam with Apache Karaf container
+- [feature/feature.xml](feature/feature.xml): Eclipse feature definition for plugin installation
+- [site/](site/): Eclipse P2 update site for distribution
+
+## Optional
+
+- [.github/workflows/build.yml](.github/workflows/build.yml): CI/CD pipeline — version calculation, build, deploy, release
+- [LICENSE.txt](LICENSE.txt): Eclipse Public License 2.0 full text
+- [model/model/Ecore.ecore](model/model/Ecore.ecore): The Ecore metamodel definition that drives all code generation
+- [model/src/workflow/generateModel.mwe2](model/src/workflow/generateModel.mwe2): MWE2 code generation workflow for builders and helpers
