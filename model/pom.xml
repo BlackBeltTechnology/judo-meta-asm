@@ -176,5 +176,20 @@
             <groupId>hu.blackbelt.judo.cli</groupId>
             <artifactId>judo-cli-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>hu.blackbelt.judo.zeta</groupId>
+            <artifactId>hu.blackbelt.judo.zeta.validation-core</artifactId>
+            <version>${judo-zeta-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>hu.blackbelt.judo.zeta</groupId>
+            <artifactId>hu.blackbelt.judo.zeta.annotations</artifactId>
+            <version>${judo-zeta-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>hu.blackbelt.judo.zeta</groupId>
+            <artifactId>hu.blackbelt.judo.zeta.common</artifactId>
+            <version>${judo-zeta-version}</version>
+        </dependency>
     </dependencies>
 </project>
