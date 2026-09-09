@@ -1,0 +1,5 @@
+# `model/src/workflow` — MWE2 code-generation workflow producing `src-gen` from the Ecore model
+
+| File | Purpose |
+|---|---|
+| `generateModel.mwe2` | MWE2 `module AsmModelBuilder` run by `./mvnw generate-sources -pl model`. Declares vars `rootPath` = `.`, `modelDir` = `model`, `javaGenPath` = `src-gen`, `platformUri` = `platform:/resource/hu.blackbelt.judo.meta.asm.model`. Pipeline: `StandaloneSetup` → `DirectoryCleaner` on `src-gen` (wipes it — never hand-edit files there) → `HelperGeneratorWorkflow` → `BuilderGeneratorWorkflow` (emits the `EcoreBuilders` / `*Builder` API tests use) → `RuntimeModelGeneratorWorkflow`. The runtime-model step injects the literal Java snippets `resolveModelName` and `resolveModelVersion`, which is where `AsmModel.getName()` (throws `IllegalStateException` "Could not get ASM model ePackage") and `AsmModel.getVersion()` (defaults `1.0.0`) come from — change that behaviour here, not in generated sources. Stock `EcoreGenerator` / `Ecore.genmodel` step is commented out: no standard EMF impl classes are generated, ASM stays plain Ecore. |
