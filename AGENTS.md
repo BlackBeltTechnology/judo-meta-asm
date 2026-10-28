@@ -137,6 +137,25 @@ then add the missing directory `AGENTS.md` row per the WRITE discipline above.
 7. For implementation use TDD (Test-Driven Development): write or update tests first to define the expected behaviour, verify they fail, then write the minimal implementation to make them pass.
 8. Use DRY (Don't Repeat Yourself): extract reusable logic into separate classes, utilities, or components. If the same pattern appears in multiple places, refactor it into a shared helper.
 
+## Discipline Skills
+
+During implementation, invoke the matching `eng-disciplines` skill when a task
+signal appears. Skills auto-trigger on natural language, but the implement loop
+may never utter the phrase — this table makes the mapping explicit (signals are
+observable in the diff / `tasks.md`, not vague intent):
+
+| Task signal (in diff / tasks.md) | Skill |
+|---|---|
+| touches auth, untrusted input, secrets, webhooks, PII | `security-hardening` |
+| spec has a latency/throughput budget, or a large-data / high-traffic path | `performance-optimization` |
+| new endpoint, job, external call, or "can't tell what happened in prod" | `observability-instrumentation` |
+| non-trivial/irreversible step (migration, public API, cross-boundary) BEFORE it stands | `doubt-driven-review` |
+| a bug surfaces mid-implementation | `systematic-debugging` |
+| runtime state opaque, `console.log` insufficient | `node-inspect-debugger` |
+| feature works + tests pass but the implementation feels heavy | `code-simplification` |
+
+The end gates (`code-review`, `code-quality`) remain unchanged and run at completion before commit.
+
 ## Build Commands
 
 ```bash
