@@ -1,0 +1,12 @@
+{
+  "worktreeInit": {
+    "gate": "test ! -d model/target",
+    "run": {
+      "type": "script",
+      "command": "./mvnw -q dependency:go-offline"
+    }
+  },
+  "flows": {
+    "editFlow": false
+  }
+}
