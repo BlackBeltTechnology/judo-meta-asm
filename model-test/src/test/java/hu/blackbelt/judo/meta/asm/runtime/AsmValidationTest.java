@@ -21,51 +21,35 @@ package hu.blackbelt.judo.meta.asm.runtime;
  */
 
 import com.google.common.collect.ImmutableList;
-import hu.blackbelt.epsilon.runtime.execution.exceptions.EvlScriptExecutionException;
-import hu.blackbelt.epsilon.runtime.execution.impl.BufferedSlf4jLogger;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.emf.common.util.URI;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import hu.blackbelt.judo.meta.asm.AbstractAsmValidationTest;
+import hu.blackbelt.judo.meta.asm.ValidatorType;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 
-import java.util.Collection;
+/**
+ * Validation tests for ASM models.
+ *
+ * <p>Tests are parameterized to run against both EVL and Java validators,
+ * ensuring parity between the two validation implementations.</p>
+ *
+ * <p>Currently, the ASM validation (asm.evl) has no rules defined, so
+ * tests verify that an empty model passes validation with no errors.</p>
+ */
+public class AsmValidationTest extends AbstractAsmValidationTest {
 
-@Slf4j
-public class AsmValidationTest {
+    /**
+     * Test that an empty model passes validation with no errors.
+     *
+     * <p>This test runs with both EVL and Java validators to ensure
+     * they produce identical results (no errors, no warnings).</p>
+     */
+    @ParameterizedTest(name = "testEmptyModelPassesValidation [{0}]")
+    @EnumSource(ValidatorType.class)
+    void testEmptyModelPassesValidation(ValidatorType type) throws Exception {
+        this.validatorType = type;
+        initModel();
 
-    private final String createdSourceModelName = "urn:asm.judo-meta-asm";
-
-    private AsmModel asmModel;
-
-    @BeforeEach
-    void setUp() {
-
-        asmModel = AsmModel.buildAsmModel()
-                .uri(URI.createURI(createdSourceModelName))
-                .build();
-    }
-
-    private void runEpsilon (Collection<String> expectedErrors, Collection<String> expectedWarnings) throws Exception {
-        try (BufferedSlf4jLogger bufferedLog = new BufferedSlf4jLogger(log)) {
-            AsmEpsilonValidator.validateAsm(bufferedLog,
-                    asmModel,
-                    AsmEpsilonValidator.calculateAsmValidationScriptURI(),
-                    expectedErrors,
-                    expectedWarnings);
-        } catch (EvlScriptExecutionException ex) {
-            log.error("EVL failed", ex);
-            log.error("\u001B[31m - expected errors: {}\u001B[0m", expectedErrors);
-            log.error("\u001B[31m - unexpected errors: {}\u001B[0m", ex.getUnexpectedErrors());
-            log.error("\u001B[31m - errors not found: {}\u001B[0m", ex.getErrorsNotFound());
-            log.error("\u001B[33m - expected warnings: {}\u001B[0m", expectedWarnings);
-            log.error("\u001B[33m - unexpected warnings: {}\u001B[0m", ex.getUnexpectedWarnings());
-            log.error("\u001B[33m - warnings not found: {}\u001B[0m", ex.getWarningsNotFound());
-            throw ex;
-        }
-    }
-
-    @Test
-    public void test() throws Exception {
-        runEpsilon(ImmutableList.of(), null);
+        // Empty model should pass validation with no errors
+        runValidation(ImmutableList.of(), ImmutableList.of());
     }
 }
