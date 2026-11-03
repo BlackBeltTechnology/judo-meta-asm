@@ -225,7 +225,7 @@ behaviour is recorded here.
 ### Core Technologies
 - **Eclipse EMF Ecore** — metamodel foundation
 - **Tycho 4.0.13** — Eclipse plugin/feature/site build integration with Maven
-- **Epsilon Runtime** — EVL (Epsilon Validation Language) validation engine
+- **Epsilon Runtime** — EVL (Epsilon Validation Language) validation engine; `model` declares `epsilon-runtime-execution` `provided` (optional, only `AsmEpsilonValidator` needs it; callers declare Epsilon themselves, not transitive). See change: split-etl-artifacts.
 - **Lombok 1.18.34** — boilerplate reduction (delomboked for Eclipse/Tycho compatibility)
 - **Xtext 2.39.0 / MWE2** — code generation workflow for builders and helpers
 - **judo-cli-api** — CLI integration SPI (ModelValidator, FqnResolver)
