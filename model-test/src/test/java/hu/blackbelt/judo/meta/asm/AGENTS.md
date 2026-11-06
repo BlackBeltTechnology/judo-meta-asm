@@ -1,0 +1,6 @@
+# `model-test/src/test/java/hu/blackbelt/judo/meta/asm` — shared harness for EVL-vs-Java validator parity tests
+
+| File | Purpose |
+|---|---|
+| `AbstractAsmValidationTest.java` | Base class for parameterized parity tests running same case through both validators. Exports `initModel()`, `runValidation(Collection<String> expectedErrors, Collection<String> expectedWarnings)`, protected fields `asmModel`, `validatorType`, `createdSourceModelName` = `urn:asm.judo-meta-asm`. Subclass must set `validatorType` and call `initModel()` before `runValidation`. Normalizes format gap: EVL reports `ConstraintName|message`, Java reports bare `ConstraintName` — runs EVL with empty expected collections to force `EvlScriptExecutionException`, then compares only `uc.getConstraint().getName()`. Null `expectedWarnings` means warnings ignored; null `expectedErrors` means none expected. Mismatch throws `AsmModel.AsmValidationException`. EVL run forced sequential (`parallel(false)`) for determinism. |
+| `ValidatorType.java` | Enum selecting validation engine per parameterized run. Constants `EVL` (dispatches to `AsmEpsilonValidator` epsilon script) and `JAVA` (dispatches to `AsmValidator`). Fed to tests via `@EnumSource`; adding a constant without a matching branch in `AbstractAsmValidationTest.runValidation` throws `IllegalStateException`. |
